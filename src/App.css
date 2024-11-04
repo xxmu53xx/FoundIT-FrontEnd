@@ -1,0 +1,156 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background-color: #F1D88A;
+  cursor: url("kitto-removebg-preview.png"),auto;
+}
+
+.dashboard {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #EEEEEE;
+  padding: 1rem 2rem;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 315px; /* Adjusts to start after sidebar */
+  width: calc(100% - 380px);
+  z-index: 100;
+}
+
+.university-logo {
+  height: 50px;
+  cursor: pointer;
+}
+
+.search-bar {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  width: 300px;
+  background-color: rgb(218, 216, 216);
+  color: #333;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.profile-picture {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #F1D88A;
+  object-fit: cover;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #121212;
+  min-height: 100vh;
+  color: white;
+  padding: 2rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.header-dashboard {
+  font-size: 24px;
+  margin-bottom: 5rem;
+  font-weight: bold;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-item {
+  margin-bottom: 1rem;
+}
+
+.logout-button {
+  margin-top: 5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+}
+
+.nav-link:hover {
+  background-color: #F1D88A;
+}
+
+.logout-button {
+  background-color: #ef4444;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #dc2626;
+}
+
+.content {
+  margin-left: 250px;
+  margin-top: 60px;
+  padding: 2rem;
+  min-height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #F1D88A;
+}
+
+
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
