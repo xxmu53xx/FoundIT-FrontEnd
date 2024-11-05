@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './Design.css';
 import './Item.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
+//oten
 function ItemManagement() {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
