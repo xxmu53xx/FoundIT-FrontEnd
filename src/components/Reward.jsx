@@ -172,6 +172,8 @@ const Rewards = () => {
                   onChange={handleInputChange}
                   required
                 />
+
+
               </div>
               <div className="form-group">
                 <label>Points Required:</label>

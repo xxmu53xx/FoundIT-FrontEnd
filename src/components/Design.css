@@ -1,3 +1,4 @@
+
 .dashboard {
   display: flex;
   height: 100vh;
@@ -6,7 +7,7 @@
 
 /* Sidebar Styles */
 .sidebar {
-  width: 245px;
+  width: 250px;
   background-color: #1a1a1a;
   color: white;
   padding: 20px 0;
@@ -39,8 +40,20 @@
   background-color: #f4e4b4  ;
   
 }
+
+.accordion-root {
+  background-color: #bb6464; /* Background for Accordion */
+}
+
+.accordion-summary {
+  background-color: #bb6464; /* Background for AccordionSummary */
+}
+
+.accordion-details {
+  background-color: #bb6464; /* Background for AccordionDetails */
+}
 .sidebar-item {
-  padding: 2px;
+  padding: 10px;
   /* Add additional styles */
 }
 .textArea{
