@@ -145,9 +145,11 @@ function App() {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isviewProfileModal,setIsviewProfileModal] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [profileData, setProfileData] = useState({
+    schoolEmail:'',
     schoolId: '',
     password: '',
     bio: '',
@@ -159,9 +161,12 @@ function App() {
     const displayName = userData.schoolEmail.split('@')[0];
     setUsername(displayName);
     setProfileData({
+      userID:userData.userID,
       schoolId: userData.schoolId,
       password: userData.password,
       bio: userData.bio,
+      schoolEmail:userData.schoolEmail,
+      currentPoints:userData.currentPoints
     });
   };
 
@@ -171,9 +176,16 @@ function App() {
   };
 
   const handleProfileClick = () => {
+    //this one is for edit
+    //if set true edit profile will popup
     setIsProfileModalOpen(true);
   };
+  const handProfileViewClick=()=>{
+    //this one if for view profile
+    //if set true view profile will popup, this should appeaer first before editing
+    setIsviewProfileModal(true);
 
+  }
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -184,7 +196,7 @@ function App() {
 
   const handleProfileSave = (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:8083/api/users/updateUser/${user.userID}`, profileData)
+    axios.put(`http://localhost:8083/api/users/putUserDetails/${user.userID}`, profileData)
       .then((response) => {
         setUser(response.data);
         setIsProfileModalOpen(false);
@@ -230,10 +242,15 @@ function App() {
                 <header className="header">
                   <img src="/citlogo.png" alt="University Logo" className="university-logo" />
                   <input type="text" className="search-bar" placeholder="Search..." />
-                  <div className="user-profile" onClick={handleProfileClick}>
+
+
+
+                  <div className="user-profile" onClick={handProfileViewClick}>
                     <span className="user-name">{username || 'Guest'}</span>
                     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
                   </div>
+
+
                 </header>
                 <div className="sidebar">
                   <h2 className="header-dashboard">
@@ -273,13 +290,38 @@ function App() {
           }
         />
       </Routes>
+{/*for viewing */}
+      {isviewProfileModal &&(
+ <div className="modal-overlay2">
+ <div className="modal-container2"><div className="content-header"> 
+ <img src="/dilao.png" alt="User Profile" className="profile-picture" /><h2>Profile Information</h2></div>
+   <div className="profile-info">
+     <p><strong>Email:</strong> {user.schoolEmail}</p>
+     <p><strong>School ID:</strong> {user.schoolId}</p>
+     <p><strong>Password:</strong> {user.password}</p>
+     <p><strong>Bio:</strong> {user.bio}</p>
+     <p><strong>Current Points:</strong> {user.currentPoints}</p>
+   </div>
+   <div className="button-group">
+     <button onClick={()=>setIsviewProfileModal(false)} className="cancel-button">Cancel</button>
+     <button onClick={()=>setIsProfileModalOpen(true)} className="edit-button">Edit Profile</button>
+     <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
+   </div>
+ </div>
+</div>
+      )}
 
+{/*for edit profile */}
       {isProfileModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">
             <h2>Edit Profile</h2>
-            <h4>Hello {username}</h4>
+            <h4>What would like to change? {username}</h4>
             <form onSubmit={handleProfileSave}>
+            <div className="form-group">
+                <label>Email:</label>
+                <input type="text" name="email" value={profileData.schoolEmail} onChange={handleProfileChange} disabled/>
+              </div>
               <div className="form-group">
                 <label>Password:</label>
                 <input type="text" name="password" value={profileData.password} onChange={handleProfileChange} />
@@ -290,8 +332,8 @@ function App() {
               </div>
               <div className="button-group">
                 <button type="submit" className="save-button">Save Changes</button>
-                <button type="button" className="cancel-button" onClick={() => setIsProfileModalOpen(false)}>Cancel</button>
-                <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
+                <button type="button" className="cancel-button" onClick={()=>setIsProfileModalOpen(false)}>Cancel</button>
+              
               </div>
             </form>
           </div>

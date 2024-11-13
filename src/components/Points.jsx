@@ -31,8 +31,7 @@ const Points = () => {
     setEditingPoint(point);
     setFormData({
       pointsEarned: point.pointsEarned.toString(),
-      dateEarned: point.dateEarned,
-      userId: point.user.userId
+      dateEarned: point.dateEarned
     });
     setShowModal(true);
   };

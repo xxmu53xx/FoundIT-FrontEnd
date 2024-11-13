@@ -87,6 +87,14 @@
     background-color: #C82333;
   }
   
+  .edit-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .edit-button:hover {
+    background-color: #43a047;
+  }
   /* Optional: Add focus styles for better accessibility */
   .save-button:focus,
   .cancel-button:focus {

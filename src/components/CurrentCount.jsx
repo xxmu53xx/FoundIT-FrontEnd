@@ -6,7 +6,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import RewardIcon from '@mui/icons-material/Stars';
 import PointIcon from '@mui/icons-material/PointOfSale';
 import InventoryIcon from '@mui/icons-material/Inventory';
-
+import { Link } from 'react-router-dom';
 import './Design.css';
 function CurrentCount() {
     const userCount = 100; // Example count
@@ -82,6 +82,7 @@ function CurrentCount() {
     <>
        <Grid container spacing={3}>
       <Grid item xs={12} sm={6} md={3}>
+      <Link to="/user-management" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -93,6 +94,12 @@ function CurrentCount() {
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
+            cursor: 'pointer',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: 6,
+              },
           }}
         >   <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
         <PeopleIcon sx={{ fontSize: 40, marginRight: 1 }} />
@@ -102,10 +109,12 @@ function CurrentCount() {
             Users
           </Typography>
         </Box>
+        </Link>
       </Grid>
 
  
       <Grid item xs={12} sm={6} md={3}>
+      <Link to="/rewards" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -117,6 +126,12 @@ function CurrentCount() {
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
+            cursor: 'pointer',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: 6,
+              },
           }}
         >
             <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
@@ -126,10 +141,12 @@ function CurrentCount() {
             Reward
           </Typography>
         </Box>
+        </Link>
       </Grid>
 
     
       <Grid item xs={12} sm={6} md={3}>
+      <Link to="/points" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -141,6 +158,12 @@ function CurrentCount() {
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
+            cursor: 'pointer',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: 6,
+              },
           }}
         >
              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
@@ -150,10 +173,12 @@ function CurrentCount() {
             Point
           </Typography>
         </Box>
+        </Link>
       </Grid>
 
 
       <Grid item xs={12} sm={6} md={3}>
+      <Link to="/item" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -165,6 +190,12 @@ function CurrentCount() {
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
+            cursor: 'pointer',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: 6,
+              },
           }}
         >
               <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
@@ -175,6 +206,7 @@ function CurrentCount() {
             Item
           </Typography>
         </Box>
+        </Link>
       </Grid>
     </Grid>
 
