@@ -1,3 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.page-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('CITbg.png') no-repeat center center;
+  background-size: cover;
+  padding: 20px;
+}
+
+:root {
+  --primary-color: #4e2a84;  /* Deep Purple */
+  --secondary-color: #6b4ca6; /* Medium Purple */
+  --accent-color: #8c6cc7;   /* Light Purple */
+  --text-primary: #2c1810;   /* Dark Brown */
+  --text-secondary: #4a3427; /* Medium Brown */
+  --border-color: #e0e0e0;
+}
+
+.login-container {
+  width: 850px;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  margin: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+.content-wrapper {
+  display: flex;
+  min-height: 500px;
+}
+
+.left-side {
+  flex: 1;
+  padding: 2rem;
+  border-right: 1px solid var(--border-color);
+  position: relative;
+}
+
+.left-side::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('CITlogos.png') no-repeat center center;
+  background-size: cover;
+  opacity: 0.4;
+}
+
+.left-side-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.right-side {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 3rem;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.title {
+  margin-bottom: 2rem !important;
+  color: var(--primary-color) !important;
+  font-size: 1.5rem !important;
+  text-align: center;
+  width: 100%;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.account-types {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.account-option {
+  width: 150px;
+  height: 150px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background-color: rgba(255, 255, 255, 1.5);
+}
+
+.account-option Typography {
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.account-option-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-option:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.account-option.selected {
+  border-color: var(--primary-color);
+  background-color: rgba(245, 249, 255, 0.9);
+}
+
+.check-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  color: var(--primary-color);
+  background-color: white;
+  border-radius: 50%;
+  font-size: 24px !important;
+}
+
+.account-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.welcome-text {
+  margin-bottom: 0.5rem !important;
+  color: var(--primary-color) !important;
+  text-align: center;
+  font-size: 1.5rem !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem !important;
+  text-align: center;
+  font-weight: 500 !important;
+}
+
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.field-icon {
+  color: var(--secondary-color);
+}
+
+.text-field {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.text-field .MuiInputLabel-root {
+  color: var(--text-secondary);
+}
+
+.text-field .MuiOutlinedInput-root {
+  color: var(--text-primary);
+}
+
+.signup-text {
+  margin: 1rem 0;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.signup-link {
+  text-transform: none !important;
+  padding: 0 4px !important;
+  color: var(--primary-color) !important;
+  font-weight: 500 !important;
+}
+
+.signup-link:hover {
+  color: var(--accent-color) !important;
+}
+
+.login-button {
+  margin-top: 1rem !important;
+  padding: 0.75rem !important;
+  background-color: var(--primary-color) !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.login-button:hover {
+  background-color: var(--secondary-color) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color) !important;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .content-wrapper {
+    flex-direction: column;
+  }
+  
+  .left-side {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
 body, html {
   margin: 0;
   padding: 0;
@@ -22,8 +276,8 @@ body, html {
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
-  left: 315px; /* Adjusts to start after sidebar */
-  width: calc(100% - 380px);
+  left: 300px; /* Adjusts to start after sidebar */
+  width: calc(100% - 300px);
   z-index: 100;
 }
 
@@ -60,7 +314,7 @@ body, html {
 }
 
 .sidebar {
-  width: 250px;
+  width: 300px;
   background-color: #121212;
   min-height: 100vh;
   color: white;
@@ -89,7 +343,7 @@ body, html {
 }
 
 .logout-button {
-  margin-top: 12rem;
+  margin-top: 5rem;
 }
 
 .nav-link {

@@ -1,0 +1,59 @@
+/* components/Signup.css */
+.signup-dialog .MuiDialog-paper {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+  
+  .signup-dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+  }
+  
+  .signup-title {
+    color: var(--primary-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .close-button {
+    color: var(--text-secondary);
+  }
+  
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 0;
+  }
+  
+  .bio-field {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.8);
+    resize: vertical;
+  }
+  
+  .bio-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+  
+  .signup-button {
+    margin-top: 1rem !important;
+    padding: 0.75rem !important;
+    background-color: var(--primary-color) !important;
+    transition: background-color 0.3s ease !important;
+  }
+  
+  .signup-button:hover {
+    background-color: var(--secondary-color) !important;
+  }

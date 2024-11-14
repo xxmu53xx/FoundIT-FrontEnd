@@ -5,10 +5,25 @@ import Dashboard from './components/Dashboard';
 import Rewards from './components/Reward';
 import Points from './components/Points';
 import Item from './components/ItemManagement';
-import './App.css';
 import axios from 'axios';
 import './components/profile-modal.css'
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Paper,
+  IconButton 
+} from '@mui/material';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Signup from './components/Signup';
+import './App.css';
+
 const Login = ({ onLogin }) => {
+  const [selectedType, setSelectedType] = useState(null);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [adminList, setAdminList] = useState([]);
@@ -20,10 +35,18 @@ const Login = ({ onLogin }) => {
       .catch(error => console.error("Error fetching admin accounts:", error));
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
+  const handleAccountSelect = (type) => {
+    setSelectedType(type);
+  };
 
+  const handleSignup = () => {
+    setIsSignupOpen(true);
+  };
+
+  const handleLogin = () => {
+    setError('');
+    
+    // Find user from admin list based on the selected email
     const user = adminList.find(user => user.schoolEmail === credentials.email);
     if (!user) {
       setError('Email not found');
@@ -34,105 +57,134 @@ const Login = ({ onLogin }) => {
       return;
     }
 
+    // Pass user to the parent component
     onLogin(user);
+    
+    // Handle different login redirects based on user type
+    if (selectedType === 'admin') {
+      console.log("Navigate to admin dashboard");
+      // window.location.href = '/admin/dashboard';
+    } else {
+      console.log("Navigate to student dashboard");
+      // window.location.href = '/student/dashboard';
+    }
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: `linear-gradient(rgba(121, 41, 41, 0.7), rgba(121, 41, 41, 0.7)), url('/cit.png')`,
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      padding: '20px',
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.85)',
-        borderRadius: '16px',
-        padding: '2rem',
-        width: '100%',
-        maxWidth: '320px',
-        boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(10px)',
-        textAlign: 'center',
-        position: 'relative'
-      }}>
-        <h1 style={{ color: '#7c2d2d', fontSize: '18px', fontWeight: 'bold', marginBottom: '1.5rem' }}>Login</h1>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-            <label style={{
-              display: 'block',
-              color: '#7c2d2d',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              marginBottom: '0.3rem',
-            }}>Username</label>
-            <input
-              type="email"
-              value={credentials.email}
-              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: '1px solid #e5e5e5',
-                borderRadius: '8px',
-                backgroundColor: '#d3d3d3',
-                color: '#333',
-                fontSize: '14px',
-              }}
-              required
-            />
-          </div>
-          <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-            <label style={{
-              display: 'block',
-              color: '#7c2d2d',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              marginBottom: '0.3rem',
-            }}>Password</label>
-            <input
-              type="password"
-              value={credentials.password}
-              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: '1px solid #e5e5e5',
-                borderRadius: '8px',
-                backgroundColor: '#d3d3d3',
-                color: '#333',
-                fontSize: '14px',
-              }}
-              required
-            />
-          </div>
-          {error && <div style={{ color: '#dc2626', marginBottom: '1rem' }}>{error}</div>}
-          <button 
-            type="submit"
-            style={{
-              width: '150px',
-              padding: '0.5rem',
-              backgroundColor: '#fbbf24',
-              border: 'none',
-              borderRadius: '20px',
-              color: '#7c2d2d',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              cursor: 'pointer',
-              marginTop: '1rem',
-              transition: 'background-color 0.2s',
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#f5c842'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#fbbf24'}
-          >
-            Login
-          </button>
-        </form>
-      </div>
+    <div className="page-container">
+      <Paper elevation={3} className="login-container">
+        <Box className="content-wrapper">
+          <Box className="left-side">
+            <Box className="left-side-content">
+              <Typography variant="h6" className="title">
+                <strong>Choose Account Type</strong>
+              </Typography>
+              <Box className="account-types">
+                <Box 
+                  className={`account-option ${selectedType === 'admin' ? 'selected' : ''}`}
+                  onClick={() => handleAccountSelect('admin')}
+                >
+                  <Box className="account-option-content">
+                    <img src="admin.png" alt="Admin" className="account-icon" />
+                    <Typography>Admin</Typography>
+                  </Box>
+                  {selectedType === 'admin' && (
+                    <CheckCircleIcon className="check-icon" />
+                  )}
+                </Box>
+                <Box 
+                  className={`account-option ${selectedType === 'student' ? 'selected' : ''}`}
+                  onClick={() => handleAccountSelect('student')}
+                >
+                  <Box className="account-option-content">
+                    <img src="student.png" alt="Student" className="account-icon" />
+                    <Typography>Student</Typography>
+                  </Box>
+                  {selectedType === 'student' && (
+                    <CheckCircleIcon className="check-icon" />
+                  )}
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box className="right-side">
+            {selectedType && (
+              <Box className="login-form">
+                <Typography variant="h6" className="welcome-text">
+                  <strong>Hello {selectedType === 'admin' ? 'Admin' : 'Student'}!</strong>
+                </Typography>
+                <Typography variant="subtitle1" className="login-subtitle">
+                  Please Log in
+                </Typography>
+                
+                <Box className="input-field">
+                  <EmailIcon className="field-icon" />
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    variant="outlined"
+                    className="text-field"
+                    value={credentials.email}
+                    onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                    required
+                  />
+                </Box>
+
+                <Box className="input-field">
+                  <LockIcon className="field-icon" />
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    variant="outlined"
+                    className="text-field"
+                    value={credentials.password}
+                    onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                    required
+                  />
+                </Box>
+
+                {error && (
+                  <Box className="error-message">
+                    <Typography color="error">{error}</Typography>
+                  </Box>
+                )}
+
+                {selectedType === 'student' && (
+                  <Box className="signup-text">
+                    <Typography variant="body2">
+                      No account? 
+                      <Button 
+                        color="primary" 
+                        onClick={handleSignup}
+                        className="signup-link"
+                      >
+                        Signup
+                      </Button>
+                    </Typography>
+                  </Box>
+                )}
+
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  fullWidth 
+                  className="login-button"
+                  onClick={handleLogin}
+                >
+                  Login
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Paper>
+      
+      <Signup 
+        open={isSignupOpen}
+        onClose={() => setIsSignupOpen(false)}
+      />
     </div>
   );
 };
@@ -311,7 +363,6 @@ function App() {
 </div>
       )}
 
-{/*for edit profile */}
       {isProfileModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">
