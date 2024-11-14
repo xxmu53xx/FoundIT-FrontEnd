@@ -110,36 +110,52 @@ const Points = () => {
   };
 
   return (
-    <div className="rewards-container">
-      <h1>Manage Points</h1>
-      
-      <button className="add-button" onClick={() => setShowModal(true)}>
-        Add Point
-      </button>
-
+    <div className="content">
+      <div className="content-header">
+        <h1>Point Management</h1>
+        <button onClick={() => setShowModal(true)} className="add-button1" title="Add User">
+          <h6>+   Add Point</h6>
+        </button>
+      </div>
       {/* Display error message if there is one */}
       {error && <div className="error-message">{error}</div>}
       
       {/* Display success message if there is one */}
       {successMessage && <div className="success-message">{successMessage}</div>}
 
-      <div className="rewards-grid">
-        {points.map((point) => (
-          <div key={point.pointId} className="reward-card">
-            <h3>Points Earned: {point.pointsEarned}</h3>
-            <p>Date Earned: {point.dateEarned}</p>
-           
-            <div className="button-container">
-              <button className="edit-button" onClick={() => handleEdit(point)}>
-                Edit
-              </button>
-              <button className="delete-button" onClick={() => handleDelete(point.pointId)}>
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="table-container">
+      <table className="points-table">
+        <thead>
+          <tr >
+            <th>Points Earned</th>
+            <th>Date Earned</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.map((point) => (
+            <tr key={point.pointId}>
+              <td>{point.pointsEarned}</td>
+              <td>{point.dateEarned}</td>
+              <td>
+                <button
+                  className="edit-btn"
+                  onClick={() => handleEdit(point)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(point.pointId)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
       {showModal && (
         <div className="modal-overlay">
@@ -171,7 +187,7 @@ const Points = () => {
               {error && <div className="error-message">{error}</div>}
               {successMessage && <div className="success-message">{successMessage}</div>}
               <div className="modal-buttons">
-                <button type="submit" className="submit-button">
+                <button type="submit" className="edit-btn">
                   {editingPoint ? 'Update' : 'Add'}
                 </button>
                 <button type="button" className="cancel-button" onClick={handleCloseModal}>

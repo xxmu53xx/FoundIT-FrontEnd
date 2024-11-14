@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Rewards.css';
+import './Design.css'
 
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
@@ -113,40 +113,54 @@ const Rewards = () => {
   };
 
   return (
-    <div className="rewards-container">
-      <h1>REDEEM REWARDS</h1>
-      
-      <button className="add-button" onClick={() => setShowModal(true)}>
-        Add Reward
-      </button>
-
+    <div className="content">
+      <div className="content-header">
+        <h1>Reward Management</h1>
+        <button onClick={() => setShowModal(true)} className="add-button1" title="Add User">
+          <h6>+ Add Reward</h6>
+        </button>
+      </div>
       {/* Display error message if there is one */}
       {error && <div className="error-message">{error}</div>}
       
       {/* Display success message if there is one */}
       {successMessage && <div className="success-message">{successMessage}</div>}
 
-      <div className="rewards-grid">
-        {rewards.map((reward) => (
-          <div key={reward.rewardId} className="reward-card">
-            <h3>{reward.rewardName}</h3>
-            <p>Reward Type: {reward.rewardType}</p>
-            <div className="points-container">
-              <span className="points-icon">★</span>
-              <span>{reward.pointsRequired}</span>
-              <button className="redeem-button">Redeem</button>
-            </div>
-            <div className="button-container">
-              <button className="edit-button" onClick={() => handleEdit(reward)}>
-                Edit
-              </button>
-              <button className="delete-button" onClick={() => handleDelete(reward.rewardId)}>
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="table-container">
+      <table>
+        <thead>
+          <tr className="labellist">
+            <th>Reward Name</th>
+            <th>Reward Type</th>
+            <th>Points Required</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rewards.map((reward) => (
+            <tr key={reward.rewardId}>
+              <td>{reward.rewardName}</td>
+              <td>{reward.rewardType}</td>
+              <td>{reward.pointsRequired}</td>
+              <td>
+                <button
+                  className="edit-btn"
+                  onClick={() => handleEdit(reward)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(reward.rewardId)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
       {showModal && (
         <div className="modal-overlay">
@@ -189,7 +203,7 @@ const Rewards = () => {
               {error && <div className="error-message">{error}</div>}
               {successMessage && <div className="success-message">{successMessage}</div>}
               <div className="modal-buttons">
-                <button type="submit" className="submit-button">
+                <button type="submit" className="edit-btn">
                   {editingReward ? 'Update' : 'Add'}
                 </button>
                 <button type="button" className="cancel-button" onClick={handleCloseModal}>

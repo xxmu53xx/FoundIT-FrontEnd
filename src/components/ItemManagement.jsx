@@ -136,22 +136,37 @@ function ItemManagement() {
 
       {error && <p className="error">{error}</p>}
 
-      <div className="grid-container">
-        {items.map((item) => (
-          <div className="item-card" key={item.itemID}>
-            <div className="actions-container">
-              <FaEdit className="edit-icon" onClick={() => handleEdit(item)} title="Edit" />
-              <FaTrash className="delete-icon" onClick={() => handleDelete(item.itemID)} title="Delete" />
-            </div>
-            <h2>Item ID: {item.itemID}</h2>
-            <p><strong>Description:</strong> {item.description}</p>
-            <p><strong>Date Lost/Found:</strong> {item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</p>
-            <p><strong>Registered By:</strong> {item.registeredBy}</p>
-            <p><strong>Location:</strong> {item.location}</p>
-            <p><strong>Status:</strong> {item.status}</p>
-          </div>
-        ))}
-      </div>
+      <div className="table-container">
+  <table>
+    <thead>
+      <tr className="labellist">
+        <th className="item-id-column">ITEM ID</th>
+        <th>Description</th>
+        <th>Date Lost/Found</th>
+        <th>Registered By</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th className="actions-column">ACTIONS</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((item) => (
+        <tr key={item.itemID}>
+          <td>{item.itemID}</td>
+          <td>{item.description}</td>
+          <td>{item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</td>
+          <td>{item.registeredBy}</td>
+          <td>{item.location}</td>
+          <td>{item.status}</td>
+          <td className="actions-column">
+            <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
+            <button className="delete-btn" onClick={() => handleDelete(item.itemID)}>Delete</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
       {showPopup && (
         <div className="modal-overlay1" onClick={togglePopup} >

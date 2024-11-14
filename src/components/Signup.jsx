@@ -1,4 +1,6 @@
-// components/Signup.jsx
+
+//goods nani dere ay na hilabi :<
+
 import { useState } from 'react';
 import { 
   Dialog,
@@ -17,15 +19,17 @@ import LockIcon from '@mui/icons-material/Lock';
 import BadgeIcon from '@mui/icons-material/Badge';
 import PersonIcon from '@mui/icons-material/Person';
 import './Signup.css';
+import axios from 'axios';
 
 const Signup = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
-    email: '',
+    schoolEmail: '',
     schoolId: '',
     bio: '',
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -34,11 +38,38 @@ const Signup = ({ open, onClose }) => {
     });
   };
 
+  const postUser = async () => {
+    try {
+      const response = await axios.post('http://localhost:8083/api/users/postUsers', {
+        schoolEmail: formData.schoolEmail,
+        schoolId: formData.schoolId,
+        password: formData.password,
+        bio: formData.bio
+      });
+      console.log('User registered:', response.data);
+      onClose(); // Close the signup modal after successful registration
+    } catch (err) {
+      console.error('Error during registration:', err);
+      setError('An error occurred during registration. Please try again.');
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup data:', formData);
-    onClose();
+
+    // Basic validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.schoolEmail === '' || formData.schoolId === '' || formData.password === '') {
+      setError('All fields are required.');
+      return;
+    }
+
+    setError('');
+    postUser();
   };
 
   return (
@@ -59,15 +90,21 @@ const Signup = ({ open, onClose }) => {
       </DialogTitle>
       <DialogContent>
         <Box component="form" onSubmit={handleSubmit} className="signup-form">
+          {error && (
+            <Typography color="error" variant="body2" className="error-message">
+              {error}
+            </Typography>
+          )}
+
           <Box className="input-field">
             <EmailIcon className="field-icon" />
             <TextField
               fullWidth
               label="Email"
-              name="email"
+              name="schoolEmail"
               type="email"
               required
-              value={formData.email}
+              value={formData.schoolEmail}
               onChange={handleChange}
               className="text-field"
             />
