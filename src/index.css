@@ -3,8 +3,10 @@ body, footer{
   margin: 0;
   padding: 0;
   cursor: url("kitto-removebg-preview.png"),auto;
+  
 }
 
 html {
   background-color: #F1D88A;
+  
 }

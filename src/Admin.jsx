@@ -117,7 +117,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             <NavLink to="item" className="nav-link">📦 Manage Items</NavLink>
           </li>
           <li className="sidebar-item">
-            <button onClick={onLogout} className="logout-button nav-link">🔓 Logout</button>
+            <button onClick={onLogout} className="logout-button">🔓 Logout</button>
           </li>
         </ul>
       </div>

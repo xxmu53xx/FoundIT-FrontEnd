@@ -142,7 +142,8 @@ function MyAccordion() {
         </table>
     </div>
 </div>
-  
+<br></br>
+<br></br>
         <div className="latest-section">
         <div className="content-header"> 
           <h3>Latest Added Items</h3><h4 className="user-count">Current Items: {countItem}</h4></div>
@@ -174,6 +175,8 @@ function MyAccordion() {
               
             </table>
         </div>
+        <br></br>
+        <br></br>
         <div className="latest-section">
         <div className="content-header"> 
           <h3>Latest Added Rewards</h3><h4 className="user-count">Current Rewards: {countReward}</h4>
@@ -203,10 +206,6 @@ function MyAccordion() {
  
         </div>
         </div>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
         <br></br>
         </Typography>
       </AccordionDetails>

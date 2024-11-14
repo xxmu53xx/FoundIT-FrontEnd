@@ -10,7 +10,8 @@ import AdminDashboard from './Admin';
 import axios from 'axios';
 import Signup from './components/Signup';
 import './App.css';
-
+import UserRewards from './components/user-Reward'
+import UserItem from './components/user-Item'
 import { 
   Box, 
   Typography, 
@@ -204,13 +205,20 @@ const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }
 
 // Main App Component
 function App() {
+  const [passwordInput, setPasswordInput] = useState('');
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isViewProfileModal, setIsViewProfileModal] = useState(false);
+  const [profileData, setProfileData] = useState({
+    schoolEmail: '',
+    schoolId: '',
+    password: '',
+    bio: '',
+  });
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const savedAuth = localStorage.getItem('isAuthenticated');
     const savedUser = localStorage.getItem('user');
-    if (savedAuth && savedUser) {
-      return true;
-    }
-    return false;
+    return !!(savedAuth && savedUser);
   });
 
   const [user, setUser] = useState(() => {
@@ -221,7 +229,6 @@ function App() {
   const handleLogin = (userData) => {
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
-    
     setIsAuthenticated(true);
     setUser(userData);
   };
@@ -229,9 +236,31 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('user');
-    
     setIsAuthenticated(false);
     setUser(null);
+  };
+
+  const handleProfileViewClick = () => {
+    setIsViewProfileModal(true);
+  };
+
+  const handleDeactivateAccount = () => {
+    setIsProfileModalOpen(false);
+    setIsDeactivateModalOpen(true);
+  };
+
+  const confirmDeactivation = () => {
+    if (passwordInput === user.password) {
+      axios.delete(`http://localhost:8083/api/users/deleteUserDetails/${user.userID}`)
+        .then(() => {
+          handleLogout(); // corrected from onLogout()
+          alert("Account deactivated successfully.");
+          navigate('/login');
+        })
+        .catch((error) => console.error("Error deactivating account:", error));
+    } else {
+      alert("Incorrect password. Please try again.");
+    }
   };
 
   return (
@@ -272,10 +301,11 @@ function App() {
               requiredType="student"
             >
               <div className="dashboard">
+          
       <header className="header">
         <img src="/citlogo.png" alt="University Logo" className="university-logo" />
         <input type="text" className="search-bar" placeholder="Search..." />
-        <div className="user-profile">
+        <div className="user-profile" onClick={handleProfileViewClick}>
                     <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
                     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
                   </div>
@@ -301,16 +331,63 @@ function App() {
           </li>
         </ul>
       </div>
-
+      
       <div className="main-content">
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/rewards" element={<Rewards />} />
-          <Route path="/item" element={<Item />} />
+          <Route path="/rewards" element={<UserRewards />} />
+          <Route path="/item" element={<UserItem />} />
         </Routes>
       </div>
 
-      
+      {isViewProfileModal && (
+        <div className="modal-overlay2">
+          <div className="modal-container2">
+            <div className="content-header">
+              <img src="/dilao.png" alt="User Profile" className="profile-picture" />
+              <h2>Profile Information</h2>
+            </div>
+            <div className="profile-info">
+              <p><strong>Email:</strong> {user.schoolEmail}</p>
+              <p><strong>School ID:</strong> {user.schoolId}</p>
+              <p><strong>Password:</strong> {user.password}</p>
+              <p><strong>Bio:</strong> {user.bio}</p>
+              <p><strong>Current Points:</strong> {user.currentPoints}</p>
+            </div>
+            <div className="button-group">
+            <button onClick={() => setIsViewProfileModal(false)} className="cancel-button">Cancel</button>
+           
+            <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+{isDeactivateModalOpen && (
+        <div className="modal-overlay2">
+          <div className="modal-container2">
+            <h2>Confirm Deactivation</h2>
+            <p>Enter your password to confirm account deactivation.</p>
+            <input
+              type="password"
+              placeholder="Password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+            <div className="button-group">
+              <button onClick={confirmDeactivation} className="confirm-button">Confirm</button>
+              <button 
+                onClick={() => setIsDeactivateModalOpen(false)} 
+                className="cancel-button" 
+                style={{ backgroundColor: '#f44336', color: '#fff' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
               </div>
             </ProtectedRoute>

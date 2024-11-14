@@ -3,6 +3,7 @@
   display: flex;
   height: 100vh;
   margin-left: 80px;
+  
 }
 
 /* Sidebar Styles */
@@ -35,12 +36,18 @@
 
 /* Content Area */
 .content {
-  flex: 1;
-  padding: 20px;
-  background-color: #f4e4b4  ;
   
+  flex: 1; 
+  background-color: #f4e4b4  ;
+  width: 83%;
 }
-
+.main-content{
+  flex: 1; 
+  height: calc(100vh - 10px); /* Adjust the height as needed */
+  overflow-y: auto;            /* Enables vertical scrolling */
+  padding: 5px;
+  width:83%;
+}
 .accordion-root {
   background-color: #bb6464; /* Background for Accordion */
 }
@@ -148,7 +155,7 @@ td {
 }
 
 .actions-column {
-  width: 200px;
+  width: 500px;
   text-align: right;
 
 

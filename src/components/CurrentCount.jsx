@@ -9,10 +9,6 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import { Link } from 'react-router-dom';
 import './Design.css';
 function CurrentCount() {
-    const userCount = 100; // Example count
-    const rewardCount = 50; // Example count
-    const pointCount = 200; // Example count
-    const itemCount = 75; // Example count
   const [count, setCount] = useState(0);
   const [error, setError] = useState(null);
   const[countPoint,setCountPoint]=useState(0);
@@ -114,7 +110,7 @@ function CurrentCount() {
 
  
       <Grid item xs={12} sm={6} md={3}>
-      <Link to="/rewards" style={{ textDecoration: 'none' }}> 
+      <Link to="/student/rewards" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -178,7 +174,7 @@ function CurrentCount() {
 
 
       <Grid item xs={12} sm={6} md={3}>
-      <Link to="/item" style={{ textDecoration: 'none' }}> 
+      <Link to="/student/item" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
