@@ -26,9 +26,9 @@
 }
 
 :root {
-  --primary-color: #4e2a84;  /* Deep Purple */
-  --secondary-color: #6b4ca6; /* Medium Purple */
-  --accent-color: #8c6cc7;   /* Light Purple */
+  --primary-color: #b42626;  /* Deep Purple */
+  --secondary-color: #800000; /* Medium Purple */
+  --accent-color: #800000;   /* Light Purple */
   --text-primary: #2c1810;   /* Dark Brown */
   --text-secondary: #4a3427; /* Medium Brown */
   --border-color: #e0e0e0;
@@ -92,9 +92,11 @@
 
 .title {
   margin-bottom: 2rem !important;
-  color: var(--primary-color) !important;
-  font-size: 1.5rem !important;
+  color: rgb(0, 0, 0);
+  font-size: 1.9rem !important;
   text-align: center;
+  -webkit-text-stroke: 1px;
+  -webkit-text-fill-color: var(--primary-color) !important;
   width: 100%;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
