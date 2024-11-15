@@ -2,7 +2,7 @@
   .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-template-columns: repeat(3, 1fr); /* Limit to 3 columns */
+    grid-template-columns: repeat(3, 1fr);
     gap: 40px;
     margin-top: 20px;
   }
@@ -16,7 +16,7 @@
   
   .table-container {
     margin-top: 10px;
-    overflow-x: auto; /* For responsiveness */
+    overflow-x: auto;
   }
   
   table {

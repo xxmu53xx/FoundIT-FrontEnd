@@ -67,8 +67,8 @@ function MyAccordion() {
           if (!response.ok) {
               throw new Error("Network response was not ok");
           }
-          const data = await response.json(); // Parse JSON from response
-          setCount(data.user_count); // Update the count state with the parsed data
+          const data = await response.json(); 
+          setCount(data.user_count);
       } catch (error) {
           console.error("Error fetching user count:", error);
       }
@@ -76,7 +76,7 @@ function MyAccordion() {
    
     const fetchLatestItems = async () => {
       try {
-        const response = await fetch('http://localhost:8083/api/items/getLatestItems'); // Ensure this endpoint exists
+        const response = await fetch('http://localhost:8083/api/items/getLatestItems'); 
         if (!response.ok) throw new Error('Failed to fetch latest items');
         const data = await response.json();
         setLatestItems(data);
@@ -87,7 +87,7 @@ function MyAccordion() {
 
     const fetchLastestRewards = async () => {
       try {
-        const response = await fetch('http://localhost:8083/api/rewards/getLatestRewards'); // Ensure this endpoint exists
+        const response = await fetch('http://localhost:8083/api/rewards/getLatestRewards'); 
         if (!response.ok) throw new Error('Failed to fetch latest Rewards');
         const data = await response.json();
         setLatestRewards(data);

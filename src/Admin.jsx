@@ -23,13 +23,12 @@ const AdminDashboard = ({ user, onLogout }) => {
   });
 
   useEffect(() => {
-    // Check if user is admin
+  
     if (!user || user.accountType !== 'admin') {
       navigate('/login');
       return;
     }
 
-    // Set initial profile data
     const displayName = user.schoolEmail.split('@')[0];
     setUsername(displayName);
     setProfileData({
@@ -122,7 +121,7 @@ const AdminDashboard = ({ user, onLogout }) => {
         </ul>
       </div>
 
-{/*Ari butang mga*/}
+{/*Ari butang mga jsxs*/}
       <div className="main-content">
         <Routes>
           <Route index element={<Dashboard />} />
@@ -133,7 +132,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         </Routes>
       </div>
 
-      {/* Profile View Modal */}
       {isViewProfileModal && (
         <div className="modal-overlay2">
           <div className="modal-container2">
@@ -157,7 +155,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         </div>
       )}
 
-      {/* Edit Profile Modal */}
       {isProfileModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">
@@ -186,7 +183,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         </div>
       )}
 
-      {/* Deactivate Account Modal */}
       {isDeactivateModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">

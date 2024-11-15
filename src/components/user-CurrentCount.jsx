@@ -8,7 +8,7 @@ import PointIcon from '@mui/icons-material/PointOfSale';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import { Link } from 'react-router-dom';
 import './Design.css';
-function CurrentCount() {
+function userCurrentCount() {
   const [count, setCount] = useState(0);
   const [error, setError] = useState(null);
   const[countPoint,setCountPoint]=useState(0);
@@ -76,9 +76,9 @@ function CurrentCount() {
 
   return (
     <>
-       <Grid container spacing={3}>
-      <Grid item xs={12} sm={6} md={3}>
-      <Link to="/admin/user-management" style={{ textDecoration: 'none' }}> 
+       <Grid container spacing={5}>
+      <Grid item xs={12} sm={6} md={4}>
+      
         <Box
           sx={{
             display: 'flex',
@@ -105,12 +105,12 @@ function CurrentCount() {
             Users
           </Typography>
         </Box>
-        </Link>
+   
       </Grid>
 
  
-      <Grid item xs={12} sm={6} md={3}>
-      <Link to="/admin/rewards" style={{ textDecoration: 'none' }}> 
+      <Grid item xs={12} sm={6} md={4}>
+      <Link to="/student/rewards" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -141,40 +141,11 @@ function CurrentCount() {
       </Grid>
 
     
-      <Grid item xs={12} sm={6} md={3}>
-      <Link to="/admin/points" style={{ textDecoration: 'none' }}> 
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 2,
-            backgroundColor: '#81d4fa',
-            borderRadius: 2,
-            boxShadow: 3,
-            height: 110,
-            cursor: 'pointer',
-              transition: 'transform 0.3s, box-shadow 0.3s',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-                boxShadow: 6,
-              },
-          }}
-        >
-             <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-          <PointIcon sx={{ fontSize: 40, marginRight: 2 }} />
-          <Typography variant="h3">{countPoint}</Typography></Box>
-          <Typography variant="body1" color="textSecondary">
-            Point
-          </Typography>
-        </Box>
-        </Link>
-      </Grid>
+      
 
 
-      <Grid item xs={12} sm={6} md={3}>
-      <Link to="/admin/item" style={{ textDecoration: 'none' }}> 
+      <Grid item xs={12} sm={6} md={4}>
+      <Link to="/student/item" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -213,4 +184,4 @@ function CurrentCount() {
   );
 }
 
-export default CurrentCount;
+export default userCurrentCount;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './Design.css';
 import './Item.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-//oten
+
 function ItemManagement() {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -95,10 +95,10 @@ function ItemManagement() {
   };
 
   const handleEdit = (itemToEdit) => {
-    // Create a shallow copy of the item to edit
+   
     setItem({
       ...itemToEdit,
-      // Ensure the date is in the correct format for the input field
+    
       dateLostOrFound: itemToEdit.dateLostOrFound ? itemToEdit.dateLostOrFound.split('T')[0] : ''
     });
     setIsEditing(true);

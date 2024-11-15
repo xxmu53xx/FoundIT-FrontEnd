@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
 import UserManagement from './components/UserManagement';
 import Dashboard from './components/Dashboard';
+import UserDashboard from './components/user-Dashboard'
 import Rewards from './components/Reward';
 import Points from './components/Points';
 import Item from './components/ItemManagement';
@@ -24,7 +25,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-// Login Component
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
@@ -57,6 +57,11 @@ const Login = ({ onLogin }) => {
     }
     if (user.password !== credentials.password) {
       setError('Invalid password');
+      return;
+    }
+
+    if (selectedType === 'admin' && !user.isAdmin) {
+      setError('You do not have admin privileges');
       return;
     }
 
@@ -188,7 +193,6 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// ProtectedRoute Component
 const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }) => {
   const navigate = useNavigate();
   
@@ -196,14 +200,21 @@ const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }
     if (!isAuthenticated) {
       navigate('/login');
     } else if (accountType !== requiredType) {
+   
+      if (accountType === 'admin' && requiredType === 'student') {
+        return children;
+      }
       navigate(accountType === 'admin' ? '/admin' : '/student/dashboard');
     }
   }, [isAuthenticated, accountType, requiredType, navigate]);
 
+  if (accountType === 'admin' && requiredType === 'student') {
+    return children;
+  }
+
   return isAuthenticated && accountType === requiredType ? children : null;
 };
 
-// Main App Component
 function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -253,7 +264,7 @@ function App() {
     if (passwordInput === user.password) {
       axios.delete(`http://localhost:8083/api/users/deleteUserDetails/${user.userID}`)
         .then(() => {
-          handleLogout(); // corrected from onLogout()
+          handleLogout(); 
           alert("Account deactivated successfully.");
           navigate('/login');
         })
@@ -277,7 +288,6 @@ function App() {
           }
         />
 
-        {/* Admin Routes */}
         <Route
           path="/admin/*"
           element={
@@ -291,7 +301,6 @@ function App() {
           }
         />
 
-        {/* Student Routes */}
         <Route
           path="/student/*"
           element={
@@ -334,7 +343,7 @@ function App() {
       
       <div className="main-content">
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/rewards" element={<UserRewards />} />
           <Route path="/item" element={<UserItem />} />
         </Routes>
@@ -394,7 +403,6 @@ function App() {
           }
         />
 
-        {/* Default redirect */}
         <Route
           path="/"
           element={
