@@ -13,6 +13,7 @@ import Signup from './components/Signup';
 import './App.css';
 import UserRewards from './components/user-Reward'
 import UserItem from './components/user-Item'
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import { 
   Box, 
   Typography, 
@@ -60,7 +61,7 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    if (selectedType === 'admin' && !user.isAdmin) {
+    if (selectedType === 'admin' && !user.admin) {
       setError('You do not have admin privileges');
       return;
     }
