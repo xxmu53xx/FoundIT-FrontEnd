@@ -6,6 +6,7 @@ const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     rewardName: '',
     rewardType: '',
@@ -111,14 +112,34 @@ const Rewards = () => {
     setError('');
     setSuccessMessage('');
   };
+  const filteredRewards = rewards.filter(reward => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      reward.rewardName.toLowerCase().includes(searchTermLower) ||
+      reward.rewardType.toLowerCase().includes(searchTermLower) ||
+      reward.pointsRequired.toString().includes(searchTermLower)
+    );
+  });
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
   return (
     <div className="content">
       <div className="content-header">
         <h1>Reward Management</h1>
+        
+        <div className="coheader">
+        <input 
+          type="text" 
+          className="search-bar" 
+          placeholder="Search..." 
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button onClick={() => setShowModal(true)} className="add-button1" title="Add User">
           <h6>+ Add Reward</h6>
-        </button>
+        </button></div>
       </div>
       {/* Display error message if there is one */}
       {error && <div className="error-message">{error}</div>}
@@ -137,7 +158,7 @@ const Rewards = () => {
           </tr>
         </thead>
         <tbody>
-          {rewards.map((reward) => (
+          {filteredRewards.map((reward) => (
             <tr key={reward.rewardId}>
               <td>{reward.rewardName}</td>
               <td>{reward.rewardType}</td>

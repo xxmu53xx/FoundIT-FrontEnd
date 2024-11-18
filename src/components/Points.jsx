@@ -6,6 +6,7 @@ const Points = () => {
   const [points, setPoints] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingPoint, setEditingPoint] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     pointsEarned: '',
     dateEarned: ''
@@ -108,14 +109,32 @@ const Points = () => {
     setError('');
     setSuccessMessage('');
   };
-
+  const filteredPoints = points.filter(point => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      point.pointsEarned.toString().includes(searchTermLower) ||
+      point.dateEarned.toLowerCase().includes(searchTermLower)
+    );
+  });
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
   return (
     <div className="content">
       <div className="content-header">
         <h1>Point Management</h1>
+        
+        <div className="coheader">
+        <input 
+          type="text" 
+          className="search-bar" 
+          placeholder="Search..." 
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button onClick={() => setShowModal(true)} className="add-button1" title="Add User">
           <h6>+   Add Point</h6>
-        </button>
+        </button></div>
       </div>
       {/* Display error message if there is one */}
       {error && <div className="error-message">{error}</div>}
@@ -133,7 +152,7 @@ const Points = () => {
           </tr>
         </thead>
         <tbody>
-          {points.map((point) => (
+          {filteredPoints.map((point) => (
             <tr key={point.pointId}>
               <td>{point.pointsEarned}</td>
               <td>{point.dateEarned}</td>

@@ -106,17 +106,18 @@ function MyAccordion() {
 
   return (
     <>
-    <Accordion defaultExpanded className="accordion-root" sx={{ backgroundColor: '#bb6464' }}>
+    {/*this is how to change accordion main color*/}
+    <Accordion defaultExpanded className="accordion-root" sx={{ backgroundColor: '#dddddd' }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
         id="panel1-header"
          className="accordion-summary"
       >
-        <Typography sx={{color:'White',fontSize: '1.5rem' }}>Latest Added</Typography>
+        <Typography sx={{color:'Black',fontSize: '1.5rem' }}>Latest Added</Typography>
       </AccordionSummary>
       <AccordionDetails >
-        <Typography className="accordion-details" sx={{color:'White'}}>
+        <Typography className="accordion-details" sx={{color:'Black'}}>
         <div className="content-header"></div>
       <div className="latest-section">
     <div className="content-header"> 

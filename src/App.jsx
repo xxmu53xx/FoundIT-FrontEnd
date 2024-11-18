@@ -61,7 +61,7 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    if (selectedType === 'admin' && !user.admin) {
+    if (selectedType === 'admin' && !user.isAdmin) {
       setError('You do not have admin privileges');
       return;
     }
@@ -281,30 +281,35 @@ function App() {
         <Route
           path="/login"
           element={
+            
             !isAuthenticated ? (
               <Login onLogin={handleLogin} />
             ) : (
               <Navigate to={user?.accountType === 'admin' ? '/admin' : '/student/dashboard'} />
             )
+        
           }
         />
 
         <Route
+        
           path="/admin/*"
           element={
+            <div className="default-background">
             <ProtectedRoute 
               isAuthenticated={isAuthenticated} 
               accountType={user?.accountType}
               requiredType="admin"
             >
               <AdminDashboard user={user} onLogout={handleLogout} />
-            </ProtectedRoute>
+            </ProtectedRoute></div>
           }
         />
 
         <Route
           path="/student/*"
           element={
+           
             <ProtectedRoute 
               isAuthenticated={isAuthenticated} 
               accountType={user?.accountType}
@@ -314,7 +319,7 @@ function App() {
           
       <header className="header">
         <img src="/citlogo.png" alt="University Logo" className="university-logo" />
-        <input type="text" className="search-bar" placeholder="Search..." />
+
         <div className="user-profile" onClick={handleProfileViewClick}>
                     <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
                     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
@@ -399,9 +404,10 @@ function App() {
         </div>
       )}
 
-              </div>
+              </div> 
             </ProtectedRoute>
           }
+         
         />
 
         <Route

@@ -89,7 +89,7 @@ const AdminDashboard = ({ user, onLogout }) => {
     <div className="dashboard">
       <header className="header">
         <img src="/citlogo.png" alt="University Logo" className="university-logo" />
-        <input type="text" className="search-bar" placeholder="Search..." />
+        
         <div className="user-profile" onClick={handleProfileViewClick}>
           <span className="user-name">{username || 'Guest'}</span>
           <img src="/dilao.png" alt="User Profile" className="profile-picture" />

@@ -7,6 +7,8 @@ function UserManagement() {
   const [users, setUsers] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  
+  const [searchTerm, setSearchTerm] = useState('');
   const [user, setUser] = useState({
     schoolEmail: '',
     schoolId: '',
@@ -96,14 +98,36 @@ function UserManagement() {
       }
     }
   };
+  const filteredUsers = users.filter(user => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      user.schoolEmail.toLowerCase().includes(searchTermLower) ||
+      user.schoolId.toLowerCase().includes(searchTermLower) ||
+      user.bio.toLowerCase().includes(searchTermLower) ||
+      user.userID.toString().includes(searchTermLower) ||
+      user.currentPoints.toString().includes(searchTermLower)
+    );
+  });
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
   return (
     <div className="content">
       <div className="content-header">
         <h1>User Management</h1>
+        
+        <div className="coheader">
+        <input 
+          type="text" 
+          className="search-bar" 
+          placeholder="Search..." 
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button onClick={togglePopup} className="add-button1" title="Add User">
           <h6>+ Add User</h6>
-        </button>
+        </button></div>
       </div>
 
       {error && <p className="error">{error}</p>}
@@ -122,7 +146,8 @@ function UserManagement() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+          {filteredUsers.map((user) => (
+         
               <tr key={user.userID}>
                 <td>{user.userID}</td>
                 <td>{user.schoolEmail}</td>

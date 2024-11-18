@@ -126,10 +126,13 @@ function ItemManagement() {
   return (
     <div className="content">
       <div className="content-header">
+        
         <h1>Items</h1>
+        <div className="coheader">
+        <input type="text" className="search-bar" placeholder="Search..." />
         <button onClick={togglePopup} className="add-button1" title="Add Item">
           <h6>+ Add Item</h6>
-        </button>
+        </button></div>
       </div>
 
       {error && <p className="error">{error}</p>}

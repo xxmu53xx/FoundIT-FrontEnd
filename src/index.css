@@ -1,4 +1,4 @@
-body, footer{
+footer{
   background-color: transparent; 
   margin: 0;
   padding: 0;
@@ -6,7 +6,46 @@ body, footer{
   
 }
 
-html {
-  background-color: #F1D88A;
-  
+.login-background {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('CITbg.png') no-repeat center center;
+  background-size: cover;
+  padding: 20px;
+}
+
+.default-background{
+  margin: 0;
+  min-height: 100vh;
+  background-color: transparent;
+  background-image: 
+    url('/translogo.png'),  /* Increased size logo placeholder */
+    linear-gradient(to bottom, 
+      rgba(255, 255, 255, 0.8), 
+      rgba(220, 194, 83, 0.8)
+    );
+  background-position: right 40px bottom 40px, center; /* Added margins: 40px from right and bottom */
+  background-repeat: no-repeat;
+  background-size: 600px, cover; /* Increased logo size to 250px */
+  background-attachment: fixed;
+}
+
+
+html, body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: transparent;
+  background-image: 
+    url('/translogo.png'),  /* Increased size logo placeholder */
+    linear-gradient(to bottom, 
+      rgba(255, 255, 255, 0.8), 
+      rgba(220, 194, 83, 0.8)
+    );
+  background-position: right 40px bottom 40px, center; /* Added margins: 40px from right and bottom */
+  background-repeat: no-repeat;
+  background-size: 600px, cover; /* Increased logo size to 250px */
+  background-attachment: fixed;
 }

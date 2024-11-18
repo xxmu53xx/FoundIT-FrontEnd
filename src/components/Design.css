@@ -37,7 +37,6 @@
 .content {
   
   flex: 1; 
-  background-color: #f4e4b4  ;
   width: 83%;
 }
 .main-content{
@@ -48,15 +47,29 @@
   width:83%;
 }
 .accordion-root {
-  background-color: #bb6464;
+  background-color: #9b9b9b;
+}
+.search-bar{
+margin-right:40px;
+background-color: white;
+color:white;
+}
+.coheader{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid none;
+  padding:10px;
+  border-radius: 25px;
+  background-color: rgb(255, 255, 255);
 }
 
 .accordion-summary {
-  background-color: #bb6464; 
+  background-color: #dddddd; 
 }
 
 .accordion-details {
-  background-color: #bb6464; 
+  background-color: #dddddd; 
 }
 .sidebar-item {
   padding: 10px;

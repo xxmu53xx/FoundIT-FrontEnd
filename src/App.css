@@ -259,7 +259,6 @@ body, html {
   padding: 0;
   height: 100%;
   font-family: 'Arial', sans-serif;
-  background-color: #F1D88A;
   cursor: url("kitto-removebg-preview.png"),auto;
 }
 
@@ -384,7 +383,6 @@ body, html {
   padding: 2rem;
   min-height: calc(100vh - 60px);
   overflow-y: auto;
-  background-color: #F1D88A;
 }
 
 

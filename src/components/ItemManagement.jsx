@@ -7,6 +7,8 @@ function ItemManagement() {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
   const [item, setItem] = useState({
     description: '',
     dateLostOrFound: '',
@@ -124,14 +126,37 @@ function ItemManagement() {
       }
     }
   };
+  const filteredPoints = items.filter(item => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      item.dateLostOrFound.toString().includes(searchTermLower) ||
+      item.description.toLowerCase().includes(searchTermLower) ||
+      item.registeredBy.toString().includes(searchTermLower) ||
+      item.location.toLowerCase().includes(searchTermLower) ||
+      item.status.toLowerCase().includes(searchTermLower)
+    );
+  });
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
   return (
     <div className="content">
       <div className="content-header">
         <h1>Item Management</h1>
+        
+        <div className="coheader">
+        <input 
+          type="text" 
+          className="search-bar" 
+          placeholder="Search..." 
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button onClick={togglePopup} className="add-button1" title="Add Item">
           <h6>+ Add Item</h6>
         </button>
+        </div>
       </div>
 
       {error && <p className="error">{error}</p>}
@@ -150,7 +175,7 @@ function ItemManagement() {
       </tr>
     </thead>
     <tbody>
-      {items.map((item) => (
+      {filteredPoints.map((item) => (
         <tr key={item.itemID}>
           <td>{item.itemID}</td>
           <td>{item.description}</td>
