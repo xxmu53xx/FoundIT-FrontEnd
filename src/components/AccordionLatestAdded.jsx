@@ -114,7 +114,7 @@ function MyAccordion() {
         id="panel1-header"
          className="accordion-summary"
       >
-        <Typography sx={{color:'Black',fontSize: '1.5rem' }}>Latest Added</Typography>
+        <Typography sx={{color:'Black',fontSize: '1.5rem' }}>Top 3 Recently Added</Typography>
       </AccordionSummary>
       <AccordionDetails >
         <Typography className="accordion-details" sx={{color:'Black'}}>
@@ -122,7 +122,7 @@ function MyAccordion() {
       <div className="latest-section">
     <div className="content-header"> 
        
-        <h3 className="latest-title">Latest Added Users</h3> <h4 className="user-count">Current Users: {count}</h4>
+        <h3 className="latest-title">Recently Added Users</h3> <h4 className="user-count">Current Users: {count}</h4>
     </div>
     <div className="table-container">
         <table>
@@ -147,7 +147,7 @@ function MyAccordion() {
 <br></br>
         <div className="latest-section">
         <div className="content-header"> 
-          <h3>Latest Added Items</h3><h4 className="user-count">Current Items: {countItem}</h4></div>
+          <h3>Recently Added Items</h3><h4 className="user-count">Current Items: {countItem}</h4></div>
           <div className="table-container">
             <table>
               <thead>
@@ -180,7 +180,7 @@ function MyAccordion() {
         <br></br>
         <div className="latest-section">
         <div className="content-header"> 
-          <h3>Latest Added Rewards</h3><h4 className="user-count">Current Rewards: {countReward}</h4>
+          <h3>Recently Added Rewards</h3><h4 className="user-count">Current Rewards: {countReward}</h4>
           </div>
           <div className="table-container">
             <table>

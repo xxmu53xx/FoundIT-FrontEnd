@@ -1,5 +1,4 @@
 
-// components/NewEntity.jsx
 const NewEntity = () => {
     const [entities, setEntities] = useState([])
     const [showForm, setShowForm] = useState(false)

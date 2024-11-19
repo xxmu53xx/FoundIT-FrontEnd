@@ -47,7 +47,7 @@ const Signup = ({ open, onClose }) => {
         bio: formData.bio
       });
       console.log('User registered:', response.data);
-      onClose(); // Close the signup modal after successful registration
+      onClose();
     } catch (err) {
       console.error('Error during registration:', err);
       setError('An error occurred during registration. Please try again.');
@@ -57,7 +57,6 @@ const Signup = ({ open, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
