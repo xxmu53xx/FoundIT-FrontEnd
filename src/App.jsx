@@ -132,6 +132,7 @@ useEffect(() => {
             <Box className="left-side-content">
               <Typography variant="h6" className="title">
                 <strong>Choose Account Type</strong>
+                
               </Typography>
               <Box className="account-types">
                 <Box 
