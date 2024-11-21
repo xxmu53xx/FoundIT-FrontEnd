@@ -148,6 +148,7 @@ const Points = () => {
           <tr >
             <th>Points Earned</th>
             <th>Date Earned</th>
+            <th>Earned By</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -156,6 +157,7 @@ const Points = () => {
             <tr key={point.pointId}>
               <td>{point.pointsEarned}</td>
               <td>{point.dateEarned}</td>
+              <td>USER</td>
               <td>
                 <button
                   className="edit-btn"

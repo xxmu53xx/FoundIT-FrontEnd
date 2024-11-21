@@ -142,7 +142,7 @@ function ItemManagement() {
     <div className="content">
       <div className="content-header">
         
-        <h1>Items</h1>
+        <h1>Current Items pending</h1>
         <div className="coheader">
         <input 
           type="text" 

@@ -10,6 +10,14 @@ import './components/profile-modal.css'
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import './App.css';
 
+//icons
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import PersonIcon from '@mui/icons-material/Person';
+import StarsIcon from '@mui/icons-material/Stars';
+import PointIcon from '@mui/icons-material/PointOfSale';
+import InventoryIcon from '@mui/icons-material/Inventory';
+
+
 const AdminDashboard = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -100,22 +108,23 @@ const AdminDashboard = ({ user, onLogout }) => {
         <h2 className="header-dashboard">
           <span style={{ color: "#FFFDFC" }}>Found</span>
           <span style={{ color: "#F1D88A" }}>IT</span>
+          <span style={{ color:"white", fontSize:"12px"}}>Admin</span>
         </h2>
         <ul className="sidebar-menu">
           <li className="sidebar-item">
-            <NavLink to="" end className="nav-link">📋 Reports</NavLink>
+            <NavLink to="" end className="nav-link"><ContentPasteIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;Reports</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="user-management" className="nav-link">👥 Manage User</NavLink>
+            <NavLink to="user-management" className="nav-link"><PersonIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;Manage User</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="rewards" className="nav-link">🎁 Manage Rewards</NavLink>
+            <NavLink to="rewards" className="nav-link"><StarsIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Rewards</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="points" className="nav-link">🍃 Manage Points</NavLink>
+            <NavLink to="points" className="nav-link"><PointIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Points</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="item" className="nav-link">📦 Manage Items</NavLink>
+            <NavLink to="item" className="nav-link"><InventoryIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Items</NavLink>
           </li>
           <li className="sidebar-item">
             <button onClick={onLogout} className="logout-button">🔓 Logout</button>
