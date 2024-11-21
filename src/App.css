@@ -50,34 +50,25 @@
 }
 
 .left-side {
-  flex: 1;
-  padding: 2rem;
-  border-right: 1px solid var(--border-color);
   position: relative;
+  overflow: hidden;
 }
 
-.left-side::before {
-  content: '';
+.left-side video {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('CITlogos.png') no-repeat center center;
-  background-size: cover;
+  top: 100%;
+  left: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
   opacity: 0.4;
+  z-index: 0;
 }
 
 .left-side-content {
   position: relative;
-  z-index: 2;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0);
-  border-radius: 8px;
-  padding: 1rem;
+  z-index: 1;
 }
 
 .right-side {

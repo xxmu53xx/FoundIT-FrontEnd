@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
 import UserManagement from './components/UserManagement';
 import Dashboard from './components/Dashboard';
@@ -83,11 +82,53 @@ const Login = ({ onLogin }) => {
     navigate(selectedType === 'admin' ? '/admin' : '/student/dashboard');
   };
 
+  const audioRef = useRef(null);
+
+useEffect(() => {
+  const audioElement = audioRef.current;
+  
+  const playAudio = () => {
+    if (audioElement) {
+      audioElement.play().catch(error => {
+        console.log("Audio autoplay failed:", error);
+      });
+    }
+  };
+
+  playAudio();
+  
+  const handleInteraction = () => {
+    playAudio();
+    document.removeEventListener('click', handleInteraction);
+  };
+  document.addEventListener('click', handleInteraction);
+
+  return () => {
+    document.removeEventListener('click', handleInteraction);
+    if (audioElement) {
+      audioElement.pause();
+    }
+  };
+}, []);
+
   return (
     <div className="page-container">
       <Paper elevation={3} className="login-container">
         <Box className="content-wrapper">
           <Box className="left-side">
+            <video autoPlay muted loop playsInline>
+              <source src="/CITCine.mp4" type="video/mp4" />
+            </video>
+            
+            {/* Add audio element at the top level of your app */}
+            <audio 
+              ref={audioRef}
+              loop 
+              id="background-music"
+            >
+              <source src="/CITHymn.mp3" type="audio/mpeg" />
+            </audio>
+            
             <Box className="left-side-content">
               <Typography variant="h6" className="title">
                 <strong>Choose Account Type</strong>
