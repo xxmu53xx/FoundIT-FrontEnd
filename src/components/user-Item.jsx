@@ -15,7 +15,7 @@ function ItemManagement() {
     location: '',
     status: 'Found',
   });
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
 
   const fetchItems = async () => {
     try {
@@ -79,16 +79,16 @@ function ItemManagement() {
       const updatedItem = await response.json();
 
       if (isEditing) {
-        setItems(prevItems => 
+        setItems((prevItems) =>
           prevItems.map((i) => (i.itemID === updatedItem.itemID ? updatedItem : i))
         );
       } else {
-        setItems(prevItems => [...prevItems, updatedItem]);
+        setItems((prevItems) => [...prevItems, updatedItem]);
       }
-      
+
       togglePopup();
       setError(null);
-      
+
       fetchItems();
     } catch (error) {
       setError(`Error ${isEditing ? 'updating' : 'creating'} item: ${error.message}`);
@@ -96,10 +96,11 @@ function ItemManagement() {
   };
 
   const handleEdit = (itemToEdit) => {
-  
     setItem({
       ...itemToEdit,
-      dateLostOrFound: itemToEdit.dateLostOrFound ? itemToEdit.dateLostOrFound.split('T')[0] : ''
+      dateLostOrFound: itemToEdit.dateLostOrFound
+        ? itemToEdit.dateLostOrFound.split('T')[0]
+        : '',
     });
     setIsEditing(true);
     setShowPopup(true);
@@ -108,15 +109,18 @@ function ItemManagement() {
   const handleDelete = async (itemID) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        const response = await fetch(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`, {
-          method: 'DELETE',
-        });
-  
+        const response = await fetch(
+          `http://localhost:8083/api/items/deleteItemDetails/${itemID}`,
+          {
+            method: 'DELETE',
+          }
+        );
+
         if (!response.ok) {
           throw new Error('Failed to delete item');
         }
-  
-        setItems(prevItems => prevItems.filter((i) => i.itemID !== itemID));
+
+        setItems((prevItems) => prevItems.filter((i) => i.itemID !== itemID));
         setError(null);
       } catch (error) {
         setError(`Error deleting item: ${error.message}`);
@@ -124,7 +128,7 @@ function ItemManagement() {
     }
   };
 
-  const filteredPoints = items.filter(item => {
+  const filteredItems = items.filter((item) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
       item.dateLostOrFound.toString().includes(searchTermLower) ||
@@ -138,55 +142,42 @@ function ItemManagement() {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
   return (
     <div className="content">
       <div className="content-header">
-        
-        <h1>Current Items pending</h1>
+        <h1>Current Items Pending</h1>
         <div className="coheader">
-        <input 
-          type="text" 
-          className="search-bar" 
-          placeholder="Search..." 
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        <button onClick={togglePopup} className="add-button1" title="Add Item">
-          <h6>+ Add Item</h6>
-        </button></div>
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <button onClick={togglePopup} className="add-button1" title="Add Item">
+            <h6>+ Add Item</h6>
+          </button>
+        </div>
       </div>
 
       {error && <p className="error">{error}</p>}
 
-      <div className="table-container">
-  <table>
-    <thead>
-      <tr className="labellist">
-       
-        <th>Description</th>
-        <th>Date Lost/Found</th>
-        <th>Registered By</th>
-        <th>Location</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredPoints.map((item) => (
-        <tr key={item.itemID}>
-       
-          <td>{item.description}</td>
-          <td>{item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</td>
-          <td>{item.registeredBy}</td>
-          <td>{item.location}</td>
-          <td>{item.status}</td>
-       
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+      <div className="horizontal-scroll-container">
+        {filteredItems.map((item) => (
+          <div className="item-card" key={item.itemID}>
+            <p><strong>Description:</strong> {item.description}</p>
+            <p><strong>Date:</strong> {item.dateLostOrFound}</p>
+            <p><strong>Registered By:</strong> {item.registeredBy}</p>
+            <p><strong>Location:</strong> {item.location}</p>
+            <p><strong>Status:</strong> {item.status}</p>
+         
+          </div>
+        ))}
+      </div>
 
-      {showPopup && (
+     
+  {showPopup && (
         <div className="modal-overlay1" onClick={togglePopup} >
           <div className="popup1" onClick={(e) => e.stopPropagation()}  style={{ height: '440px', width: '500px' }}>
             <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
@@ -255,6 +246,7 @@ function ItemManagement() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
