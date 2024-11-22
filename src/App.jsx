@@ -7,10 +7,11 @@ import Rewards from './components/Reward';
 import Points from './components/Points';
 import Item from './components/ItemManagement';
 import AdminDashboard from './Admin';
+
+import ClaimItem from './components/user-claimItem'
 import axios from 'axios';
 import Signup from './components/Signup';
 import './App.css';
-import ClaimItem from './components/user-claimItem'
 import UserRewards from './components/user-Reward'
 import UserItem from './components/user-Item'
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
@@ -41,7 +42,6 @@ const Login = ({ onLogin }) => {
   const [adminList, setAdminList] = useState([]);
 
   useEffect(() => {
-    // Fetch all users to check credentials
     axios.get('http://localhost:8083/api/users/getAllUsers')
       .then(response => setAdminList(response.data))
       .catch(error => console.error("Error fetching admin accounts:", error));
@@ -58,7 +58,6 @@ const Login = ({ onLogin }) => {
   const handleLogin = () => {
     setError('');
     
-    // Validate email and password
     const user = adminList.find(user => user.schoolEmail === credentials.email);
     if (!user) {
       setError('Email not found');
@@ -69,26 +68,61 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    // Check if selected account type matches user type
     if (selectedType === 'admin' && !user.isAdmin) {
       setError('You do not have admin privileges');
       return;
     }
 
-    const userWithType = { ...user, accountType: selectedType };
-    onLogin(userWithType); // Callback for login
-    navigate(selectedType === 'admin' ? '/admin' : '/student/dashboard'); // Redirect based on user type
-  };
+    const userWithType = {
+      ...user,
+      accountType: selectedType
+    };
 
+    onLogin(userWithType);
+    navigate(selectedType === 'admin' ? '/admin' : '/student/dashboard');
+  };
+  const audioRef = useRef(null);
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    
+    const playAudio = () => {
+      if (audioElement) {
+        audioElement.play().catch(error => {
+          console.log("Audio autoplay failed:", error);
+        });
+      }
+    };
+    playAudio();
+    
+    const handleInteraction = () => {
+      playAudio();
+      document.removeEventListener('click', handleInteraction);
+    };
+    document.addEventListener('click', handleInteraction);
+    return () => {
+      document.removeEventListener('click', handleInteraction);
+      if (audioElement) {
+        audioElement.pause();
+      }
+    };
+  }, []);
   return (
     <div className="page-container">
       <Paper elevation={3} className="login-container">
         <Box className="content-wrapper">
           <Box className="left-side">
-            {/* Background Video */}
-            <video autoPlay muted loop playsInline>
+          <video autoPlay muted loop playsInline>
               <source src="/CITCine.mp4" type="video/mp4" />
             </video>
+            
+            {/* Add audio element at the top level of your app */}
+            <audio 
+              ref={audioRef}
+              loop 
+              id="background-music"
+            >
+              <source src="/CITHymn.mp3" type="audio/mpeg" />
+            </audio>
             <Box className="left-side-content">
               <Typography variant="h6" className="title">
                 <strong>Choose Account Type</strong>
@@ -102,7 +136,9 @@ const Login = ({ onLogin }) => {
                     <img src="admin.png" alt="Admin" className="account-icon" />
                     <Typography>Admin</Typography>
                   </Box>
-                  {selectedType === 'admin' && <CheckCircleIcon className="check-icon" />}
+                  {selectedType === 'admin' && (
+                    <CheckCircleIcon className="check-icon" />
+                  )}
                 </Box>
                 <Box 
                   className={`account-option ${selectedType === 'student' ? 'selected' : ''}`}
@@ -112,7 +148,9 @@ const Login = ({ onLogin }) => {
                     <img src="student.png" alt="Student" className="account-icon" />
                     <Typography>Student</Typography>
                   </Box>
-                  {selectedType === 'student' && <CheckCircleIcon className="check-icon" />}
+                  {selectedType === 'student' && (
+                    <CheckCircleIcon className="check-icon" />
+                  )}
                 </Box>
               </Box>
             </Box>
@@ -190,11 +228,14 @@ const Login = ({ onLogin }) => {
           </Box>
         </Box>
       </Paper>
+      
+      <Signup 
+        open={isSignupOpen}
+        onClose={() => setIsSignupOpen(false)}
+      />
     </div>
   );
 };
-
-
 
 const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }) => {
   const navigate = useNavigate();
@@ -283,35 +324,30 @@ function App() {
         <Route
           path="/login"
           element={
-            
             !isAuthenticated ? (
               <Login onLogin={handleLogin} />
             ) : (
               <Navigate to={user?.accountType === 'admin' ? '/admin' : '/student/dashboard'} />
             )
-        
           }
         />
 
         <Route
-        
           path="/admin/*"
           element={
-            <div className="default-background">
             <ProtectedRoute 
               isAuthenticated={isAuthenticated} 
               accountType={user?.accountType}
               requiredType="admin"
             >
               <AdminDashboard user={user} onLogout={handleLogout} />
-            </ProtectedRoute></div>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/student/*"
           element={
-           
             <ProtectedRoute 
               isAuthenticated={isAuthenticated} 
               accountType={user?.accountType}
@@ -321,7 +357,6 @@ function App() {
           
       <header className="header">
         <img src="/citlogo.png" alt="University Logo" className="university-logo" />
-
         <div className="user-profile" onClick={handleProfileViewClick}>
     <div className="user-info">
         <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
@@ -330,7 +365,7 @@ function App() {
     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
 </div>
       </header>
-    
+
       <div className="sidebar">
         <h2 className="header-dashboard">
           <span style={{ color: "#FFFDFC" }}>Found</span>
@@ -338,16 +373,17 @@ function App() {
         </h2>
         <ul className="sidebar-menu">
           <li className="sidebar-item">
-            <NavLink to="/student/dashboard" className="nav-link"><ContentPasteIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Dashboard</NavLink>
+          <NavLink to="/student/dashboard" className="nav-link"><ContentPasteIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Dashboard</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="/student/rewards" className="nav-link"><PersonIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Rewards</NavLink>
+          <NavLink to="/student/rewards" className="nav-link"><PersonIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Rewards</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="/student/item" className="nav-link"><InventoryIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Deposit Item</NavLink>
+          <NavLink to="/student/item" className="nav-link"><InventoryIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Deposit Item</NavLink>
           </li>
+          
           <li className="sidebar-item">
-            <NavLink to="/student/claim" className="nav-link"><SystemUpdateAltIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Retrieve Item</NavLink>
+          <NavLink to="/student/claim" className="nav-link"><SystemUpdateAltIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Retrieve Item</NavLink>
           </li>
           <li className="sidebar-item">
             <button onClick={handleLogout} className="logout-button">🔓 Logout</button>
@@ -383,9 +419,10 @@ function App() {
            
             <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
             </div>
-          </div>
-        </div>
-      )}
+    </div>
+  </div>
+)}
+
 
 
 {isDeactivateModalOpen && (
@@ -413,10 +450,9 @@ function App() {
         </div>
       )}
 
-              </div> 
+              </div>
             </ProtectedRoute>
           }
-         
         />
 
         <Route
