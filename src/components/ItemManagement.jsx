@@ -8,6 +8,7 @@ function ItemManagement() {
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);  // State to store fetched users
 
   const [item, setItem] = useState({
     description: '',
@@ -16,7 +17,7 @@ function ItemManagement() {
     location: '',
     status: 'Found',
   });
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
 
   const fetchItems = async () => {
     try {
@@ -29,8 +30,21 @@ function ItemManagement() {
     }
   };
 
+  // Fetching users for the dropdown
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://localhost:8083/api/users/getAllUsers');  // Replace with your users API endpoint
+      if (!response.ok) throw new Error('Failed to fetch users');
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      setError('Error fetching users');
+    }
+  };
+
   useEffect(() => {
     fetchItems();
+    fetchUsers();  // Fetch users when component loads
   }, []);
 
   const togglePopup = () => {
@@ -80,16 +94,16 @@ function ItemManagement() {
       const updatedItem = await response.json();
 
       if (isEditing) {
-        setItems(prevItems => 
+        setItems(prevItems =>
           prevItems.map((i) => (i.itemID === updatedItem.itemID ? updatedItem : i))
         );
       } else {
         setItems(prevItems => [...prevItems, updatedItem]);
       }
-      
+
       togglePopup();
       setError(null);
-      
+
       fetchItems();
     } catch (error) {
       setError(`Error ${isEditing ? 'updating' : 'creating'} item: ${error.message}`);
@@ -97,11 +111,9 @@ function ItemManagement() {
   };
 
   const handleEdit = (itemToEdit) => {
-   
     setItem({
       ...itemToEdit,
-    
-      dateLostOrFound: itemToEdit.dateLostOrFound ? itemToEdit.dateLostOrFound.split('T')[0] : ''
+      dateLostOrFound: itemToEdit.dateLostOrFound ? itemToEdit.dateLostOrFound.split('T')[0] : '',
     });
     setIsEditing(true);
     setShowPopup(true);
@@ -113,12 +125,11 @@ function ItemManagement() {
         const response = await fetch(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`, {
           method: 'DELETE',
         });
-  
+
         if (!response.ok) {
           throw new Error('Failed to delete item');
         }
-  
-        // Remove the item from the state
+
         setItems(prevItems => prevItems.filter((i) => i.itemID !== itemID));
         setError(null);
       } catch (error) {
@@ -126,6 +137,7 @@ function ItemManagement() {
       }
     }
   };
+
   const filteredPoints = items.filter(item => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
@@ -140,6 +152,7 @@ function ItemManagement() {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
   return (
     <div className="content">
       <div className="content-header">
@@ -162,40 +175,40 @@ function ItemManagement() {
       {error && <p className="error">{error}</p>}
 
       <div className="table-container">
-  <table>
-    <thead>
-      <tr className="labellist">
-        <th className="item-id-column">ITEM ID</th>
-        <th>Description</th>
-        <th>Date Lost/Found</th>
-        <th>Registered By</th>
-        <th>Location</th>
-        <th>Status</th>
-        <th className="actions-column">ACTIONS</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredPoints.map((item) => (
-        <tr key={item.itemID}>
-          <td>{item.itemID}</td>
-          <td>{item.description}</td>
-          <td>{item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</td>
-          <td>{item.registeredBy}</td>
-          <td>{item.location}</td>
-          <td>{item.status}</td>
-          <td className="actions-column">
-            <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
-            <button className="delete-btn" onClick={() => handleDelete(item.itemID)}>Delete</button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+        <table>
+          <thead>
+            <tr className="labellist">
+              <th className="item-id-column">ITEM ID</th>
+              <th>Description</th>
+              <th>Date Lost/Found</th>
+              <th>Registered By</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th className="actions-column">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredPoints.map((item) => (
+              <tr key={item.itemID}>
+                <td>{item.itemID}</td>
+                <td>{item.description}</td>
+                <td>{item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</td>
+                <td>{item.registeredBy}</td>
+                <td>{item.location}</td>
+                <td>{item.status}</td>
+                <td className="actions-column">
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
+                  <button className="delete-btn" onClick={() => handleDelete(item.itemID)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {showPopup && (
-        <div className="modal-overlay1" onClick={togglePopup} >
-          <div className="popup1" onClick={(e) => e.stopPropagation()}  style={{ height: '440px', width: '500px' }}>
+        <div className="modal-overlay1" onClick={togglePopup}>
+          <div className="popup1" onClick={(e) => e.stopPropagation()} style={{ height: '440px', width: '500px' }}>
             <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
             <form onSubmit={handleSubmit} className="item-form">
               <div className="form-group">
@@ -222,13 +235,20 @@ function ItemManagement() {
 
               <div className="form-group">
                 <label>Registered By:</label>
-                <input
-                  type="number"
+                <select
+                  className="dropdown"
                   name="registeredBy"
                   value={item.registeredBy}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Select User</option>
+                  {users.map((user) => (
+                    <option key={user.userId} value={user.userId}>
+                      {user.schoolEmail}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group">
@@ -243,11 +263,11 @@ function ItemManagement() {
               </div>
 
               <div className="form-group">
-                <label>Status:
+                <label>Status:</label>
                 <select name="status" value={item.status} onChange={handleChange} required>
                   <option value="Lost">Lost</option>
                   <option value="Found">Found</option>
-                </select></label>
+                </select>
               </div>
 
               <div className="form-buttons">

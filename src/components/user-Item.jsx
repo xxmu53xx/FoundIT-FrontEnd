@@ -16,6 +16,7 @@ function ItemManagement() {
     status: 'Found',
   });
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null); // To store the logged-in user
 
   const fetchItems = async () => {
     try {
@@ -28,8 +29,23 @@ function ItemManagement() {
     }
   };
 
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch('http://localhost:8083/api/users/getCurrentUser', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch current user');
+      const data = await response.json();
+      setCurrentUser(data); // Set the current user from the response
+    } catch (error) {
+      setError('Error fetching user');
+    }
+  };
+
   useEffect(() => {
     fetchItems();
+    fetchCurrentUser(); // Fetch the logged-in user when the component mounts
   }, []);
 
   const togglePopup = () => {
@@ -134,8 +150,7 @@ function ItemManagement() {
       item.dateLostOrFound.toString().includes(searchTermLower) ||
       item.description.toLowerCase().includes(searchTermLower) ||
       item.registeredBy.toString().includes(searchTermLower) ||
-      item.location.toLowerCase().includes(searchTermLower) ||
-      item.status.toLowerCase().includes(searchTermLower)
+      item.location.toLowerCase().includes(searchTermLower)
     );
   });
 
@@ -171,15 +186,13 @@ function ItemManagement() {
             <p><strong>Registered By:</strong> {item.registeredBy}</p>
             <p><strong>Location:</strong> {item.location}</p>
             <p><strong>Status:</strong> {item.status}</p>
-         
           </div>
         ))}
       </div>
 
-     
-  {showPopup && (
-        <div className="modal-overlay1" onClick={togglePopup} >
-          <div className="popup1" onClick={(e) => e.stopPropagation()}  style={{ height: '440px', width: '500px' }}>
+      {showPopup && (
+        <div className="modal-overlay1" onClick={togglePopup}>
+          <div className="popup1" onClick={(e) => e.stopPropagation()} style={{ height: '440px', width: '500px' }}>
             <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
             <form onSubmit={handleSubmit} className="item-form">
               <div className="form-group">
@@ -207,11 +220,10 @@ function ItemManagement() {
               <div className="form-group">
                 <label>Registered By:</label>
                 <input
-                  type="number"
+                  type="text"
                   name="registeredBy"
-                  value={item.registeredBy}
-                  onChange={handleChange}
-                  required
+                  value={currentUser ? currentUser.school_email : 'Loading...'}
+                  disabled
                 />
               </div>
 
@@ -228,7 +240,7 @@ function ItemManagement() {
 
               <div className="form-group">
                 <label>Status:
-                <select name="status" value={item.status} onChange={handleChange} required>
+                <select name="status" value={item.status} onChange={handleChange} required className="dropdown">
                   <option value="Lost">Lost</option>
                   <option value="Found">Found</option>
                 </select></label>
@@ -246,7 +258,6 @@ function ItemManagement() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

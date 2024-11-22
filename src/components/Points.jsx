@@ -4,10 +4,13 @@ import './Rewards.css';
 
 const Points = () => {
   const [points, setPoints] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null); // Store current user info
   const [showModal, setShowModal] = useState(false);
+  const [users, setUsers] = useState([]);
   const [editingPoint, setEditingPoint] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
+    
     pointsEarned: '',
     dateEarned: ''
   });
@@ -15,9 +18,21 @@ const Points = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
+    // Fetch current user information from localStorage or context
+    const user = JSON.parse(localStorage.getItem('user')) || {}; 
+    setCurrentUser(user);
+    fetchUsers();
     fetchPoints();
   }, []);
-
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8083/api/users/getAllUsers');
+      setUsers(response.data); // Store users in state
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setError('Failed to fetch users');
+    }
+  };
   const fetchPoints = async () => {
     try {
       const response = await axios.get('http://localhost:8083/api/points/getAllPoints');
@@ -52,6 +67,7 @@ const Points = () => {
     const payload = {
       ...formData,
       pointsEarned: parseInt(formData.pointsEarned),
+      earnedBy: currentUser ? currentUser.userId : "Unknown", // Assign the logged-in user
       ...(editingPoint && { pointId: editingPoint.pointId })
     };
 
@@ -104,11 +120,11 @@ const Points = () => {
     setFormData({
       pointsEarned: '',
       dateEarned: '',
-  
     });
     setError('');
     setSuccessMessage('');
   };
+
   const filteredPoints = points.filter(point => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
@@ -116,9 +132,11 @@ const Points = () => {
       point.dateEarned.toLowerCase().includes(searchTermLower)
     );
   });
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
   return (
     <div className="content">
       <div className="content-header">
@@ -157,7 +175,7 @@ const Points = () => {
             <tr key={point.pointId}>
               <td>{point.pointsEarned}</td>
               <td>{point.dateEarned}</td>
-              <td>USER</td>
+              <td>{currentUser ? currentUser.schoolEmail : "Unknown"}</td>
               <td>
                 <button
                   className="edit-btn"
@@ -178,7 +196,8 @@ const Points = () => {
       </table>
     </div>
 
-      {showModal && (
+    
+    {showModal && (
         <div className="modal-overlay">
           <div className="modal">
             <h2>{editingPoint ? 'Edit Point' : 'Add Point'}</h2>
@@ -203,6 +222,23 @@ const Points = () => {
                   onChange={handleInputChange}
                   required
                 />
+              </div>
+              <div className="form-group">
+                <label>Earned By:</label>
+                <select
+                className="dropdown"
+                  name="userId"
+                  value={formData.userId}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select User</option>
+                  {users.map((user) => (
+                    <option key={user.userId} value={user.userId}>
+                      {user.schoolEmail} {/* You can use any user field here */}
+                    </option>
+                  ))}
+                </select>
               </div>
           
               {error && <div className="error-message">{error}</div>}
