@@ -7,6 +7,7 @@ function ItemManagement() {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [item, setItem] = useState({
     description: '',
@@ -14,6 +15,7 @@ function ItemManagement() {
     registeredBy: '',
     location: '',
     status: 'Found',
+    imageUrl: '', // Assuming imageUrl is part of item data
   });
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null); // To store the logged-in user
@@ -31,10 +33,14 @@ function ItemManagement() {
 
   const fetchCurrentUser = async () => {
     try {
+      const token = localStorage.getItem('authToken'); // Retrieve token
       const response = await fetch('http://localhost:8083/api/users/getCurrentUser', {
         method: 'GET',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` },
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include token
+        },
       });
+  
       if (!response.ok) throw new Error('Failed to fetch current user');
       const data = await response.json();
       setCurrentUser(data); // Set the current user from the response
@@ -51,13 +57,13 @@ function ItemManagement() {
   const togglePopup = () => {
     setShowPopup(!showPopup);
     if (!showPopup) {
-      setIsEditing(false);
       setItem({
         description: '',
         dateLostOrFound: '',
         registeredBy: '',
         location: '',
         status: 'Found',
+        imageUrl: '', // Reset imageUrl
       });
     }
   };
@@ -146,23 +152,102 @@ function ItemManagement() {
 
   const filteredItems = items.filter((item) => {
     const searchTermLower = searchTerm.toLowerCase();
-    return (
-      item.dateLostOrFound.toString().includes(searchTermLower) ||
-      item.description.toLowerCase().includes(searchTermLower) ||
-      item.registeredBy.toString().includes(searchTermLower) ||
-      item.location.toLowerCase().includes(searchTermLower)
-    );
+    const matchesSearchTerm =
+      (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
+      (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
+      (item.registeredBy && item.registeredBy.toLowerCase().includes(searchTermLower)) ||
+      (item.location && item.location.toLowerCase().includes(searchTermLower));
+  
+    const matchesStatus =
+      !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
+  
+    return matchesSearchTerm && matchesStatus;
   });
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+  const renderItemImage = (item) => {
+    if (item.image) {
+      return (
+        <img
+          src={item.image}
+          alt="Item"
+          style={{
+            width: '250px',
+            height: '300px',
+            objectFit: 'cover',
+            borderRadius: '4px',
+            border: '1px solid #ddd'
+          }}
+          onError={(e) => {
+            console.error(`Image load error for item ${item.itemID}`);
+            e.target.style.display = 'none';
+          }}
+        />
+      );
+    }
+    return (
+      <div style={{
+        width: '420px',
+        height: '300px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '4px',
+        display: 'flex',
+        maxWidth: '250px', 
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid #ddd',
+        color: '#666',
+        fontSize: '12px',
+        textAlign: 'center'
+      }}>
+        No Image
+      </div>
+    );
+  };
+  
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) { // 5MB limit
+        setError('File is too large. Please choose an image under 5MB.');
+        return;
+      }
 
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setItem(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+        setError(null);
+      };
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <div className="content">
       <div className="content-header">
         <h1>Current Items Pending</h1>
         <div className="coheader">
+        <select
+    className="status-dropdown"
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+  >
+    <option value="">All Status</option>
+    <option value="Found">Found</option>
+    <option value="Lost">Lost</option>
+  </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <input
             type="text"
             className="search-bar"
@@ -181,10 +266,18 @@ function ItemManagement() {
       <div className="horizontal-scroll-container">
         {filteredItems.map((item) => (
           <div className="item-card" key={item.itemID}>
+            {item.imageUrl && (
+              <img
+                src={item.image}
+                alt={item.description}
+                className="item-image"
+              />
+            )}
             <p><strong>Description:</strong> {item.description}</p>
             <p><strong>Date:</strong> {item.dateLostOrFound}</p>
             <p><strong>Registered By:</strong> {item.registeredBy}</p>
             <p><strong>Location:</strong> {item.location}</p>
+            <p><strong>{renderItemImage(item)}</strong></p>
             <p><strong>Status:</strong> {item.status}</p>
           </div>
         ))}
@@ -192,7 +285,11 @@ function ItemManagement() {
 
       {showPopup && (
         <div className="modal-overlay1" onClick={togglePopup}>
-          <div className="popup1" onClick={(e) => e.stopPropagation()} style={{ height: '440px', width: '500px' }}>
+          <div
+            className="popup1"
+            onClick={(e) => e.stopPropagation()}
+            style={{ height: '700px', width: '500px' }}
+          >
             <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
             <form onSubmit={handleSubmit} className="item-form">
               <div className="form-group">
@@ -222,8 +319,9 @@ function ItemManagement() {
                 <input
                   type="text"
                   name="registeredBy"
-                  value={currentUser ? currentUser.school_email : 'Loading...'}
-                  disabled
+                  value={item.registeredBy}
+                  onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -239,21 +337,32 @@ function ItemManagement() {
               </div>
 
               <div className="form-group">
-                <label>Status:
-                <select name="status" value={item.status} onChange={handleChange} required className="dropdown">
-                  <option value="Lost">Lost</option>
+                <label>Status:</label>
+                <select
+                  name="status"
+                  value={item.status}
+                  onChange={handleChange}
+                >
                   <option value="Found">Found</option>
-                </select></label>
+                  <option value="Lost">Lost</option>
+                </select>
               </div>
 
-              <div className="form-buttons">
-                <button type="submit" className="edit-btn">
-                  {isEditing ? 'Update Item' : 'Create Item'}
-                </button>
-                <button type="button" className="delete-btn" onClick={togglePopup}>
-                  Cancel
-                </button>
+              <div className="form-group">
+                <label>Image:</label>
+                <input
+                  type="file"
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                />
+                {item.image && <img src={item.image} alt="Preview" className="image-preview" />}
               </div>
+
+              {error && <div className="error">{error}</div>}
+
+              <button type="submit" className="edit-btn">
+                {isEditing ? 'Update Item' : 'Add Item'}
+              </button>
             </form>
           </div>
         </div>

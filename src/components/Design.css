@@ -273,7 +273,11 @@ td {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
-
+.image-preview{
+  height: 200px;
+  width: 200px;
+  align-items: center;     
+}
 a {
   color: inherit;
   text-decoration: none;

@@ -32,7 +32,6 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import PersonIcon from '@mui/icons-material/Person';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import InventoryIcon from '@mui/icons-material/Inventory';
-
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
@@ -42,6 +41,7 @@ const Login = ({ onLogin }) => {
   const [adminList, setAdminList] = useState([]);
 
   useEffect(() => {
+    // Fetch all users to check credentials
     axios.get('http://localhost:8083/api/users/getAllUsers')
       .then(response => setAdminList(response.data))
       .catch(error => console.error("Error fetching admin accounts:", error));
@@ -58,6 +58,7 @@ const Login = ({ onLogin }) => {
   const handleLogin = () => {
     setError('');
     
+    // Validate email and password
     const user = adminList.find(user => user.schoolEmail === credentials.email);
     if (!user) {
       setError('Email not found');
@@ -68,71 +69,29 @@ const Login = ({ onLogin }) => {
       return;
     }
 
+    // Check if selected account type matches user type
     if (selectedType === 'admin' && !user.isAdmin) {
       setError('You do not have admin privileges');
       return;
     }
 
-    const userWithType = {
-      ...user,
-      accountType: selectedType
-    };
-
-    onLogin(userWithType);
-    navigate(selectedType === 'admin' ? '/admin' : '/student/dashboard');
+    const userWithType = { ...user, accountType: selectedType };
+    onLogin(userWithType); // Callback for login
+    navigate(selectedType === 'admin' ? '/admin' : '/student/dashboard'); // Redirect based on user type
   };
-
-  const audioRef = useRef(null);
-
-useEffect(() => {
-  const audioElement = audioRef.current;
-  
-  const playAudio = () => {
-    if (audioElement) {
-      audioElement.play().catch(error => {
-        console.log("Audio autoplay failed:", error);
-      });
-    }
-  };
-
-  playAudio();
-  
-  const handleInteraction = () => {
-    playAudio();
-    document.removeEventListener('click', handleInteraction);
-  };
-  document.addEventListener('click', handleInteraction);
-
-  return () => {
-    document.removeEventListener('click', handleInteraction);
-    if (audioElement) {
-      audioElement.pause();
-    }
-  };
-}, []);
 
   return (
     <div className="page-container">
       <Paper elevation={3} className="login-container">
         <Box className="content-wrapper">
           <Box className="left-side">
+            {/* Background Video */}
             <video autoPlay muted loop playsInline>
               <source src="/CITCine.mp4" type="video/mp4" />
             </video>
-            
-            {/* Add audio element at the top level of your app */}
-            <audio 
-              ref={audioRef}
-              loop 
-              id="background-music"
-            >
-              <source src="/CITHymn.mp3" type="audio/mpeg" />
-            </audio>
-            
             <Box className="left-side-content">
               <Typography variant="h6" className="title">
                 <strong>Choose Account Type</strong>
-                
               </Typography>
               <Box className="account-types">
                 <Box 
@@ -143,9 +102,7 @@ useEffect(() => {
                     <img src="admin.png" alt="Admin" className="account-icon" />
                     <Typography>Admin</Typography>
                   </Box>
-                  {selectedType === 'admin' && (
-                    <CheckCircleIcon className="check-icon" />
-                  )}
+                  {selectedType === 'admin' && <CheckCircleIcon className="check-icon" />}
                 </Box>
                 <Box 
                   className={`account-option ${selectedType === 'student' ? 'selected' : ''}`}
@@ -155,9 +112,7 @@ useEffect(() => {
                     <img src="student.png" alt="Student" className="account-icon" />
                     <Typography>Student</Typography>
                   </Box>
-                  {selectedType === 'student' && (
-                    <CheckCircleIcon className="check-icon" />
-                  )}
+                  {selectedType === 'student' && <CheckCircleIcon className="check-icon" />}
                 </Box>
               </Box>
             </Box>
@@ -235,14 +190,11 @@ useEffect(() => {
           </Box>
         </Box>
       </Paper>
-      
-      <Signup 
-        open={isSignupOpen}
-        onClose={() => setIsSignupOpen(false)}
-      />
     </div>
   );
 };
+
+
 
 const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }) => {
   const navigate = useNavigate();

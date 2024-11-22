@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react';
-import './Design.css';
-import './Item.css';
-import { FaEdit, FaTrash } from 'react-icons/fa';
 
 function ItemManagement() {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState([]);  // State to store fetched users
-
+  const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
   const [item, setItem] = useState({
     description: '',
     dateLostOrFound: '',
     registeredBy: '',
     location: '',
     status: 'Found',
+    image: ''
   });
-  const [error, setError] = useState(null);
 
   const fetchItems = async () => {
     try {
@@ -26,25 +23,13 @@ function ItemManagement() {
       const data = await response.json();
       setItems(data);
     } catch (error) {
+      console.error('Error fetching items:', error);
       setError('Error fetching items');
-    }
-  };
-
-  // Fetching users for the dropdown
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('http://localhost:8083/api/users/getAllUsers');  // Replace with your users API endpoint
-      if (!response.ok) throw new Error('Failed to fetch users');
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      setError('Error fetching users');
     }
   };
 
   useEffect(() => {
     fetchItems();
-    fetchUsers();  // Fetch users when component loads
   }, []);
 
   const togglePopup = () => {
@@ -57,6 +42,7 @@ function ItemManagement() {
         registeredBy: '',
         location: '',
         status: 'Found',
+        image: ''
       });
     }
   };
@@ -69,21 +55,54 @@ function ItemManagement() {
     }));
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) { // 5MB limit
+        setError('File is too large. Please choose an image under 5MB.');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setItem(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+        setError(null);
+      };
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const itemData = {
+        ...item,
+        dateLostOrFound: new Date(item.dateLostOrFound).toISOString(),
+      };
+
       let response;
       if (isEditing) {
         response = await fetch(`http://localhost:8083/api/items/putItemDetails/${item.itemID}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
+          body: JSON.stringify(itemData),
         });
       } else {
         response = await fetch('http://localhost:8083/api/items/postItem', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
+          body: JSON.stringify(itemData),
         });
       }
 
@@ -94,18 +113,17 @@ function ItemManagement() {
       const updatedItem = await response.json();
 
       if (isEditing) {
-        setItems(prevItems =>
+        setItems((prevItems) =>
           prevItems.map((i) => (i.itemID === updatedItem.itemID ? updatedItem : i))
         );
       } else {
-        setItems(prevItems => [...prevItems, updatedItem]);
+        setItems((prevItems) => [...prevItems, updatedItem]);
       }
 
       togglePopup();
       setError(null);
-
-      fetchItems();
     } catch (error) {
+      console.error('Submission error:', error);
       setError(`Error ${isEditing ? 'updating' : 'creating'} item: ${error.message}`);
     }
   };
@@ -130,45 +148,97 @@ function ItemManagement() {
           throw new Error('Failed to delete item');
         }
 
-        setItems(prevItems => prevItems.filter((i) => i.itemID !== itemID));
+        setItems((prevItems) => prevItems.filter((i) => i.itemID !== itemID));
         setError(null);
       } catch (error) {
+        console.error('Delete error:', error);
         setError(`Error deleting item: ${error.message}`);
       }
     }
   };
 
-  const filteredPoints = items.filter(item => {
-    const searchTermLower = searchTerm.toLowerCase();
+  const renderItemImage = (item) => {
+    if (item.image) {
+      return (
+        <img
+          src={item.image}
+          alt="Item"
+          style={{
+            width: '60px',
+            height: '60px',
+            objectFit: 'cover',
+            borderRadius: '4px',
+            border: '1px solid #ddd'
+          }}
+          onError={(e) => {
+            console.error(`Image load error for item ${item.itemID}`);
+            e.target.style.display = 'none';
+          }}
+        />
+      );
+    }
     return (
-      item.dateLostOrFound.toString().includes(searchTermLower) ||
-      item.description.toLowerCase().includes(searchTermLower) ||
-      item.registeredBy.toString().includes(searchTermLower) ||
-      item.location.toLowerCase().includes(searchTermLower) ||
-      item.status.toLowerCase().includes(searchTermLower)
+      <div style={{
+        width: '60px',
+        height: '60px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '4px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid #ddd',
+        color: '#666',
+        fontSize: '12px',
+        textAlign: 'center'
+      }}>
+        No Image
+      </div>
     );
-  });
+  };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
+  const filteredItems = items.filter((item) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchesSearchTerm =
+      (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
+      (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
+      (item.registeredBy && item.registeredBy.toLowerCase().includes(searchTermLower)) ||
+      (item.location && item.location.toLowerCase().includes(searchTermLower));
+  
+    const matchesStatus =
+      !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
+  
+    return matchesSearchTerm && matchesStatus;
+  });
+
   return (
     <div className="content">
       <div className="content-header">
         <h1>Item Management</h1>
-        
+
         <div className="coheader">
-        <input 
-          type="text" 
-          className="search-bar" 
-          placeholder="Search..." 
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        <button onClick={togglePopup} className="add-button1" title="Add Item">
-          <h6>+ Add Item</h6>
-        </button>
+        <select
+    className="status-dropdown"
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+  >
+    <option value="">All Status</option>
+    <option value="Found">Found</option>
+    <option value="Lost">Lost</option>
+  </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <button onClick={togglePopup} className="add-button1" title="Add Item">
+            <h6>+ Add Item</h6>
+          </button>
         </div>
       </div>
 
@@ -184,21 +254,34 @@ function ItemManagement() {
               <th>Registered By</th>
               <th>Location</th>
               <th>Status</th>
+              <th>Image</th>
               <th className="actions-column">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
-            {filteredPoints.map((item) => (
+            {filteredItems.map((item) => (
               <tr key={item.itemID}>
                 <td>{item.itemID}</td>
                 <td>{item.description}</td>
-                <td>{item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</td>
+                <td>
+                  {item.dateLostOrFound
+                    ? new Date(item.dateLostOrFound).toLocaleDateString()
+                    : ''}
+                </td>
                 <td>{item.registeredBy}</td>
                 <td>{item.location}</td>
                 <td>{item.status}</td>
+                <td>{renderItemImage(item)}</td>
                 <td className="actions-column">
-                  <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(item.itemID)}>Delete</button>
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>
+                    Edit
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(item.itemID)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -208,7 +291,11 @@ function ItemManagement() {
 
       {showPopup && (
         <div className="modal-overlay1" onClick={togglePopup}>
-          <div className="popup1" onClick={(e) => e.stopPropagation()} style={{ height: '440px', width: '500px' }}>
+          <div
+            className="popup1"
+            onClick={(e) => e.stopPropagation()}
+            style={{ height: '700px', width: '500px' }}
+          >
             <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
             <form onSubmit={handleSubmit} className="item-form">
               <div className="form-group">
@@ -235,20 +322,13 @@ function ItemManagement() {
 
               <div className="form-group">
                 <label>Registered By:</label>
-                <select
-                  className="dropdown"
+                <input
+                  type="text"
                   name="registeredBy"
                   value={item.registeredBy}
                   onChange={handleChange}
                   required
-                >
-                  <option value="">Select User</option>
-                  {users.map((user) => (
-                    <option key={user.userId} value={user.userId}>
-                      {user.schoolEmail}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div className="form-group">
@@ -264,20 +344,32 @@ function ItemManagement() {
 
               <div className="form-group">
                 <label>Status:</label>
-                <select name="status" value={item.status} onChange={handleChange} required>
-                  <option value="Lost">Lost</option>
+                <select
+                className="dropdown"
+                  name="status"
+                  value={item.status}
+                  onChange={handleChange}
+                >
                   <option value="Found">Found</option>
+                  <option value="Lost">Lost</option>
                 </select>
               </div>
 
-              <div className="form-buttons">
-                <button type="submit" className="edit-btn">
-                  {isEditing ? 'Update Item' : 'Create Item'}
-                </button>
-                <button type="button" className="delete-btn" onClick={togglePopup}>
-                  Cancel
-                </button>
+              <div className="form-group">
+                <label>Image:</label>
+                <input
+                  type="file"
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                />
+                {item.image && <img src={item.image} alt="Preview" className="image-preview" />}
               </div>
+
+              {error && <div className="error">{error}</div>}
+
+              <button type="submit" className="edit-btn">
+                {isEditing ? 'Update Item' : 'Add Item'}
+              </button>
             </form>
           </div>
         </div>
