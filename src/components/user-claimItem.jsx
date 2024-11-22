@@ -25,7 +25,7 @@ function ItemManagement() {
       const response = await fetch('http://localhost:8083/api/items/getAllItems');
       if (!response.ok) throw new Error('Failed to fetch items');
       const data = await response.json();
-      setItems(data.filter(item => item.status === 'Lost'));
+      setItems(data.filter(item => item.status === 'Found'));
     } catch (error) {
       setError('Error fetching items');
     }
