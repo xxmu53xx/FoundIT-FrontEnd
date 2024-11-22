@@ -14,7 +14,9 @@ function UserManagement() {
     schoolId: '',
     password: '',
     bio: '',
-    currentPoints: 0
+    currentPoints: 0,
+    isAdmin:true
+
   });
   const [error, setError] = useState(null);
 
@@ -39,9 +41,10 @@ function UserManagement() {
       setUser({
         schoolEmail: '',
         schoolId: '',
-        password: '',
+        password: '',   
         bio: '',
-        currentPoints: 0
+        currentPoints: 0,
+        isAdmin: false
       });
     }
   };
@@ -142,6 +145,7 @@ function UserManagement() {
               <th>PASSWORD</th>
               <th>BIO</th>
               <th className="cp-column">CP</th>
+              <th>isAdmin</th>
               <th className="actions-column">ACTIONS</th>
             </tr>
           </thead>
@@ -155,6 +159,7 @@ function UserManagement() {
                 <td>•••••••</td>
                 <td className="bio">{user.bio}</td>
                 <td className="cp-column">{user.currentPoints}</td>
+                <td className="bio">{user?.isAdmin ? 'True' : 'False'}</td>
                 <td className="actions-column">
                   <button className="edit-btn" onClick={() => handleEdit(user)}>Edit</button>
                   <button className="delete-btn" onClick={() => handleDelete(user.userID)}>Delete</button>

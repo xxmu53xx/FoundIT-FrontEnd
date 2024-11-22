@@ -86,7 +86,8 @@ function CurrentCount() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            backgroundColor: '#c5e1a5',
+            backgroundColor: '#b5201f',
+            color:'White',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
@@ -101,7 +102,7 @@ function CurrentCount() {
         <PeopleIcon sx={{ fontSize: 40, marginRight: 1 }} />
         <Typography variant="h3">{count}</Typography>
       </Box>
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="white">
             Users
           </Typography>
         </Box>
@@ -118,7 +119,7 @@ function CurrentCount() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            backgroundColor: '#ffcc80',
+            backgroundColor: '#e4d07b',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
@@ -150,7 +151,8 @@ function CurrentCount() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            backgroundColor: '#81d4fa',
+            backgroundColor: '#b5201f',
+            color:'white',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
@@ -165,7 +167,7 @@ function CurrentCount() {
              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
           <PointIcon sx={{ fontSize: 40, marginRight: 2 }} />
           <Typography variant="h3">{countPoint}</Typography></Box>
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="white">
             Point
           </Typography>
         </Box>
@@ -182,7 +184,7 @@ function CurrentCount() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            backgroundColor: '#ffe082',
+            backgroundColor: '#e4d07b',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,

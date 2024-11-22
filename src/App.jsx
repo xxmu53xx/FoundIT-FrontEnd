@@ -371,9 +371,12 @@ function App() {
         <img src="/citlogo.png" alt="University Logo" className="university-logo" />
 
         <div className="user-profile" onClick={handleProfileViewClick}>
-                    <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
-                    <img src="/dilao.png" alt="User Profile" className="profile-picture" />
-                  </div>
+    <div className="user-info">
+        <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
+        <span className="user-id">{user?.schoolId|| '00-0000-000'}</span>
+    </div>
+    <img src="/dilao.png" alt="User Profile" className="profile-picture" />
+</div>
       </header>
     
       <div className="sidebar">
@@ -383,16 +386,16 @@ function App() {
         </h2>
         <ul className="sidebar-menu">
           <li className="sidebar-item">
-            <NavLink to="/student/dashboard" className="nav-link"><ContentPasteIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Dashboard</NavLink>
+            <NavLink to="/student/dashboard" className="nav-link"><ContentPasteIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Dashboard</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="/student/rewards" className="nav-link"><PersonIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Rewards</NavLink>
+            <NavLink to="/student/rewards" className="nav-link"><PersonIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Rewards</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="/student/item" className="nav-link"><InventoryIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Deposit Item</NavLink>
+            <NavLink to="/student/item" className="nav-link"><InventoryIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Deposit Item</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="/student/claim" className="nav-link"><SystemUpdateAltIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Retrieve Item</NavLink>
+            <NavLink to="/student/claim" className="nav-link"><SystemUpdateAltIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Retrieve Item</NavLink>
           </li>
           <li className="sidebar-item">
             <button onClick={handleLogout} className="logout-button">🔓 Logout</button>

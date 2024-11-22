@@ -99,9 +99,12 @@ const AdminDashboard = ({ user, onLogout }) => {
         <img src="/citlogo.png" alt="University Logo" className="university-logo" />
         
         <div className="user-profile" onClick={handleProfileViewClick}>
-          <span className="user-name">{username || 'Guest'}</span>
-          <img src="/dilao.png" alt="User Profile" className="profile-picture" />
-        </div>
+    <div className="user-info">
+        <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
+        <span className="user-id">{user?.schoolId|| '00-0000-000'}</span>
+    </div>
+    <img src="/dilao.png" alt="User Profile" className="profile-picture" />
+</div>
       </header>
 
       <div className="sidebar">
@@ -112,19 +115,19 @@ const AdminDashboard = ({ user, onLogout }) => {
         </h2>
         <ul className="sidebar-menu">
           <li className="sidebar-item">
-            <NavLink to="" end className="nav-link"><ContentPasteIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;Reports</NavLink>
+            <NavLink to="" end className="nav-link"><ContentPasteIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;<span className="dashboard-text">Reports</span></NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="user-management" className="nav-link"><PersonIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;Manage User</NavLink>
+            <NavLink to="user-management" className="nav-link"><PersonIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;Manage User</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="rewards" className="nav-link"><StarsIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Rewards</NavLink>
+            <NavLink to="rewards" className="nav-link"><StarsIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Rewards</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="points" className="nav-link"><PointIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Points</NavLink>
+            <NavLink to="points" className="nav-link"><PointIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Points</NavLink>
           </li>
           <li className="sidebar-item">
-            <NavLink to="item" className="nav-link"><InventoryIcon style={{  color:'#ffc71f',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Items</NavLink>
+            <NavLink to="item" className="nav-link"><InventoryIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Items</NavLink>
           </li>
           <li className="sidebar-item">
             <button onClick={onLogout} className="logout-button">🔓 Logout</button>

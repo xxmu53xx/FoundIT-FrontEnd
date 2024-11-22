@@ -65,11 +65,11 @@ color:white;
 }
 
 .accordion-summary {
-  background-color: #dddddd; 
+  background-color: #e4d07b; 
 }
 
 .accordion-details {
-  background-color: #dddddd; 
+  background-color: #e4d07b; 
 }
 .sidebar-item {
   padding: 10px;
@@ -159,6 +159,36 @@ td {
   width: 100px;
 }
 
+.user-profile {
+  display: flex; /* Align items side by side */
+  align-items: center; /* Vertically align items in the center */
+  gap: 10px; /* Space between image and text */
+  cursor: pointer; /* Pointer cursor for interactivity */
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column; /* Stack the text vertically */
+  align-items: flex-end; /* Align the text to the right */
+  text-align: right; /* Ensure the text content aligns to the right */
+}
+
+.user-name {
+  font-weight: bold; /* Highlight the username */
+  font-size: 1.2rem; /* Adjust font size for prominence */
+}
+
+.user-id {
+  font-size: 0.9rem; /* Make the ID slightly smaller */
+  color: gray; /* Add a subtle color for distinction */
+}
+
+.profile-picture {
+  width: 50px; /* Adjust the size of the profile picture */
+  height: 50px;
+  border-radius: 50%; /* Make the image circular */
+  object-fit: cover; /* Ensure the image scales properly */
+}
 .cp-column {
   width: 100px;
   text-align: right;

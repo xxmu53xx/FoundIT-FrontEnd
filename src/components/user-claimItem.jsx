@@ -189,16 +189,7 @@ function ItemManagement() {
                 <td>
                   <button 
                     onClick={() => handleClaimClick(item)}
-                    className="claim-button"
-                    style={{
-                      backgroundColor: '#4CAF50',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '14px'
-                    }}
+                    className="edit-btn"
                   >
                     Retrieve
                   </button>

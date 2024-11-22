@@ -289,22 +289,16 @@ body, html {
   color: #333;
 }
 
-.user-profile {
-  display: flex;
-  align-items: center;
-}
+
 
 .user-name {
   margin-right: 10px;
   font-weight: bold;
 }
 
-.profile-picture {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #F1D88A;
-  object-fit: cover;
+.user-id{
+  margin-right: 10px;
+  font-weight: bold;
 }
 
 .sidebar {
@@ -327,11 +321,15 @@ body, html {
 }
 
 .sidebar-menu {
+  
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+.dashboard-text{
+  font-family: 'Roboto', sans-serif;
+}
 .sidebar-item {
   margin-bottom: 1rem;
 }
@@ -347,6 +345,7 @@ body, html {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-family: 'Roboto', sans-serif;
   transition: background-color 0.2s;
   padding: 0.5rem 1rem;
   border-radius: 10px;
@@ -383,6 +382,8 @@ body, html {
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
+    font-family: 'Roboto', sans-serif;
+    /*ari sa ni*/
     height: auto;
     position: static;
   }

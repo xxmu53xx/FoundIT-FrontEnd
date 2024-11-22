@@ -77,7 +77,7 @@ function userCurrentCount() {
   return (
     <>
        <Grid container spacing={5}>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid item xs={12} sm={6} md={3}>
       
         <Box
           sx={{
@@ -85,8 +85,9 @@ function userCurrentCount() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            color:'white',
             padding: 2,
-            backgroundColor: '#c5e1a5',
+            backgroundColor: '#b5201f',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
@@ -101,7 +102,7 @@ function userCurrentCount() {
         <PeopleIcon sx={{ fontSize: 40, marginRight: 1 }} />
         <Typography variant="h3">{count}</Typography>
       </Box>
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="white">
             Users
           </Typography>
         </Box>
@@ -109,7 +110,7 @@ function userCurrentCount() {
       </Grid>
 
  
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid item xs={12} sm={6} md={3}>
       <Link to="/student/rewards" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
@@ -118,7 +119,7 @@ function userCurrentCount() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            backgroundColor: '#ffcc80',
+            backgroundColor: '#e4d07b',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
@@ -142,9 +143,40 @@ function userCurrentCount() {
 
     
       
+      <Grid item xs={12} sm={6} md={3}>
+      <Link to="/student/claim" style={{ textDecoration: 'none' }}> 
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 2,
+            color:'white',
+            backgroundColor: '#b5201f',
+            borderRadius: 2,
+            boxShadow: 3,
+            height: 110,
+            cursor: 'pointer',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: 6,
+              },
+          }}
+        >
+              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+          <InventoryIcon sx={{ fontSize: 40, marginRight: 2 }} />
+          <Typography variant="h3">{countItem}
+          </Typography></Box>
+          <Typography variant="body1" color="white">
+            Items To be Claimed
+          </Typography>
+        </Box>
+        </Link>
+      </Grid>
 
-
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid item xs={12} sm={6} md={3}>
       <Link to="/student/item" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
@@ -153,7 +185,7 @@ function userCurrentCount() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: 2,
-            backgroundColor: '#ffe082',
+            backgroundColor: '#e4d07b',
             borderRadius: 2,
             boxShadow: 3,
             height: 110,
@@ -170,11 +202,13 @@ function userCurrentCount() {
           <Typography variant="h3">{countItem}
           </Typography></Box>
           <Typography variant="body1" color="textSecondary">
-            Item
+            Items Pending
           </Typography>
         </Box>
         </Link>
       </Grid>
+
+      
     </Grid>
 
     <br>
