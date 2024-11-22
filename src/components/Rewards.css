@@ -11,7 +11,42 @@
   border-radius: 12px;
   box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.0);
 }
+.dropdown {
+  width: 95%;
+  padding: 10px;
+  background-color: #fcfcfc; /* Maroon color */
+  color: 'black'; /* Gold color */
+  border: 2px solid #FFD700; /* Gold border */
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  transition: background-color 0.3s, border-color 0.3s;
+}
 
+/* Hover and focus effects */
+.dropdown:hover,
+.dropdown:focus {
+  background-color: #e9e9e9; /* Darker maroon for hover */
+  border-color: #FFB800; /* Lighter gold for focus */
+  outline: none;
+}
+
+/* Style for the options */
+.dropdown option {
+  background-color: #ffffff; /* Maroon background for options */
+  color: #161616; /* Gold color for text */
+}
+
+/* Hover effect for option items */
+.dropdown option:hover {
+  background-color: #df6c6c; /* Darker maroon for option hover */
+}
+
+/* Option styles when selected */
+.dropdown option:checked {
+  background-color: #FFB800; /* Lighter gold for selected option */
+  color: #660000; /* Darker maroon text color for selected option */
+}
 h1 {
   align-items: center;
   justify-content: center;
