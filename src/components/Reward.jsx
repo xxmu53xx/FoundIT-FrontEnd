@@ -154,7 +154,7 @@ const Rewards = () => {
             <th>Reward Name</th>
             <th>Reward Type</th>
             <th>Points Required</th>
-            <th>Actions</th>
+            <th className="actions-column">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -163,7 +163,7 @@ const Rewards = () => {
               <td>{reward.rewardName}</td>
               <td>{reward.rewardType}</td>
               <td>{reward.pointsRequired}</td>
-              <td>
+              <td className="actions-column">
                 <button
                   className="edit-btn"
                   onClick={() => handleEdit(reward)}

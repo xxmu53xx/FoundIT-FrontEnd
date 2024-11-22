@@ -167,7 +167,7 @@ const Points = () => {
             <th>Points Earned</th>
             <th>Date Earned</th>
             <th>Earned By</th>
-            <th>Actions</th>
+            <th className="actions-column"   >ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -176,7 +176,7 @@ const Points = () => {
               <td>{point.pointsEarned}</td>
               <td>{point.dateEarned}</td>
               <td>{currentUser ? currentUser.schoolEmail : "Unknown"}</td>
-              <td>
+              <td className="actions-column"> 
                 <button
                   className="edit-btn"
                   onClick={() => handleEdit(point)}
