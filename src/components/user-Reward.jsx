@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Design.css'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import CloseIcon from '@mui/icons-material/Close';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import './user-Reward.css';
 
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editingReward, setEditingReward] = useState(null);
-  const [formData, setFormData] = useState({
-    rewardName: '',
-    rewardType: '',
-    pointsRequired: ''
-  });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [wishlist, setWishlist] = useState([]);
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -28,124 +30,157 @@ const Rewards = () => {
     }
   };
 
-  const handleEdit = (reward) => {
-    setEditingReward(reward);
-    setFormData({
-      rewardName: reward.rewardName,
-      rewardType: reward.rewardType,
-      pointsRequired: reward.pointsRequired.toString()
-    });
-    setShowModal(true);
-  };
-
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-
-    const payload = {
-      ...formData,
-      pointsRequired: parseInt(formData.pointsRequired),
-      ...(editingReward && { rewardId: editingReward.rewardId })
-    };
-
-    try {
-      if (editingReward) {
-        // Fix: Change port from 8080 to 8083
-        const response = await axios.put(
-          `http://localhost:8083/api/rewards/putReward/${editingReward.rewardId}`,
-          payload
-        );
-        if (response.status === 200) {
-          setSuccessMessage('Reward updated successfully!');
-          fetchRewards();
-          setTimeout(() => handleCloseModal(), 1500);
-        }
-      } else {
-        const response = await axios.post(
-          'http://localhost:8083/api/rewards/postRewards',
-          payload
-        );
-        if (response.status === 201) {
-          setSuccessMessage('Reward created successfully!');
-          fetchRewards();
-          setTimeout(() => handleCloseModal(), 1500);
-        }
-      }
-    } catch (error) {
-      console.error('Error saving reward:', error);
-      setError(error.response?.data?.message || 'Failed to save reward. Please try again.');
-    }
-};
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this reward?')) {
-      try {
-        const response = await axios.delete(`http://localhost:8083/api/rewards/deleteRewards/${id}`);
-        if (response.status === 204) {
-          setSuccessMessage('Reward deleted successfully!');
-          fetchRewards();
-        }
-      } catch (error) {
-        console.error('Error deleting reward:', error);
-        setError('Failed to delete reward');
-      }
+  const toggleWishlist = (reward) => {
+    if (wishlist.find(item => item.rewardId === reward.rewardId)) {
+      setWishlist(wishlist.filter(item => item.rewardId !== reward.rewardId));
+    } else {
+      setWishlist([...wishlist, reward]);
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingReward(null);
-    setFormData({
-      rewardName: '',
-      rewardType: '',
-      pointsRequired: ''
-    });
-    setError('');
-    setSuccessMessage('');
+  const handleRedeem = (reward) => {
+    // Implement redeem functionality
+    console.log('Redeeming:', reward);
+  };
+
+  const nextPage = () => {
+    if ((currentPage + 1) * 4 < rewards.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const getCurrentRewards = () => {
+    const startIndex = currentPage * 4;
+    return rewards.slice(startIndex, startIndex + 4);
+  };
+
+  const removeFromWishlist = (rewardId) => {
+    setWishlist(wishlist.filter(item => item.rewardId !== rewardId));
   };
 
   return (
     <div className="rewards-container">
-    <h1>REDEEM REWARDS</h1>
-    
-
-
-    {/* Display error message if there is one */}
-    {error && <div className="error-message">{error}</div>}
-    
-    {/* Display success message if there is one */}
-    {successMessage && <div className="success-message">{successMessage}</div>}
-
-    <div className="rewards-grid">
-      {rewards.map((reward) => (
-        <div key={reward.rewardId} className="reward-card">
-          <h3>{reward.rewardName}</h3>
-          <p>Reward Type: {reward.rewardType}</p>
-          <div className="points-container">
-            <span className="points-icon">★</span>
-            <span>{reward.pointsRequired}</span>
-            <button className="redeem-button">Redeem</button>
-          </div>
-          <div className="button-container">
+      <h1>REDEEM REWARDS</h1>
       
+      <div className="wishlist-button-container">
+        <button 
+          className="wishlist-button"
+          onClick={() => setShowWishlistModal(true)}
+        >
+          <FavoriteIcon /> Wishlist ({wishlist.length})
+        </button>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success-message">{successMessage}</div>}
+
+      <div className="rewards-carousel">
+        <button 
+          className="nav-button prev" 
+          onClick={prevPage}
+          disabled={currentPage === 0}
+        >
+          <NavigateBeforeIcon />
+        </button>
+
+        <div className="rewards-grid">
+          {getCurrentRewards().map((reward) => (
+            <div key={reward.rewardId} className="reward-card">
+              <div className="wishlist-icon" onClick={() => toggleWishlist(reward)}>
+                {wishlist.find(item => item.rewardId === reward.rewardId) 
+                  ? <FavoriteIcon className="wished" />
+                  : <FavoriteBorderIcon />}
+              </div>
+              
+              <h3>{reward.rewardName}</h3>
+              <p className="reward-type">Type: {reward.rewardType}</p>
+              
+              <div className="points-container">
+                <div className="stars">
+                  {[...Array(Math.min(Math.ceil(reward.pointsRequired/100), 5))].map((_, i) => (
+                    <span key={i} className="star-filled">★</span>
+                  ))}
+                  {[...Array(5 - Math.min(Math.ceil(reward.pointsRequired/100), 5))].map((_, i) => (
+                    <span key={i} className="star-empty">☆</span>
+                  ))}
+                </div>
+                <div className="price">
+                  <span className="points">★ {reward.pointsRequired}</span>
+                </div>
+              </div>
+
+              <button 
+                className="redeem-button"
+                onClick={() => handleRedeem(reward)}
+              >
+                <ShoppingCartIcon /> REDEEM NOW
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <button 
+          className="nav-button next" 
+          onClick={nextPage}
+          disabled={(currentPage + 1) * 4 >= rewards.length}
+        >
+          <NavigateNextIcon />
+        </button>
+      </div>
+
+      {/* Wishlist Modal */}
+      {showWishlistModal && (
+        <div className="modal-overlay">
+          <div className="wishlist-modal">
+            <div className="modal-header">
+              <h2>My Wishlist</h2>
+              <button 
+                className="close-button"
+                onClick={() => setShowWishlistModal(false)}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            
+            <div className="wishlist-items">
+              {wishlist.length === 0 ? (
+                <p>No items in wishlist</p>
+              ) : (
+                wishlist.map((reward) => (
+                  <div key={reward.rewardId} className="wishlist-item">
+                    <div className="wishlist-item-info">
+                      <h3>{reward.rewardName}</h3>
+                      <p>{reward.rewardType}</p>
+                      <p>★ {reward.pointsRequired} points</p>
+                    </div>
+                    <div className="wishlist-item-actions">
+                      <button 
+                        className="redeem-button"
+                        onClick={() => handleRedeem(reward)}
+                      >
+                        Redeem
+                      </button>
+                      <button 
+                        className="remove-button"
+                        onClick={() => removeFromWishlist(reward.rewardId)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
-      ))}
+      )}
     </div>
-
-              </div>
-          
-
-      
- 
   );
 };
 
