@@ -23,7 +23,7 @@ function CurrentCount() {
               throw new Error("Error reponse");
           }
           const data = await response.json();
-          setCountPoint(data.user_count); 
+          setCountPoint(data.point_count); 
       } catch (error) {
           console.error("Error fetching user count:", error);
       }
