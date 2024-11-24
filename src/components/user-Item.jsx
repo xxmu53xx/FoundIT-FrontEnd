@@ -234,6 +234,8 @@ function ItemManagement() {
       reader.readAsDataURL(file);
     }
   };
+
+  
   return (
     <div className="content">
       <div className="content-header">

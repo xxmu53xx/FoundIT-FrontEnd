@@ -93,6 +93,7 @@ color:white;
 }
 .content-body{
   display: flex;
+  overflow:hidden;
 }
 
 .content-body h4{
