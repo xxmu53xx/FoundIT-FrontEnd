@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, NavLink } from 'react-router-dom';
 import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './Design.css'
 
 function UserManagement() {
@@ -161,8 +163,18 @@ function UserManagement() {
                 <td className="cp-column">{user.currentPoints}</td>
                 <td className="bio">{user?.isAdmin ? 'True' : 'False'}</td>
                 <td className="actions-column">
-                  <button className="edit-btn" onClick={() => handleEdit(user)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(user.userID)}>Delete</button>
+                <button 
+                  className="edit-btn" 
+                  onClick={() => handleEdit(user)}
+                >
+                  <EditIcon />
+                </button>
+                <button 
+                  className="delete-btn" 
+                  onClick={() => handleDelete(user.userID)}
+                >
+                  <DeleteIcon />
+                </button>
                 </td>
               </tr>
             ))}

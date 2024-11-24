@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './Design.css'
 
 const Rewards = () => {
@@ -166,17 +168,17 @@ const Rewards = () => {
               <td>{reward.rewardType}</td>
               <td>{reward.pointsRequired}</td>
               <td className="actions-column">
-                <button
-                  className="edit-btn"
+                <button 
+                  className="edit-btn" 
                   onClick={() => handleEdit(reward)}
                 >
-                  Edit
+                  <EditIcon />
                 </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(reward.rewardId)}
+                <button 
+                  className="delete-btn" 
+                  onClick={() => handleDelete(reward.rewardID)}
                 >
-                  Delete
+                  <DeleteIcon />
                 </button>
               </td>
             </tr>

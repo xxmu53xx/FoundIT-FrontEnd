@@ -236,7 +236,7 @@ const Items = () => {
                     className="delete-btn"
                     onClick={() => handleDelete(item.itemId)}
                   >
-                    Delete
+                    <DeleteIcon />
                   </button>
                 </td>
               </tr>
