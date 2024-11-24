@@ -10,8 +10,7 @@
   .horizontal-scroll-container {
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    height: 580px;
+    height: 800px;
     scroll-behavior: smooth;
     gap: 10px;
   }
@@ -29,8 +28,8 @@
     background: #555;
   }
   .item-card {
-    width: 400px;
-    height: 580px;
+    width: 500px;
+    height:600px;
     background: white;
     padding: 16px;
     border-radius: 8px;

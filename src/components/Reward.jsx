@@ -45,18 +45,19 @@ const Rewards = () => {
       [e.target.name]: e.target.value
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
+  
     const payload = {
-      ...formData,
+      rewardName: formData.rewardName,
+      rewardType: formData.rewardType,
       pointsRequired: parseInt(formData.pointsRequired),
+      user: { userID: 1 },  // Make sure you dynamically set this to the correct userID
       ...(editingReward && { rewardId: editingReward.rewardId })
     };
-
+  
     try {
       if (editingReward) {
         // Fix: Change port from 8080 to 8083
@@ -84,8 +85,7 @@ const Rewards = () => {
       console.error('Error saving reward:', error);
       setError(error.response?.data?.message || 'Failed to save reward. Please try again.');
     }
-};
-
+  };
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this reward?')) {
       try {
@@ -151,6 +151,7 @@ const Rewards = () => {
       <table>
         <thead>
           <tr className="labellist">
+            <th>REWARD ID</th>
             <th>Reward Name</th>
             <th>Reward Type</th>
             <th>Points Required</th>
@@ -160,6 +161,7 @@ const Rewards = () => {
         <tbody>
           {filteredRewards.map((reward) => (
             <tr key={reward.rewardId}>
+              <td>{reward.rewardId}</td>
               <td>{reward.rewardName}</td>
               <td>{reward.rewardType}</td>
               <td>{reward.pointsRequired}</td>

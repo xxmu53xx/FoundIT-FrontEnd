@@ -107,7 +107,7 @@ function MyAccordion() {
   return (
     <>
     {/*this is how to change accordion main color*/}
-    <Accordion defaultExpanded className="accordion-root" sx={{ backgroundColor: '#9c6b54',border: '2px solid none', borderRadius: '25px',padding: '5px' }}>
+    <Accordion defaultExpanded className="accordion-root" sx={{ backgroundColor: '#800000',border: '3px solid black', borderRadius: '10px',padding: '5px' }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
@@ -117,7 +117,7 @@ function MyAccordion() {
         <Typography sx={{color:'White',fontSize: '1.5rem' }}>Top 3 Recently Added</Typography>
       </AccordionSummary>
       <AccordionDetails >
-        <Typography className="accordion-details" sx={{color:'Black',border: '2px solid none', borderRadius: '25px',padding: '20px' }}>
+        <Typography className="accordion-details" sx={{color:'Black',border: '2px solid black', borderRadius: '10px',padding: '20px' }}>
         <div className="content-header"></div>
       <div className="latest-section">
     <div className="content-header"> 

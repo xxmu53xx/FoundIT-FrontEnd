@@ -58,85 +58,6 @@ function ItemManagement() {
     setShowClaimPopup(false);
     setSelectedItem(null);
   };
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setItem((prevItem) => ({
-      ...prevItem,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      let response;
-      if (isEditing) {
-        response = await fetch(`http://localhost:8083/api/items/putItemDetails/${item.itemID}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
-        });
-      } else {
-        response = await fetch('http://localhost:8083/api/items/postItem', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
-        });
-      }
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${isEditing ? 'update' : 'create'} item`);
-      }
-
-      const updatedItem = await response.json();
-
-      if (updatedItem.status === 'Lost') {
-        if (isEditing) {
-          setItems(prevItems => 
-            prevItems.map((i) => (i.itemID === updatedItem.itemID ? updatedItem : i))
-          );
-        } else {
-          setItems(prevItems => [...prevItems, updatedItem]);
-        }
-      }
-      
-      togglePopup();
-      setError(null);
-      
-      fetchItems();
-    } catch (error) {
-      setError(`Error ${isEditing ? 'updating' : 'creating'} item: ${error.message}`);
-    }
-  };
-
-  const handleEdit = (itemToEdit) => {
-    setItem({
-      ...itemToEdit,
-      dateLostOrFound: itemToEdit.dateLostOrFound ? itemToEdit.dateLostOrFound.split('T')[0] : ''
-    });
-    setIsEditing(true);
-    setShowPopup(true);
-  };
-
-  const handleDelete = async (itemID) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        const response = await fetch(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`, {
-          method: 'DELETE',
-        });
-  
-        if (!response.ok) {
-          throw new Error('Failed to delete item');
-        }
-  
-        setItems(prevItems => prevItems.filter((i) => i.itemID !== itemID));
-        setError(null);
-      } catch (error) {
-        setError(`Error deleting item: ${error.message}`);
-      }
-    }
-  };
-
   const filteredPoints = items.filter(item => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
@@ -149,6 +70,45 @@ function ItemManagement() {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+  };
+  const renderItemImage = (item) => {
+    if (item.image) {
+      return (
+        <img
+          src={item.image}
+          alt="Item"
+          style={{
+            width: '250px',
+            height: '300px',
+            objectFit: 'cover',
+            borderRadius: '4px',
+            border: '1px solid #ddd'
+          }}
+          onError={(e) => {
+            console.error(`Image load error for item ${item.itemID}`);
+            e.target.style.display = 'none';
+          }}
+        />
+      );
+    }
+    return (
+      <div style={{
+        width: '420px',
+        height: '300px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '4px',
+        display: 'flex',
+        maxWidth: '250px', 
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid #ddd',
+        color: '#666',
+        fontSize: '12px',
+        textAlign: 'center'
+      }}>
+        No Image
+      </div>
+    );
   };
 
   return (
@@ -168,37 +128,36 @@ function ItemManagement() {
 
       {error && <p className="error">{error}</p>}
 
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr className="labellist">
-              <th>Description</th>
-              <th>Date Lost/Found</th>
-              <th>Registered By</th>
-              <th>Location</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPoints.map((item) => (
-              <tr key={item.itemID}>
-                <td>{item.description}</td>
-                <td>{item.dateLostOrFound ? new Date(item.dateLostOrFound).toLocaleDateString() : ''}</td>
-                <td>{item.registeredBy}</td>
-                <td>{item.location}</td>
-                <td>
-                  <button 
+
+      <div className="horizontal-scroll-container">
+        {filteredPoints.map((item) => (
+          <div className="item-card" key={item.itemID}>
+            {item.imageUrl && (
+              <img
+                src={item.image}
+                alt={item.description}
+                className="item-image"
+              />
+            )}
+            <p><strong>Description:</strong> {item.description}</p>
+            <p><strong>Date:</strong> {item.dateLostOrFound}</p>
+            <p><strong>Registered By:</strong> {item.registeredBy}</p>
+            <p><strong>Location:</strong> {item.location}</p>
+            <p><strong>{renderItemImage(item)}</strong></p>
+            <p><strong>Status:</strong> {item.status}</p>
+            <p><strong> 
+              <button 
                     onClick={() => handleClaimClick(item)}
                     className="edit-btn"
                   >
                     Retrieve
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </strong></p>
+                
+          </div>
+        ))}
       </div>
+    
 
       {/* Claim Popup */}
         {showClaimPopup && selectedItem && (

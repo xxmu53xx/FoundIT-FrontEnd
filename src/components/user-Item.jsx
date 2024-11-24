@@ -319,8 +319,8 @@ function ItemManagement() {
                 <input
                   type="text"
                   name="registeredBy"
-                  value={item.registeredBy}
-                  onChange={handleChange}
+                  value={currentUser ? currentUser.school_email : 'Loading...'}
+                  disabled
                   required
                 />
               </div>
@@ -339,6 +339,7 @@ function ItemManagement() {
               <div className="form-group">
                 <label>Status:</label>
                 <select
+                className="dropdown"
                   name="status"
                   value={item.status}
                   onChange={handleChange}
@@ -349,7 +350,7 @@ function ItemManagement() {
               </div>
 
               <div className="form-group">
-                <label>Image:</label>
+                <label>Image (5MB MAX):</label>
                 <input
                   type="file"
                   onChange={handleImageUpload}

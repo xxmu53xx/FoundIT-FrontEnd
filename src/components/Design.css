@@ -113,47 +113,93 @@ color:white;
 }
 
 .add-button1 {
-  width: 150px;
-  height: 35px;
+  width: 160px; /* Slightly wider for balance */
+  height: 45px; /* Taller for better visibility */
   border-radius: 25px;
-  background-color: #ffc107;
-  color: white;
+  background-color: #ffc107; /* Bright gold */
+  color: #4b4b4b; /* Dark text for better contrast */
   border: none;
-  font-size: 24px;
+  font-size: 18px; /* Adjusted font size for readability */
   cursor: pointer;
   display: flex;
+  font-size: 20px;
   align-items: center;
   justify-content: center;
-  padding-bottom: 4px;
+  font-weight: bold; /* Bold text for emphasis */
+  transition: all 0.3s ease; /* Smooth hover effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
-.table-container {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* Hover effect */
+.add-button1:hover {
+  background-color: #e0a806; /* Darker gold */
+  transform: scale(1.05); /* Slight enlargement on hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
 }
 
+/* Active (click) effect */
+.add-button1:active {
+  transform: scale(0.98); /* Slight shrink for a "pressed" effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+}
+
+.table-container table {
+  border-collapse: collapse; /* Ensures borders don’t overlap */
+  width: 100%; /* Adjust width as needed */
+  overflow: hidden; /* Ensures content stays inside the rounded borders */
+  border-radius: 15px; /* Add your desired radius */
+  
+}
+
+
+/*this is for the table design*/
 table {
+  background-color: #800000;
+  color:white;
+  border: 3px solid none;
+  border-radius: 50px;
   width: 100%;
   border-collapse: collapse;
 }
 
 th {
   text-align: left;
-  padding: 12px 20px;
-  font-size: 12px;
+  padding: 20px 20px;
+  font-size: 14px;
   font-weight: 600;
-  color: #000000;
   border-bottom: 1px solid #eee;
-  background-color: rgb(199, 199, 199);
+  background-color: #800000;
+  
 }
 
 td {
+  
   padding: 12px 20px;
   font-size: 14px;
-  color: #333;
   border-bottom: 1px solid #eee;
+} /* Zebra Striping for Rows */
+
+tbody tr:nth-child(odd) {
+  background-color: #fde76c; /* Gold */
+  color: black; /* Black text for contrast */
 }
+
+tbody tr:nth-child(even) {
+  background-color: #b63c3c; /* Light Maroon */
+  color: white; /* White text for contrast */
+}
+
+tbody tr:hover:nth-child(odd) {
+  background-color: #f1c54a; /* Darker Gold */
+  color: black; /* Keep the text black for contrast */
+}
+
+tbody tr:hover:nth-child(even) {
+  background-color: #9e3232; /* Darker Maroon */
+  color: white; /* Keep the text white for contrast */
+}
+
+
 
 .user-id-column {
   width: 100px;
@@ -200,24 +246,40 @@ td {
 
 
 }
-
 .edit-btn, .delete-btn {
-  padding: 6px 16px;
-  border-radius: 4px;
+  padding: 10px 20px; /* Adjusted padding for consistency */
+  border-radius: 50px; /* Rounded edges for a cleaner look */
   border: none;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px; /* Slightly increased font size */
   margin-left: 8px;
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+  font-weight: bold; /* Make text stand out */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
+/* Edit button styling */
 .edit-btn {
-  background-color: #ffc107;
+  background-color: #fcd112; /* Gold color for edit button */
+  color: #4b4b4b; /* Darker text color for better contrast */
+}
+
+.edit-btn:hover {
+  background-color: #e6b800; /* Slightly darker gold on hover */
+  transform: scale(1.05); /* Slight enlargement on hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Delete button styling */
+.delete-btn {
+  background-color: #ff4444; /* Red for delete button */
   color: white;
 }
 
-.delete-btn {
-  background-color: #ff4444;
-  color: white;
+.delete-btn:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+  transform: scale(1.05); /* Slight enlargement on hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 
 .Schoolid{

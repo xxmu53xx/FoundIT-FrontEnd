@@ -4,42 +4,56 @@ import './Rewards.css';
 
 const Points = () => {
   const [points, setPoints] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null); // Store current user info
+  const [currentUser, setCurrentUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [users, setUsers] = useState([]);
   const [editingPoint, setEditingPoint] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
-    
     pointsEarned: '',
-    dateEarned: ''
+    dateEarned: '',
+    userId: ''
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    // Fetch current user information from localStorage or context
-    const user = JSON.parse(localStorage.getItem('user')) || {}; 
+    const user = JSON.parse(localStorage.getItem('user')) || {};
     setCurrentUser(user);
     fetchUsers();
-    fetchPoints();
+    
+    const intervalId = setInterval(() => {
+      fetchUsers();
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
+
   const fetchUsers = async () => {
     try {
       const response = await axios.get('http://localhost:8083/api/users/getAllUsers');
-      setUsers(response.data); // Store users in state
+      setUsers(response.data);
+      
+      const allPoints = [];
+      response.data.forEach(user => {
+        if (user.points) {
+          const userPoints = user.points.map(point => ({
+            ...point,
+            userEmail: user.schoolEmail,
+            userId: user.userID
+          }));
+          allPoints.push(...userPoints);
+        }
+      });
+      
+      // Sort points by pointId in descending order
+      allPoints.sort((a, b) => b.pointId - a.pointId);
+      // Remove any potential duplicates based on pointId
+      const uniquePoints = Array.from(new Map(allPoints.map(point => [point.pointId, point])).values());
+      setPoints(uniquePoints);
     } catch (error) {
-      console.error('Error fetching users:', error);
-      setError('Failed to fetch users');
-    }
-  };
-  const fetchPoints = async () => {
-    try {
-      const response = await axios.get('http://localhost:8083/api/points/getAllPoints');
-      setPoints(response.data);
-    } catch (error) {
-      console.error('Error fetching points:', error);
-      setError('Failed to fetch points');
+      console.error('Error fetching users and points:', error);
+      setError('Failed to fetch data');
     }
   };
 
@@ -47,7 +61,8 @@ const Points = () => {
     setEditingPoint(point);
     setFormData({
       pointsEarned: point.pointsEarned.toString(),
-      dateEarned: point.dateEarned
+      dateEarned: new Date(point.dateEarned).toISOString().split('T')[0],
+      userId: point.userId.toString()
     });
     setShowModal(true);
   };
@@ -58,55 +73,77 @@ const Points = () => {
       [e.target.name]: e.target.value
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
 
+    if (!formData.userId) {
+      setError('Please select a user');
+      return;
+    }
+
     const payload = {
-      ...formData,
+      pointId: editingPoint?.pointId, // Include the pointId for updates
       pointsEarned: parseInt(formData.pointsEarned),
-      earnedBy: currentUser ? currentUser.userId : "Unknown", // Assign the logged-in user
-      ...(editingPoint && { pointId: editingPoint.pointId })
+      dateEarned: new Date(formData.dateEarned).toISOString(),
+      user: {
+        userID: parseInt(formData.userId)
+      }
     };
 
     try {
       if (editingPoint) {
+        // Include the pointId in the payload and ensure it's a PUT request
         const response = await axios.put(
           `http://localhost:8083/api/points/putPoint/${editingPoint.pointId}`,
-          payload
+          payload,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
         );
-        if (response.status === 200) {
+
+        if (response.status === 200 || response.status === 204) {
+          // Only fetch the updated data after successful update
+          await fetchUsers();
           setSuccessMessage('Point updated successfully!');
-          fetchPoints();
-          setTimeout(() => handleCloseModal(), 1500);
+          setTimeout(() => {
+            handleCloseModal();
+            setSuccessMessage('');
+          }, 1500);
         }
       } else {
+        // Handle new point creation
         const response = await axios.post(
           'http://localhost:8083/api/points/postPoints',
           payload
         );
-        if (response.status === 201) {
+        
+        if (response.status === 201 || response.status === 200) {
+          await fetchUsers();
           setSuccessMessage('Point created successfully!');
-          fetchPoints();
-          setTimeout(() => handleCloseModal(), 1500);
+          setTimeout(() => {
+            handleCloseModal();
+            setSuccessMessage('');
+          }, 1500);
         }
       }
     } catch (error) {
       console.error('Error saving point:', error);
-      setError(error.response?.data?.message || 'Failed to save point. Please try again.');
+      const errorMessage = error.response?.data?.message || 
+                          'Failed to save point. Please try again.';
+      setError(errorMessage);
     }
   };
-
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this point?')) {
       try {
-        const response = await axios.delete(`http://localhost:8083/api/points/deletePoints/${id}`);
-        if (response.status === 204) {
-          setSuccessMessage('Point deleted successfully!');
-          fetchPoints();
-        }
+        await axios.delete(`http://localhost:8083/api/points/deletePoints/${id}`);
+        // Update points state locally
+        setPoints(prevPoints => prevPoints.filter(point => point.pointId !== id));
+        setSuccessMessage('Point deleted successfully!');
       } catch (error) {
         console.error('Error deleting point:', error);
         setError('Failed to delete point');
@@ -120,6 +157,7 @@ const Points = () => {
     setFormData({
       pointsEarned: '',
       dateEarned: '',
+      userId: ''
     });
     setError('');
     setSuccessMessage('');
@@ -129,7 +167,8 @@ const Points = () => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
       point.pointsEarned.toString().includes(searchTermLower) ||
-      point.dateEarned.toLowerCase().includes(searchTermLower)
+      (point.dateEarned && point.dateEarned.toLowerCase().includes(searchTermLower)) ||
+      (point.userEmail && point.userEmail.toLowerCase().includes(searchTermLower))
     );
   });
 
@@ -141,63 +180,62 @@ const Points = () => {
     <div className="content">
       <div className="content-header">
         <h1>Point Management</h1>
-        
         <div className="coheader">
-        <input 
-          type="text" 
-          className="search-bar" 
-          placeholder="Search..." 
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        <button onClick={() => setShowModal(true)} className="add-button1" title="Add User">
-          <h6>+   Add Point</h6>
-        </button></div>
+          <input 
+            type="text" 
+            className="search-bar" 
+            placeholder="Search..." 
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <button onClick={() => setShowModal(true)} className="add-button1" title="Add User">
+            <h6>+   Add Point</h6>
+          </button>
+        </div>
       </div>
-      {/* Display error message if there is one */}
+
       {error && <div className="error-message">{error}</div>}
-      
-      {/* Display success message if there is one */}
       {successMessage && <div className="success-message">{successMessage}</div>}
 
       <div className="table-container">
-      <table className="points-table">
-        <thead>
-          <tr >
-            <th>Points Earned</th>
-            <th>Date Earned</th>
-            <th>Earned By</th>
-            <th className="actions-column"   >ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPoints.map((point) => (
-            <tr key={point.pointId}>
-              <td>{point.pointsEarned}</td>
-              <td>{point.dateEarned}</td>
-              <td>{currentUser ? currentUser.schoolEmail : "Unknown"}</td>
-              <td className="actions-column"> 
-                <button
-                  className="edit-btn"
-                  onClick={() => handleEdit(point)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(point.pointId)}
-                >
-                  Delete
-                </button>
-              </td>
+        <table className="points-table">
+          <thead>
+            <tr>
+              <th>POINT ID</th>
+              <th>Points Earned</th>
+              <th>Date Earned</th>
+              <th>Earned By</th>
+              <th className="actions-column">ACTIONS</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {filteredPoints.map((point) => (
+              <tr key={point.pointId}>
+                <td>{point.pointId}</td>
+                <td>{point.pointsEarned}</td>
+                <td>{new Date(point.dateEarned).toLocaleDateString()}</td>
+                <td>{point.userEmail || 'Unassigned'}</td>
+                <td className="actions-column">
+                  <button
+                    className="edit-btn"
+                    onClick={() => handleEdit(point)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(point.pointId)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    
-    {showModal && (
+      {showModal && (
         <div className="modal-overlay">
           <div className="modal">
             <h2>{editingPoint ? 'Edit Point' : 'Add Point'}</h2>
@@ -226,7 +264,7 @@ const Points = () => {
               <div className="form-group">
                 <label>Earned By:</label>
                 <select
-                className="dropdown"
+                  className="dropdown"
                   name="userId"
                   value={formData.userId}
                   onChange={handleInputChange}
@@ -234,13 +272,13 @@ const Points = () => {
                 >
                   <option value="">Select User</option>
                   {users.map((user) => (
-                    <option key={user.userId} value={user.userId}>
-                      {user.schoolEmail} {/* You can use any user field here */}
+                    <option key={user.userID} value={user.userID}>
+                      {user.schoolEmail}
                     </option>
                   ))}
                 </select>
               </div>
-          
+
               {error && <div className="error-message">{error}</div>}
               {successMessage && <div className="success-message">{successMessage}</div>}
               <div className="modal-buttons">

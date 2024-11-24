@@ -14,7 +14,7 @@ function userCurrentCount() {
   const[countPoint,setCountPoint]=useState(0);
   const[countReward,setCountReward]=useState(0);
   const[countItem,setCountItem]=useState(0);
-
+  const[countFoundItems,setcountFoundItems]=useState(0);
   useEffect(() => {
     const countPoints = async () => {
       try {
@@ -37,7 +37,7 @@ function userCurrentCount() {
           const data = await response.json();
           setCountReward(data.user_count); 
       } catch (error) {
-          console.error("Error fetching user count:", error);
+          console.error("Error fetching reward count count:", error);
       }
   };
     const countItems = async () => {
@@ -49,7 +49,7 @@ function userCurrentCount() {
           const data = await response.json();
           setCountItem(data.user_count); 
       } catch (error) {
-          console.error("Error fetching user count:", error);
+          console.error("Error fetching current item count:", error);
       }
   };
 
@@ -65,9 +65,20 @@ function userCurrentCount() {
           console.error("Error fetching user count:", error);
       }
   };
-   
+  const countFoundItems = async () => {
+    try {
+        const response = await fetch('http://localhost:8083/api/items/getFoundItemCount');
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const data = await response.json(); 
+        setcountFoundItems(data.found_item_count); 
+    } catch (error) {
+        console.error("Error fetching Item found count:", error);
+    }
+};
 
-
+countFoundItems();
  countUsers();
    countItems();
    countPoints();
@@ -167,7 +178,7 @@ function userCurrentCount() {
         >
               <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
           <InventoryIcon sx={{ fontSize: 40, marginRight: 2 }} />
-          <Typography variant="h3">{countItem}
+          <Typography variant="h3">{countFoundItems}
           </Typography></Box>
           <Typography variant="body1" color="white">
             Items To be Claimed
