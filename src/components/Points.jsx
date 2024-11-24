@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './Rewards.css';
 
   const Points = () => {
@@ -216,17 +218,17 @@ import './Rewards.css';
                 <td>{new Date(point.dateEarned).toLocaleDateString()}</td>
                 <td>{point.userEmail || 'Unassigned'}</td>
                 <td className="actions-column">
-                  <button
-                    className="edit-btn"
+                  <button 
+                    className="edit-btn" 
                     onClick={() => handleEdit(point)}
                   >
-                    Edit
-                  </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(point.pointId)}
+                    <EditIcon />
+                  </button>      
+                  <button 
+                    className="delete-btn" 
+                    onClick={() => handleDelete(point.pointID)}
                   >
-                    Delete
+                    <DeleteIcon />
                   </button>
                 </td>
               </tr>

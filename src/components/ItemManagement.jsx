@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function ItemManagement() {
   const [items, setItems] = useState([]);
@@ -273,14 +275,17 @@ function ItemManagement() {
                 <td>{item.status}</td>
                 <td>{renderItemImage(item)}</td>
                 <td className="actions-column">
-                  <button className="edit-btn" onClick={() => handleEdit(item)}>
-                    Edit
+                  <button 
+                    className="edit-btn" 
+                    onClick={() => handleEdit(item)}
+                  >
+                    <EditIcon />
                   </button>
-                  <button
-                    className="delete-btn"
+                  <button 
+                    className="delete-btn" 
                     onClick={() => handleDelete(item.itemID)}
                   >
-                    Delete
+                    <DeleteIcon />
                   </button>
                 </td>
               </tr>
