@@ -17,6 +17,7 @@
 
 .header-dashboard {
   font-size: 24px;
+  
   padding: 0 20px;
   margin-bottom: 40px;
   font-weight: normal;
@@ -40,6 +41,7 @@
   width: 83%;
 }
 .main-content{
+  margin-left:-16%;
   flex: 1; 
   height: calc(100vh - 5px); 
   overflow-y: auto;     
@@ -187,20 +189,12 @@ tbody tr:nth-child(odd) {
   color: black; /* Black text for contrast */
 }
 
-tbody tr:nth-child(even) {
-  background-color: #b63c3c; /* Light Maroon */
-  color: white; /* White text for contrast */
-}
 
 tbody tr:hover:nth-child(odd) {
   background-color: #f1c54a; /* Darker Gold */
   color: black; /* Keep the text black for contrast */
 }
 
-tbody tr:hover:nth-child(even) {
-  background-color: #9e3232; /* Darker Maroon */
-  color: white; /* Keep the text white for contrast */
-}
 
 
 

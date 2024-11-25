@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import UserManagement from './components/UserManagement';
 import Dashboard from './components/Dashboard';
 import Rewards from './components/Reward';
 import Points from './components/Points';
 import Item from './components/ItemManagement';
 import axios from 'axios';
-import './components/profile-modal.css'
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import './App.css';
+import './components/profile-modal.css';
+import './components/sidebar.css';
 
-//icons
+// Icons
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import PersonIcon from '@mui/icons-material/Person';
 import StarsIcon from '@mui/icons-material/Stars';
 import PointIcon from '@mui/icons-material/PointOfSale';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -105,35 +105,47 @@ const AdminDashboard = ({ user, onLogout }) => {
         <span className="curPoints">ADMIN</span>
     </div>
     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
-</div>
-      </header>
+    </div>
+    </header>
 
-      <div className="sidebar">
-        <h2 className="header-dashboard">
-          <span style={{ color: "#FFFDFC" }}>Found</span>
-          <span style={{ color: "#F1D88A" }}>IT</span>
-          <span style={{ color:"white", fontSize:"12px"}}>Admin</span>
-        </h2>
-        <ul className="sidebar-menu">
-          <li className="sidebar-item">
-            <NavLink to="" end className="nav-link"><ContentPasteIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;<span className="dashboard-text">Reports</span></NavLink>
-          </li>
-          <li className="sidebar-item">
-            <NavLink to="user-management" className="nav-link"><PersonIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp;Manage User</NavLink>
-          </li>
-          <li className="sidebar-item">
-            <NavLink to="rewards" className="nav-link"><StarsIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Rewards</NavLink>
-          </li>
-          <li className="sidebar-item">
-            <NavLink to="points" className="nav-link"><PointIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Points</NavLink>
-          </li>
-          <li className="sidebar-item">
-            <NavLink to="item" className="nav-link"><InventoryIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/> &nbsp;&nbsp;&nbsp;Manage Items</NavLink>
-          </li>
-          <li className="sidebar-item">
-            <button onClick={onLogout} className="logout-button">🔓 Logout</button>
-          </li>
-        </ul>
+    <div className="modern-sidebar">
+        <div className="sidebar-brand">
+          <span className="found">Found</span>
+          <span className="it">IT</span>
+          <span className="admin">Admin</span>
+        </div>
+        
+        <div className="nav-links">
+          <NavLink to="" end className="nav-item">
+            <ContentPasteIcon sx={{ fontSize: 24 }} />
+            <span className="nav-label">Reports</span>
+          </NavLink>
+
+          <NavLink to="user-management" className="nav-item">
+            <PersonIcon sx={{ fontSize: 24 }} />
+            <span className="nav-label">Manage Users</span>
+          </NavLink>
+
+          <NavLink to="rewards" className="nav-item">
+            <StarsIcon sx={{ fontSize: 24 }} />
+            <span className="nav-label">Manage Rewards</span>
+          </NavLink>
+
+          <NavLink to="points" className="nav-item">
+            <PointIcon sx={{ fontSize: 24 }} />
+            <span className="nav-label">Manage Points</span>
+          </NavLink>
+
+          <NavLink to="item" className="nav-item">
+            <InventoryIcon sx={{ fontSize: 24 }} />
+            <span className="nav-label">Manage Items</span>
+          </NavLink>
+        </div>
+
+        <button onClick={onLogout} className="logout-item">
+          <LogoutIcon sx={{ fontSize: 24 }} />
+          <span className="nav-label">Logout</span>
+        </button>
       </div>
 
 {/*Ari butang mga jsxs*/}

@@ -7,6 +7,7 @@ import Rewards from './components/Reward';
 import Points from './components/Points';
 import Item from './components/ItemManagement';
 import AdminDashboard from './Admin';
+import './components/sidebar.css';
 
 import ClaimItem from './components/user-claimItem'
 import axios from 'axios';
@@ -33,6 +34,8 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import PersonIcon from '@mui/icons-material/Person';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
@@ -367,29 +370,39 @@ function App() {
 </div>
       </header>
 
-      <div className="sidebar">
-        <h2 className="header-dashboard">
-          <span style={{ color: "#FFFDFC" }}>Found</span>
-          <span style={{ color: "#F1D88A" }}>IT</span>
-        </h2>
-        <ul className="sidebar-menu">
-          <li className="sidebar-item">
-          <NavLink to="/student/dashboard" className="nav-link"><ContentPasteIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Dashboard</NavLink>
-          </li>
-          <li className="sidebar-item">
-          <NavLink to="/student/rewards" className="nav-link"><PersonIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Rewards</NavLink>
-          </li>
-          <li className="sidebar-item">
-          <NavLink to="/student/item" className="nav-link"><InventoryIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Deposit Item</NavLink>
-          </li>
-          
-          <li className="sidebar-item">
-          <NavLink to="/student/claim" className="nav-link"><SystemUpdateAltIcon style={{  color:'#dfb637',verticalAlign: 'middle', marginTop: '5px'}}/>&nbsp;&nbsp;&nbsp; Retrieve Item</NavLink>
-          </li>
-          <li className="sidebar-item">
-            <button onClick={handleLogout} className="logout-button">🔓 Logout</button>
-          </li>
-        </ul>
+      <div className="modern-sidebar">
+        <div className="sidebar-brand">
+          <span className="found">Found</span>
+          <span className="it">IT</span>
+          <span className="admin">Student</span>
+        </div>
+
+        <div className="nav-links">
+          <NavLink to="/student/dashboard" className="nav-item">
+            <ContentPasteIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+            <span className="nav-label">Dashboard</span>
+          </NavLink>
+
+          <NavLink to="/student/rewards" className="nav-item">
+            <PersonIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+            <span className="nav-label">Rewards</span>
+          </NavLink>
+
+          <NavLink to="/student/item" className="nav-item">
+            <InventoryIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+            <span className="nav-label">Deposit Item</span>
+          </NavLink>
+
+          <NavLink to="/student/claim" className="nav-item">
+            <SystemUpdateAltIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+            <span className="nav-label">Retrieve Item</span>
+          </NavLink>
+        </div>
+
+        <button onClick={handleLogout} className="logout-item">
+          <LogoutIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+          <span className="nav-label">Logout</span>
+        </button>
       </div>
       
       <div className="main-content">
