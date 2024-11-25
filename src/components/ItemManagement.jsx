@@ -2,239 +2,318 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Rewards.css';
 
-const Items = () => {
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+function ItemManagement() {
   const [items, setItems] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [users, setUsers] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [formData, setFormData] = useState({
+  const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [item, setItem] = useState({
     description: '',
     dateLostOrFound: '',
-    registeredBy: '',
+    userId: '',
     location: '',
-    userId: ''
+    status: 'Found',
+    image: ''
   });
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user')) || {};
-    setCurrentUser(user);
-    fetchUsers();
+  
+  const fetchItems = async () => {
+    try {
+      const [itemsResponse, usersResponse] = await Promise.all([
+        axios.get('http://localhost:8083/api/items/getAllItems'),
+        axios.get('http://localhost:8083/api/users/getAllUsers')
+      ]);
     
-    const intervalId = setInterval(() => {
-      fetchUsers();
-    }, 30000);
-
-    return () => clearInterval(intervalId);
+      const itemsData = itemsResponse.data;
+      const usersData = usersResponse.data;
+    
+      // Map user items to their corresponding user emails
+      const enhancedItems = itemsData.map(item => {
+        const associatedUser = usersData.find(user =>
+          user.items.some(userItem => userItem.itemID === item.itemID)
+        );
+    
+        return {
+          ...item,
+          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned'
+        };
+      });
+    
+      setItems(enhancedItems);
+      setUsers(usersData);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Error fetching items and users');
+    }
+  };
+  useEffect(() => {
+    fetchItems();
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:8083/api/users/getAllUsers');
-      setUsers(response.data);
-      
-      const allItems = [];
-      response.data.forEach(user => {
-        if (user.items) {
-          const userItems = user.items.map(item => ({
-            ...item,
-            userEmail: user.schoolEmail,
-            userId: user.userID
-          }));
-          allItems.push(...userItems);
-        }
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+    if (!showPopup) {
+      setIsEditing(false);
+      setItem({
+        description: '',
+        dateLostOrFound: '',
+        userId: '',
+        location: '',
+        status: 'Found',
+        image: ''
       });
-      
-      // Sort items by itemId in descending order
-      allItems.sort((a, b) => b.itemId - a.itemId);
-      // Remove any potential duplicates based on itemId
-      const uniqueItems = Array.from(new Map(allItems.map(item => [item.itemId, item])).values());
-      setItems(uniqueItems);
-    } catch (error) {
-      console.error('Error fetching users and items:', error);
-      setError('Failed to fetch data');
     }
   };
 
-  const handleEdit = (item) => {
-    setEditingItem(item);
-    setFormData({
-      description: item.description,
-      dateLostOrFound: new Date(item.dateLostOrFound).toISOString().split('T')[0],
-      registeredBy: item.registeredBy,
-      location: item.location,
-      userId: item.userId.toString()
-    });
-    setShowModal(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setItem((prevItem) => ({
+      ...prevItem,
+      [name]: value,
+    }));
   };
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) {
+        setError('File is too large. Please choose an image under 5MB.');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setItem(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+        setError(null);
+      };
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-
-    if (!formData.userId) {
-      setError('Please select a user');
-      return;
-    }
-
-    const payload = {
-      itemId: editingItem?.itemId, // Include the itemId for updates
-      description: formData.description,
-      dateLostOrFound: new Date(formData.dateLostOrFound).toISOString(),
-      registeredBy: formData.registeredBy,
-      location: formData.location,
-      user: {
-        userID: parseInt(formData.userId)
-      }
-    };
-
     try {
-      if (editingItem) {
-        // Include the itemId in the payload and ensure it's a PUT request
-        const response = await axios.put(
-          `http://localhost:8083/api/items/putItem/${editingItem.itemId}`,
-          payload,
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
+      if (!item.userId) {
+        setError('Please select a user');
+        return;
+      }
 
-        if (response.status === 200 || response.status === 204) {
-          // Only fetch the updated data after successful update
-          await fetchUsers();
-          setSuccessMessage('Item updated successfully!');
-          setTimeout(() => {
-            handleCloseModal();
-            setSuccessMessage('');
-          }, 1500);
-        }
-      } else {
-        // Handle new item creation
-        const response = await axios.post(
-          'http://localhost:8083/api/items/postItems',
-          payload
-        );
-        
-        if (response.status === 201 || response.status === 200) {
-          await fetchUsers();
-          setSuccessMessage('Item created successfully!');
-          setTimeout(() => {
-            handleCloseModal();
-            setSuccessMessage('');
-          }, 1500);
-        }
+      // Create the proper item data structure for the API
+      const itemData = {
+        ...item,
+        dateLostOrFound: new Date(item.dateLostOrFound).toISOString(),
+        // Ensure we're sending the complete user object structure
+        user: {
+          userID: parseInt(item.userId)
+        },
+        // Remove any extra fields that might cause issues
+        userEmail: undefined
+      };
+
+      // If updating, make sure we include the itemID in the request body
+      if (isEditing) {
+        itemData.itemID = item.itemID;
+      }
+
+      const endpoint = isEditing 
+        ? `http://localhost:8083/api/items/putItemDetails/${item.itemID}`
+        : 'http://localhost:8083/api/items/postItem';
+
+      const response = await axios({
+        method: isEditing ? 'put' : 'post',
+        url: endpoint,
+        data: itemData,
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        await fetchItems(); // Refresh the list to get updated data
+        togglePopup();
+        setError(null);
       }
     } catch (error) {
-      console.error('Error saving item:', error);
-      const errorMessage = error.response?.data?.message || 
-                          'Failed to save item. Please try again.';
-      setError(errorMessage);
+      console.error('Submission error:', error);
+      setError(`Error ${isEditing ? 'updating' : 'creating'} item: ${error.message}`);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleEdit = (itemToEdit) => {
+    // Find the current user associated with the item
+    const currentUser = users.find(user => 
+      user.items.some(userItem => userItem.itemID === itemToEdit.itemID)
+    );
+
+    setItem({
+      ...itemToEdit,
+      dateLostOrFound: itemToEdit.dateLostOrFound ? itemToEdit.dateLostOrFound.split('T')[0] : '',
+      // Set the userId from the current user, if found
+      userId: currentUser ? currentUser.userID.toString() : '',
+      userEmail: currentUser ? currentUser.schoolEmail : 'Unassigned'
+    });
+    setIsEditing(true);
+    setShowPopup(true);
+  };
+
+  const handleDelete = async (itemID) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        await axios.delete(`http://localhost:8083/api/items/deleteItems/${id}`);
-        // Update items state locally
-        setItems(prevItems => prevItems.filter(item => item.itemId !== id));
-        setSuccessMessage('Item deleted successfully!');
+        const response = await fetch(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete item');
+        }
+
+        setItems((prevItems) => prevItems.filter((i) => i.itemID !== itemID));
+        setError(null);
       } catch (error) {
-        console.error('Error deleting item:', error);
-        setError('Failed to delete item');
+        console.error('Delete error:', error);
+        setError(`Error deleting item: ${error.message}`);
       }
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingItem(null);
-    setFormData({
-      description: '',
-      dateLostOrFound: '',
-      registeredBy: '',
-      location: '',
-      userId: ''
-    });
-    setError('');
-    setSuccessMessage('');
-  };
-
-  const filteredItems = items.filter(item => {
-    const searchTermLower = searchTerm.toLowerCase();
+  const renderItemImage = (item) => {
+    if (item.image) {
+      return (
+        <img
+          src={item.image}
+          alt="Item"
+          style={{
+            width: '60px',
+            height: '60px',
+            objectFit: 'cover',
+            borderRadius: '4px',
+            border: '1px solid #ddd'
+          }}
+          onError={(e) => {
+            console.error(`Image load error for item ${item.itemID}`);
+            e.target.style.display = 'none';
+          }}
+        />
+      );
+    }
     return (
-      item.description.toLowerCase().includes(searchTermLower) ||
-      (item.dateLostOrFound && item.dateLostOrFound.toLowerCase().includes(searchTermLower)) ||
-      (item.userEmail && item.userEmail.toLowerCase().includes(searchTermLower))
+      <div style={{
+        width: '60px',
+        height: '60px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '4px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid #ddd',
+        color: '#666',
+        fontSize: '12px',
+        textAlign: 'center'
+      }}>
+        No Image
+      </div>
     );
-  });
+  };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
+  const filteredItems = items.filter((item) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchesSearchTerm =
+      (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
+      (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
+      (item.user?.schoolEmail && item.user.schoolEmail.toLowerCase().includes(searchTermLower)) ||
+      (item.location && item.location.toLowerCase().includes(searchTermLower));
+  
+    const matchesStatus =
+      !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
+  
+    return matchesSearchTerm && matchesStatus;
+  });
+
   return (
     <div className="content">
+      <br></br>
       <div className="content-header">
         <h1>Item Management</h1>
+
         <div className="coheader">
-          <input 
-            type="text" 
-            className="search-bar" 
-            placeholder="Search..." 
+          <select
+            className="status-dropdown"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="Found">Found</option>
+            <option value="Lost">Lost</option>
+          </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search..."
             value={searchTerm}
             onChange={handleSearch}
           />
-          <button onClick={() => setShowModal(true)} className="add-button1" title="Add Item">
-            <h6>+   Add Item</h6>
+          <button onClick={togglePopup} className="add-button1" title="Add Item">
+            <h6>+ Add Item</h6>
           </button>
         </div>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
-      {successMessage && <div className="success-message">{successMessage}</div>}
+      {error && <p className="error">{error}</p>}
 
       <div className="table-container">
-        <table className="points-table">
+      <table>
           <thead>
-            <tr>
-              <th>ITEM ID</th>
+            <tr className="labellist">
+              <th className="item-id-column">ITEM ID</th>
               <th>Description</th>
-              <th>Date Lost or Found</th>
+              <th>Date Lost/Found</th>
               <th>Registered By</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Image</th>
               <th className="actions-column">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             {filteredItems.map((item) => (
-              <tr key={item.itemId}>
-                <td>{item.itemId}</td>
+              <tr key={item.itemID}>
+                <td>{item.itemID}</td>
                 <td>{item.description}</td>
-                <td>{new Date(item.dateLostOrFound).toLocaleDateString()}</td>
-                <td>{item.userEmail || 'Unassigned'}</td>
+                <td>
+                  {item.dateLostOrFound
+                    ? new Date(item.dateLostOrFound).toLocaleDateString()
+                    : ''}
+                </td>
+                <td>{item.userEmail}</td>
+                <td>{item.location}</td>
+                <td>{item.status}</td>
+                <td>{renderItemImage(item)}</td>
                 <td className="actions-column">
-                  <button
-                    className="edit-btn"
-                    onClick={() => handleEdit(item)}
-                  >
-                    Edit
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>
+                    <EditIcon />
                   </button>
                   <button
                     className="delete-btn"
-                    onClick={() => handleDelete(item.itemId)}
+                    onClick={() => handleDelete(item.itemID)}
                   >
                     <DeleteIcon />
                   </button>
@@ -243,62 +322,50 @@ const Items = () => {
             ))}
           </tbody>
         </table>
+        <div className="space"></div>
       </div>
 
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>{editingItem ? 'Edit Item' : 'Add Item'}</h2>
-            <form onSubmit={handleSubmit}>
+      {showPopup && (
+        <div className="modal-overlay1" onClick={togglePopup}>
+          <div
+            className="popup1"
+            onClick={(e) => e.stopPropagation()}
+            style={{ height: '700px', width: '500px' }}
+          >
+            <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
+            <form onSubmit={handleSubmit} className="item-form">
               <div className="form-group">
                 <label>Description:</label>
                 <input
                   type="text"
                   name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
+                  value={item.description}
+                  onChange={handleChange}
                   required
                 />
               </div>
+
               <div className="form-group">
-                <label>Date Lost or Found:</label>
+                <label>Date Lost/Found:</label>
                 <input
                   type="date"
                   name="dateLostOrFound"
-                  value={formData.dateLostOrFound}
-                  onChange={handleInputChange}
+                  value={item.dateLostOrFound}
+                  onChange={handleChange}
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Registered By:</label>
-                <input
-                  type="text"
-                  name="registeredBy"
-                  value={formData.registeredBy}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Location:</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>User:</label>
                 <select
+                  className="dropdown"
                   name="userId"
-                  value={formData.userId}
-                  onChange={handleInputChange}
+                  value={item.userId}
+                  onChange={handleChange}
                   required
                 >
-                  <option value="">Select a user</option>
+                  <option value="">Select User</option>
                   {users.map((user) => (
                     <option key={user.userID} value={user.userID}>
                       {user.schoolEmail}
@@ -306,14 +373,52 @@ const Items = () => {
                   ))}
                 </select>
               </div>
-              <button type="submit" className="save-btn">Save</button>
-              <button type="button" onClick={handleCloseModal} className="cancel-btn">Cancel</button>
+
+              <div className="form-group">
+                <label>Location:</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={item.location}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Status:</label>
+                <select
+                  className="dropdown"
+                  name="status"
+                  value={item.status}
+                  onChange={handleChange}
+                >
+                  <option value="Found">Found</option>
+                  <option value="Lost">Lost</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Image:</label>
+                <input
+                  type="file"
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                />
+                {item.image && <img src={item.image} alt="Preview" className="image-preview" />}
+              </div>
+
+              {error && <div className="error">{error}</div>}
+<div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <button type="submit" className="edit-btn" >
+                {isEditing ? 'Update Item' : 'Add Item'}
+              </button></div>
             </form>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
-export default Items;
+export default ItemManagement;

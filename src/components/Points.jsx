@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import './Rewards.css';
 
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
   const Points = () => {
     const [points, setPoints] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
@@ -180,6 +180,7 @@ import './Rewards.css';
 
   return (
     <div className="content">
+       <br></br>
       <div className="content-header">
         <h1>Point Management</h1>
         <div className="coheader">
@@ -218,17 +219,17 @@ import './Rewards.css';
                 <td>{new Date(point.dateEarned).toLocaleDateString()}</td>
                 <td>{point.userEmail || 'Unassigned'}</td>
                 <td className="actions-column">
-                  <button 
-                    className="edit-btn" 
+                  <button
+                    className="edit-btn"
                     onClick={() => handleEdit(point)}
                   >
-                    <EditIcon />
-                  </button>      
-                  <button 
-                    className="delete-btn" 
-                    onClick={() => handleDelete(point.pointID)}
+                     <EditIcon />
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(point.pointId)}
                   >
-                    <DeleteIcon />
+                      <DeleteIcon />
                   </button>
                 </td>
               </tr>

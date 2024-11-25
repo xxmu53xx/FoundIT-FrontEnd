@@ -104,6 +104,7 @@ function Dashboard() {
 
   return (
     <div className="content">
+      <br></br>
       <h1>Dashboard</h1>
         {error && <p className="error">{error}</p>}
         <CurrentCount/>

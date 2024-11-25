@@ -12,7 +12,8 @@ const Rewards = () => {
   const [formData, setFormData] = useState({
     rewardName: '',
     rewardType: '',
-    pointsRequired: ''
+    pointsRequired: '',
+    isClaimed: false
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -36,7 +37,8 @@ const Rewards = () => {
     setFormData({
       rewardName: reward.rewardName,
       rewardType: reward.rewardType,
-      pointsRequired: reward.pointsRequired.toString()
+      pointsRequired: reward.pointsRequired.toString(),
+      isClaimed: reward.isClaimed,
     });
     setShowModal(true);
   };
@@ -57,7 +59,7 @@ const Rewards = () => {
       rewardType: formData.rewardType,
       pointsRequired: parseInt(formData.pointsRequired),
       user: { userID: 1 },  // Make sure you dynamically set this to the correct userID
-      ...(editingReward && { rewardId: editingReward.rewardId })
+      ...(editingReward && { rewardId: editingReward.rewardId }) 
     };
   
     try {
@@ -128,6 +130,7 @@ const Rewards = () => {
   };
   return (
     <div className="content">
+       <br></br>
       <div className="content-header">
         <h1>Reward Management</h1>
         
@@ -157,6 +160,7 @@ const Rewards = () => {
             <th>Reward Name</th>
             <th>Reward Type</th>
             <th>Points Required</th>
+            <th>isClaimed</th>
             <th className="actions-column">ACTIONS</th>
           </tr>
         </thead>
@@ -167,6 +171,8 @@ const Rewards = () => {
               <td>{reward.rewardName}</td>
               <td>{reward.rewardType}</td>
               <td>{reward.pointsRequired}</td>
+      
+              <td>{reward?.isClaimed? 'True' : 'False'}</td>
               <td className="actions-column">
                 <button 
                   className="edit-btn" 

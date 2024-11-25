@@ -292,11 +292,17 @@ body, html {
 
 
 .user-name {
+  font-size: 20px;
   margin-right: 10px;
   font-weight: bold;
 }
-
+.curPoints{
+  font-size: 14px;
+  margin-right: 10px;
+  font-weight: bold;
+}
 .user-id{
+  font-size: 16px;
   margin-right: 10px;
   font-weight: bold;
 }

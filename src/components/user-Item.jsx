@@ -1,57 +1,61 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Design.css';
 import './Item.css';
-import { FaEdit, FaTrash } from 'react-icons/fa';
 
 function ItemManagement() {
   const [items, setItems] = useState([]);
+  const [users, setUsers] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
   const [item, setItem] = useState({
     description: '',
     dateLostOrFound: '',
-    registeredBy: '',
+    userId: '',
     location: '',
     status: 'Found',
-    imageUrl: '', // Assuming imageUrl is part of item data
+    image: ''
   });
-  const [error, setError] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null); // To store the logged-in user
 
   const fetchItems = async () => {
     try {
-      const response = await fetch('http://localhost:8083/api/items/getAllItems');
-      if (!response.ok) throw new Error('Failed to fetch items');
-      const data = await response.json();
-      setItems(data);
-    } catch (error) {
-      setError('Error fetching items');
-    }
-  };
-
-  const fetchCurrentUser = async () => {
-    try {
-      const token = localStorage.getItem('authToken'); // Retrieve token
-      const response = await fetch('http://localhost:8083/api/users/getCurrentUser', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`, // Include token
-        },
+      const [itemsResponse, usersResponse] = await Promise.all([
+        axios.get('http://localhost:8083/api/items/getAllItems'),
+        axios.get('http://localhost:8083/api/users/getAllUsers')
+      ]);
+    
+      const itemsData = itemsResponse.data;
+      const usersData = usersResponse.data;
+    
+      const enhancedItems = itemsData.map(item => {
+        const associatedUser = usersData.find(user =>
+          user.items.some(userItem => userItem.itemID === item.itemID)
+        );
+    
+        return {
+          ...item,
+          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned'
+        };
       });
-  
-      if (!response.ok) throw new Error('Failed to fetch current user');
-      const data = await response.json();
-      setCurrentUser(data); // Set the current user from the response
+    
+      // Sort items by date in descending order (latest first)
+      const sortedItems = enhancedItems.sort((a, b) => 
+        new Date(b.dateLostOrFound) - new Date(a.dateLostOrFound)
+      );
+    
+      setItems(sortedItems);
+      setUsers(usersData);
+      setError(null);
     } catch (error) {
-      setError('Error fetching user');
+      console.error('Error fetching data:', error);
+      setError('Error fetching items and users');
     }
   };
 
   useEffect(() => {
     fetchItems();
-    fetchCurrentUser(); // Fetch the logged-in user when the component mounts
   }, []);
 
   const togglePopup = () => {
@@ -60,10 +64,10 @@ function ItemManagement() {
       setItem({
         description: '',
         dateLostOrFound: '',
-        registeredBy: '',
+        userId: '',
         location: '',
         status: 'Found',
-        imageUrl: '', // Reset imageUrl
+        image: ''
       });
     }
   };
@@ -76,97 +80,69 @@ function ItemManagement() {
     }));
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) {
+        setError('File is too large. Please choose an image under 5MB.');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setItem(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+        setError(null);
+      };
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let response;
-      if (isEditing) {
-        response = await fetch(`http://localhost:8083/api/items/putItemDetails/${item.itemID}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
-        });
-      } else {
-        response = await fetch('http://localhost:8083/api/items/postItem', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
-        });
+      if (!item.userId) {
+        setError('Please select a user');
+        return;
       }
 
-      if (!response.ok) {
-        throw new Error(`Failed to ${isEditing ? 'update' : 'create'} item`);
-      }
+      const itemData = {
+        ...item,
+        dateLostOrFound: new Date(item.dateLostOrFound).toISOString(),
+        user: {
+          userID: parseInt(item.userId)
+        },
+        userEmail: undefined
+      };
 
-      const updatedItem = await response.json();
+      const response = await axios({
+        method: 'post',
+        url: 'http://localhost:8083/api/items/postItem',
+        data: itemData,
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-      if (isEditing) {
-        setItems((prevItems) =>
-          prevItems.map((i) => (i.itemID === updatedItem.itemID ? updatedItem : i))
-        );
-      } else {
-        setItems((prevItems) => [...prevItems, updatedItem]);
-      }
-
-      togglePopup();
-      setError(null);
-
-      fetchItems();
-    } catch (error) {
-      setError(`Error ${isEditing ? 'updating' : 'creating'} item: ${error.message}`);
-    }
-  };
-
-  const handleEdit = (itemToEdit) => {
-    setItem({
-      ...itemToEdit,
-      dateLostOrFound: itemToEdit.dateLostOrFound
-        ? itemToEdit.dateLostOrFound.split('T')[0]
-        : '',
-    });
-    setIsEditing(true);
-    setShowPopup(true);
-  };
-
-  const handleDelete = async (itemID) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        const response = await fetch(
-          `http://localhost:8083/api/items/deleteItemDetails/${itemID}`,
-          {
-            method: 'DELETE',
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to delete item');
-        }
-
-        setItems((prevItems) => prevItems.filter((i) => i.itemID !== itemID));
+      if (response.status === 200 || response.status === 201) {
+        await fetchItems();
+        togglePopup();
         setError(null);
-      } catch (error) {
-        setError(`Error deleting item: ${error.message}`);
       }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setError(`Error creating item: ${error.message}`);
     }
   };
 
-  const filteredItems = items.filter((item) => {
-    const searchTermLower = searchTerm.toLowerCase();
-    const matchesSearchTerm =
-      (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
-      (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
-      (item.registeredBy && item.registeredBy.toLowerCase().includes(searchTermLower)) ||
-      (item.location && item.location.toLowerCase().includes(searchTermLower));
-  
-    const matchesStatus =
-      !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
-  
-    return matchesSearchTerm && matchesStatus;
-  });
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
   const renderItemImage = (item) => {
     if (item.image) {
       return (
@@ -206,50 +182,40 @@ function ItemManagement() {
       </div>
     );
   };
-  
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5000000) { // 5MB limit
-        setError('File is too large. Please choose an image under 5MB.');
-        return;
-      }
 
-      if (!file.type.startsWith('image/')) {
-        setError('Please upload an image file');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setItem(prev => ({
-          ...prev,
-          image: reader.result
-        }));
-        setError(null);
-      };
-      reader.onerror = () => {
-        setError('Error reading file');
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
+  const filteredItems = items.filter((item) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchesSearchTerm =
+      (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
+      (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
+      (item.userEmail && item.userEmail.toLowerCase().includes(searchTermLower)) ||
+      (item.location && item.location.toLowerCase().includes(searchTermLower));
   
+    const matchesStatus =
+      !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
+  
+    return matchesSearchTerm && matchesStatus;
+  });
+
   return (
     <div className="content">
+      <br></br>
       <div className="content-header">
         <h1>Current Items Pending</h1>
         <div className="coheader">
-        <select
-    className="status-dropdown"
-    value={statusFilter}
-    onChange={(e) => setStatusFilter(e.target.value)}
-  >
-    <option value="">All Status</option>
-    <option value="Found">Found</option>
-    <option value="Lost">Lost</option>
-  </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <select
+            className="status-dropdown"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="Found">Found</option>
+            <option value="Lost">Lost</option>
+          </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <input
             type="text"
             className="search-bar"
@@ -268,18 +234,11 @@ function ItemManagement() {
       <div className="horizontal-scroll-container">
         {filteredItems.map((item) => (
           <div className="item-card" key={item.itemID}>
-            {item.imageUrl && (
-              <img
-                src={item.image}
-                alt={item.description}
-                className="item-image"
-              />
-            )}
             <p><strong>Description:</strong> {item.description}</p>
-            <p><strong>Date:</strong> {item.dateLostOrFound}</p>
-            <p><strong>Registered By:</strong> {item.registeredBy}</p>
+            <p><strong>Date:</strong> {new Date(item.dateLostOrFound).toLocaleDateString()}</p>
+            <p><strong>Registered By:</strong> {item.userEmail}</p>
             <p><strong>Location:</strong> {item.location}</p>
-            <p><strong>{renderItemImage(item)}</strong></p>
+            {renderItemImage(item)}
             <p><strong>Status:</strong> {item.status}</p>
           </div>
         ))}
@@ -292,7 +251,7 @@ function ItemManagement() {
             onClick={(e) => e.stopPropagation()}
             style={{ height: '700px', width: '500px' }}
           >
-            <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
+            <h2>Create New Item</h2>
             <form onSubmit={handleSubmit} className="item-form">
               <div className="form-group">
                 <label>Description:</label>
@@ -318,13 +277,20 @@ function ItemManagement() {
 
               <div className="form-group">
                 <label>Registered By:</label>
-                <input
-                  type="text"
-                  name="registeredBy"
-                  value={currentUser ? currentUser.school_email : 'Loading...'}
-                  disabled
+                <select
+                  className="dropdown"
+                  name="userId"
+                  value={item.userId}
+                  onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Select User</option>
+                  {users.map((user) => (
+                    <option key={user.userID} value={user.userID}>
+                      {user.schoolEmail}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group">
@@ -341,7 +307,7 @@ function ItemManagement() {
               <div className="form-group">
                 <label>Status:</label>
                 <select
-                className="dropdown"
+                  className="dropdown"
                   name="status"
                   value={item.status}
                   onChange={handleChange}
@@ -363,9 +329,11 @@ function ItemManagement() {
 
               {error && <div className="error">{error}</div>}
 
-              <button type="submit" className="edit-btn">
-                {isEditing ? 'Update Item' : 'Add Item'}
-              </button>
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button type="submit" className="edit-btn">
+                  Add Item
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -374,4 +342,4 @@ function ItemManagement() {
   );
 }
 
-export default ItemManagement;
+export default ItemManagement;  

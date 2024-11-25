@@ -10,11 +10,19 @@
   .horizontal-scroll-container {
     display: flex;
     flex-wrap: nowrap;
-    height: 800px;
+    overflow-x: auto;
+    height: 510px;
     scroll-behavior: smooth;
     gap: 10px;
   }
-  
+  .horizontal-scroll-container1 {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 610px;
+    scroll-behavior: smooth;
+    gap: 10px;
+  }
   .horizontal-scroll-container::-webkit-scrollbar {
     height: 8px;
   }
@@ -27,9 +35,11 @@
   .horizontal-scroll-container::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  
+  /*for deposit item*/
   .item-card {
-    width: 500px;
-    height:600px;
+    width: 285px;
+    height:500px;
     background: white;
     padding: 16px;
     border-radius: 8px;
@@ -101,6 +111,178 @@
     color: #8C1D3A;
     overflow: hidden;
   }
+
+  .item-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 15px rgba(107, 15, 51, 0.2);
+    overflow: hidden;
+  }
+  
+  .item-card:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .item-card p {
+    margin: 8px 0;
+    color: #2C2C2C;
+    transition: color 0.3s ease;
+  }
+  
+  .item-card:hover p {
+    color: #6B0F33;
+  }
+  
+  .item-card p strong {
+    color: #6B0F33;
+    transition: color 0.3s ease;
+  }
+  
+  .item-card:hover p strong {
+    color: #D4AF37;
+  }
+  
+  .item-card > p:first-of-type {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #6B0F33;
+    overflow: hidden;
+  }
+  
+  .item-card> p:last-of-type {
+    margin-top: auto;
+    font-style: italic;
+    color: #8C1D3A;
+    overflow: hidden;
+  }
+
+
+
+
+
+
+  /*itemcard2 for items*/
+
+
+  
+  .item-card1 {
+    width: 285px;
+    height:600px;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #8C1D3A;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow-y: hidden;
+  }
+  
+  .item-card1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #6B0F33, #D4AF37);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    overflow-y: hidden;
+  }
+  
+  .item-card1:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 15px rgba(107, 15, 51, 0.2);
+    overflow: hidden;
+  }
+  
+  .item-card1:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .item-card1 p {
+    margin: 8px 0;
+    color: #2C2C2C;
+    transition: color 0.3s ease;
+  }
+  
+  .item-card1:hover p {
+    color: #6B0F33;
+  }
+  
+  .item-card1 p strong {
+    color: #6B0F33;
+    transition: color 0.3s ease;
+  }
+  
+  .item-card1:hover p strong {
+    color: #D4AF37;
+  }
+  
+  .item-card1 > p:first-of-type {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #6B0F33;
+    overflow: hidden;
+  }
+  
+  .item-card1 > p:last-of-type {
+    margin-top: auto;
+    font-style: italic;
+    color: #8C1D3A;
+    overflow: hidden;
+  }
+
+  .item-card1:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 15px rgba(107, 15, 51, 0.2);
+    overflow: hidden;
+  }
+  
+  .item-card1:hover::before {
+    transform: scaleX(1);
+  }
+  
+  .item-card1 p {
+    margin: 8px 0;
+    color: #2C2C2C;
+    transition: color 0.3s ease;
+  }
+  
+  .item-card1:hover p {
+    color: #6B0F33;
+  }
+  
+  .item-card1 p strong {
+    color: #6B0F33;
+    transition: color 0.3s ease;
+  }
+  
+  .item-card1:hover p strong {
+    color: #D4AF37;
+  }
+  
+  .item-card1 > p:first-of-type {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #6B0F33;
+    overflow: hidden;
+  }
+  
+  .item-card1> p:last-of-type {
+    margin-top: auto;
+    font-style: italic;
+    color: #8C1D3A;
+    overflow: hidden;
+  }
   .card-actions {
     display: flex;
     justify-content: space-between;
@@ -121,14 +303,6 @@
     margin-top: 20px;
   }
   
-  .item-card {
-    width: 280px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  }
 .edit-icon{
 color:blue;
 }

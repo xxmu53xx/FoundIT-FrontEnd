@@ -102,6 +102,7 @@ const AdminDashboard = ({ user, onLogout }) => {
     <div className="user-info">
         <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
         <span className="user-id">{user?.schoolId|| '00-0000-000'}</span>
+        <span className="curPoints">ADMIN</span>
     </div>
     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
 </div>

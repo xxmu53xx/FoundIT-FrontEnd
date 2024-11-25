@@ -35,16 +35,17 @@
 }
 
 .content {
-  
+  overflow-x:hidden;
   flex: 1; 
   width: 83%;
 }
 .main-content{
   flex: 1; 
-  height: calc(100vh - 10px); 
-  overflow-y: auto;      
+  height: calc(100vh - 5px); 
+  overflow-y: auto;     
+  overflow-x:hidden;
   padding: 5px;
-  width:83%;
+  width:100%;
 }
 .accordion-root {
   background-color: #9b9b9b;
@@ -101,6 +102,7 @@ color:white;
   justify-content: left;
 }
 .content-header {
+  position: 'fixed';
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -336,9 +338,15 @@ tbody tr:hover:nth-child(even) {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+.cancel-button{
+  align-items: center;
+  
+}
 .image-preview{
-  height: 200px;
-  width: 200px;
+  height: 160px;
+  width: 160px;
+  margin-left:140px;
+  margin-top: 10px;
   align-items: center;     
 }
 a {

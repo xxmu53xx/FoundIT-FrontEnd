@@ -7,7 +7,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './user-Reward.css';
-
+import './Design.css'
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -65,7 +65,8 @@ const Rewards = () => {
   };
 
   return (
-    <div className="rewards-container">
+    <div className="content">
+      <br></br><br></br>
       <h1>REDEEM REWARDS</h1>
       
       <div className="wishlist-button-container">
@@ -86,7 +87,7 @@ const Rewards = () => {
           onClick={prevPage}
           disabled={currentPage === 0}
         >
-          <NavigateBeforeIcon />
+          <NavigateBeforeIcon sx={{ backgroundColor : '#800000'}}/>
         </button>
 
         <div className="rewards-grid">
@@ -130,7 +131,7 @@ const Rewards = () => {
           onClick={nextPage}
           disabled={(currentPage + 1) * 4 >= rewards.length}
         >
-          <NavigateNextIcon />
+          <NavigateNextIcon sx={{ backgroundColor : '#800000'}}/>
         </button>
       </div>
 

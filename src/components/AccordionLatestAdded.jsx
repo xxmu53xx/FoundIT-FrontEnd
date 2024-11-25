@@ -67,7 +67,7 @@ function MyAccordion() {
 
         const fetchLatestUsers = async () => {
             try {
-                const response = await fetch('http://localhost:8083/api/users/getLatestUsers?count=5');
+                const response = await fetch('http://localhost:8083/api/users/getLatestUsers');
                 if (!response.ok) throw new Error('Failed to fetch latest users');
                 const data = await response.json();
                 setLatestUsers(data);
@@ -131,7 +131,7 @@ function MyAccordion() {
             case 3:
                 return '🥉';
             default:
-                return `#${rank}`;
+                return `${rank}`;
         }
     };
 
@@ -149,7 +149,7 @@ function MyAccordion() {
                     id="panel1-header"
                     className="accordion-summary"
                 >
-                    <Typography sx={{ color: 'White', fontSize: '1.5rem' }}>Top 3 Recently Added</Typography>
+                    <Typography sx={{ color: 'White', fontSize: '1.5rem' }}>Reports</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography className="accordion-details" sx={{
@@ -178,7 +178,7 @@ function MyAccordion() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {latestUsers.slice(0, 3).map((user) => (
+                                            {latestUsers.slice(0, 5).map((user) => (
                                                 <tr key={user.userID} style={{ borderBottom: '1px solid #ddd' }}>
                                                     <td style={{ padding: '10px' }}>{user.schoolId}</td>
                                                     <td style={{ padding: '10px' }}>{user.schoolEmail}</td>
@@ -197,8 +197,8 @@ function MyAccordion() {
                                     </h3>
                                     <h4 className="user-count">Top 5 Points</h4>
                                 </div>
-                                <div className="table-container" style={{ border: '1px solid #ddd', borderRadius: '5px' }}>
-                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <div className="table-container" style={{ border: '1px solid #ddd', borderRadius: '5px',color:'white' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' ,color:'white'}}>
                                         <thead>
                                             <tr style={{ backgroundColor: '#800000', color: 'white' }}>
                                                 <th style={{ padding: '10px', textAlign: 'center' }}>Rank</th>
@@ -209,10 +209,11 @@ function MyAccordion() {
                                         <tbody>
                                             {leaderboardUsers.slice(0, 5).map((user, index) => (
                                                 <tr key={user.userID} style={{
+                                                    color:'white',
                                                     borderBottom: '1px solid #ddd',
                                                     backgroundColor: index < 3 ? 'rgba(255, 215, 0, 0.1)' : 'transparent'
                                                 }}>
-                                                    <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold' }}>
+                                                    <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold',color:'white' }}>
                                                         {getRankEmoji(index + 1)}
                                                     </td>
                                                     <td style={{ padding: '10px' }}>{user.schoolId}</td>

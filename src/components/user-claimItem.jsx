@@ -113,6 +113,7 @@ function ItemManagement() {
 
   return (
     <div className="content">
+      <br></br>
       <div className="content-header">
         <h1>Retrieve item</h1>
         <div className="coheader">
@@ -129,9 +130,9 @@ function ItemManagement() {
       {error && <p className="error">{error}</p>}
 
 
-      <div className="horizontal-scroll-container">
+      <div className="horizontal-scroll-container1">
         {filteredPoints.map((item) => (
-          <div className="item-card" key={item.itemID}>
+          <div className="item-card1" key={item.itemID}>
             {item.imageUrl && (
               <img
                 src={item.image}
@@ -140,7 +141,7 @@ function ItemManagement() {
               />
             )}
             <p><strong>Description:</strong> {item.description}</p>
-            <p><strong>Date:</strong> {item.dateLostOrFound}</p>
+            <p><strong>Date:</strong> {new Date(item.dateLostOrFound).toLocaleDateString()}</p>
             <p><strong>Registered By:</strong> {item.registeredBy}</p>
             <p><strong>Location:</strong> {item.location}</p>
             <p><strong>{renderItemImage(item)}</strong></p>

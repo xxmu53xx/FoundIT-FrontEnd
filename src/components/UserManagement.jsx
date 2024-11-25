@@ -119,6 +119,7 @@ function UserManagement() {
   };
   return (
     <div className="content">
+       <br></br>
       <div className="content-header">
         <h1>User Management</h1>
         

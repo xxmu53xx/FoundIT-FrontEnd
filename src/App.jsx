@@ -361,6 +361,7 @@ function App() {
     <div className="user-info">
         <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
         <span className="user-id">{user?.schoolId|| '00-0000-000'}</span>
+        <spam className="curPoints">{new Intl.NumberFormat().format(user?.currentPoints)} CP</spam>
     </div>
     <img src="/dilao.png" alt="User Profile" className="profile-picture" />
 </div>
