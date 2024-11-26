@@ -115,7 +115,7 @@ function ItemManagement() {
     <div className="content">
       <br></br>
       <div className="content-header">
-        <h1>Retrieve item</h1>
+        <h1>Your Posts</h1>
         <div className="coheader">
         <input 
           type="text" 

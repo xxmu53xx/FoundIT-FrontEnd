@@ -9,7 +9,7 @@ import Item from './components/ItemManagement';
 import AdminDashboard from './Admin';
 import './components/sidebar.css';
 
-import ClaimItem from './components/user-claimItem'
+import UserPosts from './components/user-post'
 import axios from 'axios';
 import Signup from './components/Signup';
 import './App.css';
@@ -390,12 +390,12 @@ function App() {
 
           <NavLink to="/student/item" className="nav-item">
             <InventoryIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-            <span className="nav-label">Deposit Item</span>
+            <span className="nav-label">Deposit/Retrieve Items</span>
           </NavLink>
 
-          <NavLink to="/student/claim" className="nav-item">
+          <NavLink to="/student/posts" className="nav-item">
             <SystemUpdateAltIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-            <span className="nav-label">Retrieve Item</span>
+            <span className="nav-label">Your Posts</span>
           </NavLink>
         </div>
 
@@ -410,7 +410,7 @@ function App() {
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/rewards" element={<UserRewards />} />
           <Route path="/item" element={<UserItem user={user} />} />
-          <Route path="/claim" element={<ClaimItem/>}/>
+          <Route path="/posts" element={<UserPosts/>}/>
         </Routes>
       </div>
 

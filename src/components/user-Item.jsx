@@ -7,6 +7,8 @@ function ItemManagement({ user }) {
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [showClaimPopup, setShowClaimPopup] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('');
@@ -67,6 +69,39 @@ function ItemManagement({ user }) {
         status: 'Found',
         image: ''
       });
+    }
+  };
+
+  const handleOpenClaimPopup = (item) => {
+    setSelectedItem(item);
+    setShowClaimPopup(true);
+  };
+
+  const handleCloseClaimPopup = () => {
+    setShowClaimPopup(false);
+    setSelectedItem(null);
+  };
+
+  const handleClaimItem = async () => {
+    if (!selectedItem) return;
+
+    try {
+      const response = await axios.put(`http://localhost:8083/api/items/updateItem/${selectedItem.itemID}`, {
+        ...selectedItem,
+        status: 'Claimed',
+        claimedByUser: {
+          userID: user.userID
+        }
+      });
+
+      if (response.status === 200) {
+        await fetchItems();
+        handleCloseClaimPopup();
+        setError(null);
+      }
+    } catch (error) {
+      console.error('Claim error:', error);
+      setError(`Error claiming item: ${error.message}`);
     }
   };
 
@@ -134,7 +169,6 @@ function ItemManagement({ user }) {
       setError(`Error creating item: ${error.message}`);
     }
   };
-
 
   const renderItemImage = (item) => {
     if (item.image) {
@@ -233,10 +267,28 @@ function ItemManagement({ user }) {
             <p><strong>Location:</strong> {item.location}</p>
             {renderItemImage(item)}
             <p><strong>Status:</strong> {item.status}</p>
+            {item.status === 'Found' && (
+              <button 
+                onClick={() => handleOpenClaimPopup(item)}
+                style={{
+                  backgroundColor: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  marginTop: '10px'
+                }}
+              >
+                Claim Item
+              </button>
+            )}
           </div>
         ))}
       </div>
 
+      {/* Existing Add Item Popup */}
       {showPopup && (
         <div className="modal-overlay1" onClick={togglePopup}>
           <div
@@ -322,8 +374,103 @@ function ItemManagement({ user }) {
           </div>
         </div>
       )}
+
+      {/* Claim Item Popup */}
+      {showClaimPopup && selectedItem && (
+        <div className="modal-overlay1" onClick={handleCloseClaimPopup}>
+          <div 
+            className="popup1" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ 
+              height: 'auto',
+              width: '400px',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '15px'
+            }}
+          >
+            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Claim Item</h2>
+            
+            <div style={{ 
+              backgroundColor: '#f5f5f5',
+              padding: '20px',
+              borderRadius: '8px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Description:</strong>
+                <div>{selectedItem.description}</div>
+              </div>
+              
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Date Found:</strong>
+                <div>
+                  {selectedItem.dateLostOrFound 
+                    ? new Date(selectedItem.dateLostOrFound).toLocaleDateString() 
+                    : ''}
+                </div>
+              </div>
+              
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Registered By:</strong>
+                <div>{selectedItem.userEmail}</div>
+              </div>
+              
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Location:</strong>
+                <div>{selectedItem.location}</div>
+              </div>
+            </div>
+
+            <p style={{ 
+              textAlign: 'center', 
+              fontSize: '16px', 
+              color: '#666',
+              margin: '10px 0' 
+            }}>
+              Are you sure you want to claim this item?
+            </p>
+
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '10px'
+            }}>
+              <button 
+                onClick={handleClaimItem}
+                style={{
+                  backgroundColor: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Confirm Claim
+              </button>
+              <button 
+                onClick={handleCloseClaimPopup}
+                style={{
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default ItemManagement;  
+export default ItemManagement;

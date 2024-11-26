@@ -97,13 +97,11 @@ const Rewards = () => {
     if (window.confirm('Are you sure you want to delete this reward?')) {
       try {
         const response = await axios.delete(`http://localhost:8083/api/rewards/deleteRewards/${id}`);
-        if (response.status === 204) {
-          setSuccessMessage('Reward deleted successfully!');
-          fetchRewards();
-        }
+        setSuccessMessage('Reward deleted successfully!');
+        fetchRewards();
       } catch (error) {
         console.error('Error deleting reward:', error);
-        setError('Failed to delete reward');
+        setError(error.response?.data?.message || 'Failed to delete reward');
       }
     }
   };
@@ -189,7 +187,7 @@ const Rewards = () => {
                 </button>
                 <button 
                   className="delete-btn" 
-                  onClick={() => handleDelete(reward.rewardID)}
+                  onClick={() => handleDelete(reward.rewardId)}
                 >
                   <DeleteIcon />
                 </button>
@@ -238,8 +236,7 @@ const Rewards = () => {
                   min="0"
                 />
               </div>
-              {error && <div className="error-message">{error}</div>}
-              {successMessage && <div className="success-message">{successMessage}</div>}
+            
               <div className="modal-buttons">
                 <button type="submit" className="edit-btn">
                   {editingReward ? 'Update' : 'Add'}
