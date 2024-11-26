@@ -17,23 +17,27 @@ import PointIcon from '@mui/icons-material/PointOfSale';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-
-const AdminDashboard = ({ user, onLogout }) => {
+const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isViewProfileModal, setIsViewProfileModal] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
+    userID: '',
     schoolEmail: '',
     schoolId: '',
     password: '',
     bio: '',
+    currentPoints: 0,
+    accountType: '',
+    isAdmin: true // Add isAdmin field
   });
 
   useEffect(() => {
-  
     if (!user || user.accountType !== 'admin') {
       navigate('/login');
       return;
@@ -45,49 +49,104 @@ const AdminDashboard = ({ user, onLogout }) => {
       userID: user.userID,
       schoolId: user.schoolId,
       password: user.password,
-      bio: user.bio,
+      bio: user.bio || '',
       schoolEmail: user.schoolEmail,
-      currentPoints: user.currentPoints
+      currentPoints: user.currentPoints,
+      accountType: user.accountType,
+      isAdmin: true // Ensure isAdmin is set to true for admin users
     });
   }, [user, navigate]);
 
   const handleProfileViewClick = () => {
     setIsViewProfileModal(true);
+    setIsEditing(false);
+  };
+
+  const handleEditProfileClick = () => {
+    setIsViewProfileModal(false);
+    setIsProfileModalOpen(true);
+    setIsEditing(true);
+    setProfileData(prevData => ({
+      ...prevData
+    }));
   };
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfileData(prevData => ({
       ...prevData,
-      [name]: value,
+      [name]: value
     }));
   };
 
-  const handleProfileSave = (e) => {
+  const toggleProfileModal = () => {
+    setIsProfileModalOpen(!isProfileModalOpen);
+    if (!isProfileModalOpen) {
+      setIsEditing(false);
+      setProfileData({
+        userID: user.userID,
+        schoolId: user.schoolId,
+        password: user.password,
+        bio: user.bio || '',
+        schoolEmail: user.schoolEmail,
+        currentPoints: user.currentPoints,
+        accountType: user.accountType
+      });
+    }
+  };
+
+  const handleProfileSave = async (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:8083/api/users/putUserDetails/${user.userID}`, profileData)
-      .then((response) => {
-        setProfileData(response.data);
-        setIsProfileModalOpen(false);
-        alert("Profile updated successfully!");
-      })
-      .catch((error) => console.error("Error updating profile:", error));
+    try {
+      const updatePayload = {
+        ...profileData,
+        accountType: 'admin',
+        isAdmin: true // Explicitly set isAdmin to true in the update payload
+      };
+
+      const response = await axios.put(
+        `http://localhost:8083/api/users/putUserDetails/${profileData.userID}`, 
+        updatePayload
+      );
+      
+      setProfileData({
+        ...response.data,
+        isAdmin: true // Ensure isAdmin remains true after update
+      });
+      setIsProfileModalOpen(false);
+      setIsEditing(false);
+      setError(null);
+      
+      if (response.data && onUserUpdate) {
+        onUserUpdate({
+          ...response.data,
+          isAdmin: true // Ensure isAdmin remains true in the parent component
+        });
+      }
+      alert("Profile updated successfully!");
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error updating profile');
+      alert("Failed to update profile. Please try again.");
+    }
   };
 
   const handleDeactivateAccount = () => {
     setIsProfileModalOpen(false);
+    setIsViewProfileModal(false);
     setIsDeactivateModalOpen(true);
   };
 
-  const confirmDeactivation = () => {
+  const confirmDeactivation = async () => {
     if (passwordInput === user.password) {
-      axios.delete(`http://localhost:8083/api/users/deleteUserDetails/${user.userID}`)
-        .then(() => {
-          onLogout();
-          alert("Account deactivated successfully.");
-          navigate('/login');
-        })
-        .catch((error) => console.error("Error deactivating account:", error));
+      try {
+        await axios.delete(`http://localhost:8083/api/users/deleteUserDetails/${user.userID}`);
+        onLogout();
+        alert("Account deactivated successfully.");
+        navigate('/login');
+      } catch (error) {
+        setError(error.response?.data?.message || 'Error deactivating account');
+        alert("Failed to deactivate account. Please try again.");
+      }
     } else {
       alert("Incorrect password. Please try again.");
     }
@@ -148,7 +207,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         </button>
       </div>
 
-{/*Ari butang mga jsxs*/}
       <div className="main-content">
         <Routes>
           <Route index element={<Dashboard />} />
@@ -159,57 +217,119 @@ const AdminDashboard = ({ user, onLogout }) => {
         </Routes>
       </div>
 
+      {/* View Profile Modal */}
       {isViewProfileModal && (
-        <div className="modal-overlay2">
-          <div className="modal-container2">
-            <div className="content-header">
-              <img src="/dilao.png" alt="User Profile" className="profile-picture" />
-              <h2>Profile Information</h2>
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <div className="content1-header">
+              {error && <p className="error">{error}</p>}
             </div>
-            <div className="profile-info">
-              <p><strong>Email:</strong> {user.schoolEmail}</p>
-              <p><strong>School ID:</strong> {user.schoolId}</p>
-              <p><strong>Password:</strong> {user.password}</p>
-              <p><strong>Bio:</strong> {user.bio}</p>
-              <p><strong>Current Points:</strong> {user.currentPoints}</p>
+
+            <div className="profile-body">
+              <div className="profile-left">
+                <img src="/dilao.png" alt="User Profile" className="profile-picture1" />
+                <div className="about-me">
+                  <h3>Bio</h3>
+                  <p>{profileData.bio || 'No bio available'}</p>
+                </div>
+              </div>
+
+              <div className="profile-right">
+                <p><strong>Email:</strong> {profileData.schoolEmail}</p>
+                <p><strong>School ID:</strong> {profileData.schoolId}</p>
+                <p><strong>Password:</strong> {profileData.password}</p>
+                <p><strong>Current Points:</strong> {profileData.currentPoints}</p>
+                <p><strong>Account Type:</strong> {profileData.accountType}</p>
+              </div>
             </div>
+
             <div className="button-group">
-              <button onClick={() => setIsViewProfileModal(false)} className="cancel-button">Cancel</button>
-              <button onClick={() => setIsProfileModalOpen(true)} className="edit-button">Edit Profile</button>
-              <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
+              <button onClick={() => setIsViewProfileModal(false)} className="cancel-button">
+                Cancel
+              </button>
+              <button onClick={handleEditProfileClick} className="edit-button">
+                Edit Profile
+              </button>
+              <button onClick={handleDeactivateAccount} className="confirm-button">
+                Deactivate Account
+              </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Edit Profile Modal */}
       {isProfileModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">
-            <h2>Edit Profile</h2>
+            <h2>{isEditing ? 'Edit Profile' : 'View Profile'}</h2>
             <h4>What would you like to change, {username}?</h4>
+            {error && <p className="error">{error}</p>}
             <form onSubmit={handleProfileSave}>
               <div className="form-group">
                 <label>Email:</label>
-                <input type="text" name="email" value={profileData.schoolEmail} onChange={handleProfileChange} disabled />
+                <input 
+                  type="text" 
+                  name="schoolEmail" 
+                  value={profileData.schoolEmail} 
+                  onChange={handleProfileChange} 
+                  disabled 
+                />
+              </div>
+              <div className="form-group">
+                <label>School ID:</label>
+                <input 
+                  type="text" 
+                  name="schoolId" 
+                  value={profileData.schoolId} 
+                  onChange={handleProfileChange} 
+                  disabled 
+                />
               </div>
               <div className="form-group">
                 <label>Password:</label>
-                <input type="text" name="password" value={profileData.password} onChange={handleProfileChange} />
+                <input 
+                  type="text" 
+                  name="password" 
+                  value={profileData.password} 
+                  onChange={handleProfileChange} 
+                />
               </div>
               <div className="form-group">
                 <label>Bio:</label>
-                <textarea name="bio" value={profileData.bio} onChange={handleProfileChange} />
+                <textarea 
+                  name="bio" 
+                  value={profileData.bio} 
+                  onChange={handleProfileChange} 
+                />
+              </div>
+              <div className="form-group">
+                <label>Account Type:</label>
+                <input 
+                  type="text" 
+                  name="accountType" 
+                  value={profileData.accountType} 
+                  disabled 
+                />
               </div>
               <div className="button-group">
-                <button type="submit" className="save-button">Save Changes</button>
-                <button type="button" className="cancel-button" onClick={() => setIsProfileModalOpen(false)}>Cancel</button>
-                <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
+                <button type="submit" className="save-button">
+                  {isEditing ? 'Update Profile' : 'Save Changes'}
+                </button>
+                <button 
+                  type="button" 
+                  className="cancel-button" 
+                  onClick={toggleProfileModal}
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
+      {/* Deactivate Account Modal remains the same */}
       {isDeactivateModalOpen && (
         <div className="modal-overlay2">
           <div className="modal-container2">
@@ -222,7 +342,9 @@ const AdminDashboard = ({ user, onLogout }) => {
               onChange={(e) => setPasswordInput(e.target.value)}
             />
             <div className="button-group">
-              <button onClick={confirmDeactivation} className="confirm-button">Confirm</button>
+              <button onClick={confirmDeactivation} className="confirm-button">
+                Confirm
+              </button>
               <button 
                 onClick={() => setIsDeactivateModalOpen(false)} 
                 className="cancel-button" 

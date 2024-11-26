@@ -266,7 +266,14 @@ function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isViewProfileModal, setIsViewProfileModal] = useState(false);
+  const [isEditProfileModal, setIsEditProfileModal] = useState(false);
   const [profileData, setProfileData] = useState({
+    schoolEmail: '',
+    schoolId: '',
+    password: '',
+    bio: '',
+  });
+  const [editProfileData, setEditProfileData] = useState({
     schoolEmail: '',
     schoolId: '',
     password: '',
@@ -284,6 +291,17 @@ function App() {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  useEffect(() => {
+    if (user) {
+      setEditProfileData({
+        schoolEmail: user.schoolEmail,
+        schoolId: user.schoolId,
+        password: user.password,
+        bio: user.bio || '',
+      });
+    }
+  }, [user]);
+
   const handleLogin = (userData) => {
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
@@ -300,6 +318,27 @@ function App() {
 
   const handleProfileViewClick = () => {
     setIsViewProfileModal(true);
+  };
+
+  const handleEditProfile = () => {
+    setIsViewProfileModal(false);
+    setIsEditProfileModal(true);
+  };
+
+  const handleSaveProfile = () => {
+    axios.put(`http://localhost:8083/api/users/updateUserDetails/${user.userID}`, editProfileData)
+      .then(response => {
+        const updatedUser = { ...user, ...editProfileData };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setIsEditProfileModal(false);
+        setIsViewProfileModal(true);
+        alert('Profile updated successfully!');
+      })
+      .catch(error => {
+        console.error("Error updating profile:", error);
+        alert('Failed to update profile. Please try again.');
+      });
   };
 
   const handleDeactivateAccount = () => {
@@ -415,55 +454,127 @@ function App() {
       </div>
 
       {isViewProfileModal && (
-        <div className="modal-overlay2">
-          <div className="modal-container2">
-            <div className="content-header">
-              <img src="/dilao.png" alt="User Profile" className="profile-picture" />
-              <h2>Profile Information</h2>
-            </div>
-            <div className="profile-info">
-              <p><strong>Email:</strong> {user.schoolEmail}</p>
-              <p><strong>School ID:</strong> {user.schoolId}</p>
-              <p><strong>Password:</strong> {user.password}</p>
-              <p><strong>Bio:</strong> {user.bio}</p>
-              <p><strong>Current Points:</strong> {user.currentPoints}</p>
-            </div>
-            <div className="button-group">
-            <button onClick={() => setIsViewProfileModal(false)} className="cancel-button">Cancel</button>
-           
-            <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
-            </div>
-    </div>
-  </div>
-)}
+                  <div className="modal-overlay">
+                    <div className="modal-container">
+                      <div className="content1-header">
+                      </div>
 
+                      <div className="profile-body">
+                        <div className="profile-left">
+                          <img src="/dilao.png" alt="User Profile" className="profile-picture1" />
+                          <div className="about-me">
+                            <h3>Bio</h3>
+                            <p>{user.bio}</p>
+                          </div>
+                        </div>
 
+                        <div className="profile-right">
+                          <p><strong>Email:</strong> {user.schoolEmail}</p>
+                          <p><strong>School ID:</strong> {user.schoolId}</p>
+                          <p><strong>Password:</strong> {user.password}</p>
+                          <p><strong>Current Points:</strong> {user.currentPoints}</p>
+                        </div>
+                      </div>
 
-{isDeactivateModalOpen && (
-        <div className="modal-overlay2">
-          <div className="modal-container2">
-            <h2>Confirm Deactivation</h2>
-            <p>Enter your password to confirm account deactivation.</p>
-            <input
-              type="password"
-              placeholder="Password"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-            />
-            <div className="button-group">
-              <button onClick={confirmDeactivation} className="confirm-button">Confirm</button>
-              <button 
-                onClick={() => setIsDeactivateModalOpen(false)} 
-                className="cancel-button" 
-                style={{ backgroundColor: '#f44336', color: '#fff' }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                      <div className="button-group">
+                        <button onClick={() => setIsViewProfileModal(false)} className="cancel-button">Cancel</button>
+                        <button onClick={handleEditProfile} className="edit-button">Edit Profile</button>
+                        <button type="button" className="confirm-button" onClick={handleDeactivateAccount}>Deactivate Account</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
+                {isEditProfileModal && (
+                  <div className="modal-overlay">
+                    <div className="modal-container">
+                      <div className="content1-header">
+                        <h2>Edit Profile</h2>
+                      </div>
+
+                      <div className="profile-body">
+                        <div className="profile-form">
+                          <div className="form-group">
+                            <label>Email:</label>
+                            <input
+                              type="email"
+                              value={editProfileData.schoolEmail}
+                              onChange={(e) => setEditProfileData({
+                                ...editProfileData,
+                                schoolEmail: e.target.value
+                              })}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>School ID:</label>
+                            <input
+                              type="text"
+                              value={editProfileData.schoolId}
+                              onChange={(e) => setEditProfileData({
+                                ...editProfileData,
+                                schoolId: e.target.value
+                              })}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Password:</label>
+                            <input
+                              type="password"
+                              value={editProfileData.password}
+                              onChange={(e) => setEditProfileData({
+                                ...editProfileData,
+                                password: e.target.value
+                              })}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Bio:</label>
+                            <textarea
+                              value={editProfileData.bio}
+                              onChange={(e) => setEditProfileData({
+                                ...editProfileData,
+                                bio: e.target.value
+                              })}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="button-group">
+                        <button onClick={() => {
+                          setIsEditProfileModal(false);
+                          setIsViewProfileModal(true);
+                        }} className="cancel-button">Cancel</button>
+                        <button onClick={handleSaveProfile} className="save-button">Save Changes</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {isDeactivateModalOpen && (
+                  <div className="modal-overlay2">
+                    <div className="modal-container2">
+                      <h2>Confirm Deactivation</h2>
+                      <p>Enter your password to confirm account deactivation.</p>
+                      <input
+                        type="password"
+                        placeholder="Password"
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                      />
+                      <div className="button-group">
+                        <button onClick={confirmDeactivation} className="confirm-button">Confirm</button>
+                        <button 
+                          onClick={() => setIsDeactivateModalOpen(false)} 
+                          className="cancel-button" 
+                          style={{ backgroundColor: '#f44336', color: '#fff' }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </ProtectedRoute>
           }
