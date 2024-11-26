@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Lora', sans-serif;
 }
 
 #root {
@@ -151,6 +151,299 @@
   font-size: 24px !important;
 }
 
+/* Modal Overlays */
+.modal-overlay,
+.modal-overlay2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay2 {
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+}
+
+/* Modal Containers */
+.modal-container,
+.modal-container2 {
+  background: rgb(255, 235, 194);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-container {
+  width: 600px;
+}
+
+.modal-container2 {
+  width: 500px;
+  padding: 24px;
+}
+
+/* Header Section */
+.content1-header {
+  height: 200px;
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+              url('CITbg.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Profile Body */
+.profile-body {
+  display: flex;
+  padding: 20px;
+  position: relative;
+}
+
+.profile-left {
+  width: 40%;
+  padding-top: 80px;
+}
+
+.profile-right {
+  width: 60%;
+  padding: 20px;
+}
+
+/* Profile Picture */
+.profile-picture1 {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  border: 4px solid white;
+  position: absolute;
+  top: -66px;
+  left: 20px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+/* About Section */
+.about-me {
+  margin-top: 20px;
+  padding: 0 20px;
+}
+
+.about-me h3 {
+  font-size: 20px;
+  color: #0f1419;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.about-me p {
+  color: #536471;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Profile Information */
+.profile-right p {
+  margin: 12px 0;
+  font-size: 15px;
+  color: #536471;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-right p strong {
+  color: #0f1419;
+  width: 120px;
+  font-weight: 600;
+}
+
+/* Button Groups */
+.button-group {
+  padding: 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+}
+
+.cancel-button,
+.edit-button,
+.confirm-button,
+.save-button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.cancel-button {
+  background-color: #eff3f4;
+  color: #0f1419;
+}
+
+.edit-button {
+  background-color: #1da1f2;
+  color: white;
+}
+
+.confirm-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.save-button {
+  background-color: #00ba7c;
+  color: white;
+}
+
+.cancel-button:hover { background-color: #e1e8ed; }
+.edit-button:hover { background-color: #1a91da; }
+.confirm-button:hover { background-color: #c82333; }
+.save-button:hover { background-color: #00a067; }
+
+/* Edit Profile Form */
+.modal-container2 h2 {
+  color: #0f1419;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.modal-container2 h4 {
+  color: #536471;
+  margin-bottom: 24px;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #536471;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cfd9de;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #1da1f2;
+  outline: none;
+}
+
+.form-group input:disabled {
+  background-color: #f7f9fa;
+  cursor: not-allowed;
+}
+
+.form-group textarea {
+  height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Deactivate Modal */
+.modal-container2 input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cfd9de;
+  border-radius: 4px;
+  margin: 20px 0;
+  font-size: 15px;
+}
+
+.modal-container2 p {
+  color: #536471;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-container,
+  .modal-container2 {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .profile-body {
+    flex-direction: column;
+  }
+
+  .profile-left,
+  .profile-right {
+    width: 100%;
+  }
+
+  .profile-right {
+    padding: 20px 0;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+
+  .profile-picture1 {
+    width: 100px;
+    height: 100px;
+    top: -50px;
+  }
+
+  .profile-left {
+    padding-top: 60px;
+  }
+
+  .content1-header {
+    height: 150px;
+  }
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-container,
+.modal-container2 {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
 .account-icon {
   width: 64px;
   height: 64px;
@@ -160,6 +453,8 @@
 .login-form {
   width: 100%;
 }
+
+
 
 .welcome-text {
   margin-bottom: 0.5rem !important;
@@ -387,6 +682,7 @@ body, html {
 
 
 
+
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -409,4 +705,6 @@ body, html {
     width: 100%;
     margin-top: 1rem;
   }
+
+  
 }
