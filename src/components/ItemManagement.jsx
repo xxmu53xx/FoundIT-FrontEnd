@@ -330,7 +330,7 @@ function ItemManagement() {
           <div
             className="popup1"
             onClick={(e) => e.stopPropagation()}
-            style={{ height: '700px', width: '500px' }}
+            style={{ height: 'auto', width: '500px' }}
           >
             <h2>{isEditing ? 'Edit Item' : 'Create New Item'}</h2>
             <form onSubmit={handleSubmit} className="item-form">
@@ -405,7 +405,7 @@ function ItemManagement() {
                   onChange={handleImageUpload}
                   accept="image/*"
                 />
-                {item.image && <img src={item.image} alt="Preview" className="image-preview" />}
+              {/*{item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
               </div>
 
               {error && <div className="error">{error}</div>}

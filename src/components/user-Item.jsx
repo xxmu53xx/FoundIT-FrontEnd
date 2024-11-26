@@ -3,7 +3,7 @@ import axios from 'axios';
 import './Design.css';
 import './Item.css';
 
-function ItemManagement() {
+function ItemManagement({ user }) {
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -46,7 +46,6 @@ function ItemManagement() {
       );
     
       setItems(sortedItems);
-      setUsers(usersData);
       setError(null);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -56,7 +55,7 @@ function ItemManagement() {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [user]);
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
@@ -64,7 +63,6 @@ function ItemManagement() {
       setItem({
         description: '',
         dateLostOrFound: '',
-        userId: '',
         location: '',
         status: 'Found',
         image: ''
@@ -111,18 +109,12 @@ function ItemManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (!item.userId) {
-        setError('Please select a user');
-        return;
-      }
-
       const itemData = {
         ...item,
         dateLostOrFound: new Date(item.dateLostOrFound).toISOString(),
         user: {
-          userID: parseInt(item.userId)
-        },
-        userEmail: undefined
+          userID: user.userID
+        }
       };
 
       const response = await axios({
@@ -142,6 +134,7 @@ function ItemManagement() {
       setError(`Error creating item: ${error.message}`);
     }
   };
+
 
   const renderItemImage = (item) => {
     if (item.image) {
@@ -277,20 +270,11 @@ function ItemManagement() {
 
               <div className="form-group">
                 <label>Registered By:</label>
-                <select
-                  className="dropdown"
-                  name="userId"
-                  value={item.userId}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select User</option>
-                  {users.map((user) => (
-                    <option key={user.userID} value={user.userID}>
-                      {user.schoolEmail}
-                    </option>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  value={user.schoolEmail}
+                  disabled
+                />
               </div>
 
               <div className="form-group">
@@ -324,7 +308,7 @@ function ItemManagement() {
                   onChange={handleImageUpload}
                   accept="image/*"
                 />
-                {item.image && <img src={item.image} alt="Preview" className="image-preview" />}
+              {/*  {item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
               </div>
 
               {error && <div className="error">{error}</div>}

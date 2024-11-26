@@ -13,7 +13,8 @@ const Rewards = () => {
     rewardName: '',
     rewardType: '',
     pointsRequired: '',
-    isClaimed: false
+    isClaimed: false,
+    code:''
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -39,6 +40,8 @@ const Rewards = () => {
       rewardType: reward.rewardType,
       pointsRequired: reward.pointsRequired.toString(),
       isClaimed: reward.isClaimed,
+      code:reward.couponCode
+      
     });
     setShowModal(true);
   };
@@ -161,6 +164,8 @@ const Rewards = () => {
             <th>Reward Type</th>
             <th>Points Required</th>
             <th>isClaimed</th>
+            <th>Claimed By</th>
+            <th>Code</th>
             <th className="actions-column">ACTIONS</th>
           </tr>
         </thead>
@@ -173,6 +178,8 @@ const Rewards = () => {
               <td>{reward.pointsRequired}</td>
       
               <td>{reward?.isClaimed? 'True' : 'False'}</td>
+              <td>if true display user here</td>
+              <td>{reward.couponCode}</td>
               <td className="actions-column">
                 <button 
                   className="edit-btn" 

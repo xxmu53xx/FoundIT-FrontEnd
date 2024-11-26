@@ -1,53 +1,51 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Design.css';
 import './Item.css';
-import { FaEdit, FaTrash } from 'react-icons/fa';
 
 function ItemManagement() {
   const [items, setItems] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
+  const [users, setUsers] = useState([]);
   const [showClaimPopup, setShowClaimPopup] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [item, setItem] = useState({
-    description: '',
-    dateLostOrFound: '',
-    registeredBy: '',
-    location: '',
-    status: 'Lost',
-  });
   const [error, setError] = useState(null); 
 
-  
-  const fetchItems = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch('http://localhost:8083/api/items/getAllItems');
-      if (!response.ok) throw new Error('Failed to fetch items');
-      const data = await response.json();
-      setItems(data.filter(item => item.status === 'Found'));
+      const [itemsResponse, usersResponse] = await Promise.all([
+        axios.get('http://localhost:8083/api/items/getAllItems'),
+        axios.get('http://localhost:8083/api/users/getAllUsers')
+      ]);
+    
+      const itemsData = itemsResponse.data;
+      const usersData = usersResponse.data;
+    
+      const enhancedItems = itemsData
+        .filter(item => item.status === 'Found')
+        .map(item => {
+          const associatedUser = usersData.find(user =>
+            user.items.some(userItem => userItem.itemID === item.itemID)
+          );
+    
+          return {
+            ...item,
+            userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned'
+          };
+        });
+    
+      setItems(enhancedItems);
+      setUsers(usersData);
+      setError(null);
     } catch (error) {
-      setError('Error fetching items');
+      console.error('Error fetching data:', error);
+      setError('Error fetching items and users');
     }
   };
 
   useEffect(() => {
-    fetchItems();
+    fetchData();
   }, []);
-
-  const togglePopup = () => {
-    setShowPopup(!showPopup);
-    if (!showPopup) {
-      setIsEditing(false);
-      setItem({
-        description: '',
-        dateLostOrFound: '',
-        registeredBy: '',
-        location: '',
-        status: 'Lost',
-      });
-    }
-  };
 
   const handleClaimClick = (itemData) => {
     setSelectedItem(itemData);
@@ -58,19 +56,21 @@ function ItemManagement() {
     setShowClaimPopup(false);
     setSelectedItem(null);
   };
-  const filteredPoints = items.filter(item => {
+
+  const filteredItems = items.filter(item => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      item.dateLostOrFound.toString().includes(searchTermLower) ||
-      item.description.toLowerCase().includes(searchTermLower) ||
-      item.registeredBy.toString().includes(searchTermLower) ||
-      item.location.toLowerCase().includes(searchTermLower)
+      (item.dateLostOrFound && item.dateLostOrFound.toString().toLowerCase().includes(searchTermLower)) ||
+      (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
+      (item.userEmail && item.userEmail.toLowerCase().includes(searchTermLower)) ||
+      (item.location && item.location.toLowerCase().includes(searchTermLower))
     );
   });
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
   const renderItemImage = (item) => {
     if (item.image) {
       return (
@@ -129,9 +129,8 @@ function ItemManagement() {
 
       {error && <p className="error">{error}</p>}
 
-
       <div className="horizontal-scroll-container1">
-        {filteredPoints.map((item) => (
+        {filteredItems.map((item) => (
           <div className="item-card1" key={item.itemID}>
             {item.imageUrl && (
               <img
@@ -142,7 +141,7 @@ function ItemManagement() {
             )}
             <p><strong>Description:</strong> {item.description}</p>
             <p><strong>Date:</strong> {new Date(item.dateLostOrFound).toLocaleDateString()}</p>
-            <p><strong>Registered By:</strong> {item.registeredBy}</p>
+            <p><strong>Registered By:</strong> {item.userEmail}</p>
             <p><strong>Location:</strong> {item.location}</p>
             <p><strong>{renderItemImage(item)}</strong></p>
             <p><strong>Status:</strong> {item.status}</p>
@@ -154,15 +153,12 @@ function ItemManagement() {
                     Retrieve
                   </button>
                 </strong></p>
-                
           </div>
         ))}
       </div>
-    
 
       {/* Claim Popup */}
-        {showClaimPopup && selectedItem && (
-            
+      {showClaimPopup && selectedItem && (
         <div className="modal-overlay1" onClick={handleCloseClaimPopup}>
           <div 
             className="popup1" 
@@ -200,7 +196,7 @@ function ItemManagement() {
               
               <div style={{ marginBottom: '10px' }}>
                 <strong>Registered By:</strong>
-                <div>{selectedItem.registeredBy}</div>
+                <div>{selectedItem.userEmail}</div>
               </div>
               
               <div style={{ marginBottom: '10px' }}>
@@ -237,8 +233,6 @@ function ItemManagement() {
           </div>
         </div>
       )}
-
-
     </div>
   );
 }

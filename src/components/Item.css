@@ -39,7 +39,7 @@
   /*for deposit item*/
   .item-card {
     width: 285px;
-    height:500px;
+    height:auto;
     background: white;
     padding: 16px;
     border-radius: 8px;
@@ -167,7 +167,7 @@
   
   .item-card1 {
     width: 285px;
-    height:600px;
+    height:auto;
     background: white;
     padding: 16px;
     border-radius: 8px;

@@ -409,7 +409,7 @@ function App() {
         <Routes>
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/rewards" element={<UserRewards />} />
-          <Route path="/item" element={<UserItem />} />
+          <Route path="/item" element={<UserItem user={user} />} />
           <Route path="/claim" element={<ClaimItem/>}/>
         </Routes>
       </div>
