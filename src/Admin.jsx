@@ -8,8 +8,7 @@ import Item from './components/ItemManagement';
 import axios from 'axios';
 import './components/profile-modal.css';
 import './components/sidebar.css';
-
-import './components/Design.css'
+import './components/verifycoupon.css'; // Import the new CSS file
 
 // Icons
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
@@ -21,27 +20,28 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import TicketIcon from '@mui/icons-material/ConfirmationNumber'; // Import ticket icon
 
 const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
-
   //ticket/coupon modal design is in sidebar.css
-//ticket modal
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [couponCode, setCouponCode] = useState("");
-const [message, setMessage] = useState("");
-const [isSuccess, setIsSuccess] = useState(false);
-const [rewardDetails, setRewardDetails] = useState(null);
-const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [rewardDetails, setRewardDetails] = useState(null);
+  const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
 
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+  const [isCongratsModalOpen, setIsCongratsModalOpen] = useState(false);
 
-const handleCloseModal = () => {
-  setIsModalOpen(false);
-  setMessage("");
-  setCouponCode("");
-  setRewardDetails(null);
-};
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setMessage('');
+    setCouponCode('');
+    setRewardDetails(null);
+  };
 
-const handleCloseRewardModal = () => {
-  setIsRewardModalOpen(false);
-};
+  const handleCloseRewardModal = () => {
+    setIsRewardModalOpen(false);
+  };
+
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -129,10 +129,10 @@ const handleCloseRewardModal = () => {
       };
 
       const response = await axios.put(
-        `http://localhost:8083/api/users/putUserDetails/${profileData.userID}`, 
+        `http://localhost:8083/api/users/putUserDetails/${profileData.userID}`,
         updatePayload
       );
-      
+
       setProfileData({
         ...response.data,
         isAdmin: true // Ensure isAdmin remains true after update
@@ -140,17 +140,17 @@ const handleCloseRewardModal = () => {
       setIsProfileModalOpen(false);
       setIsEditing(false);
       setError(null);
-      
+
       if (response.data && onUserUpdate) {
         onUserUpdate({
           ...response.data,
           isAdmin: true // Ensure isAdmin remains true in the parent component
         });
       }
-      alert("Profile updated successfully!");
+      alert('Profile updated successfully!');
     } catch (error) {
       setError(error.response?.data?.message || 'Error updating profile');
-      alert("Failed to update profile. Please try again.");
+      alert('Failed to update profile. Please try again.');
     }
   };
 
@@ -165,33 +165,35 @@ const handleCloseRewardModal = () => {
       try {
         await axios.delete(`http://localhost:8083/api/users/deleteUserDetails/${user.userID}`);
         onLogout();
-        alert("Account deactivated successfully.");
+        alert('Account deactivated successfully.');
         navigate('/login');
       } catch (error) {
         setError(error.response?.data?.message || 'Error deactivating account');
-        alert("Failed to deactivate account. Please try again.");
+        alert('Failed to deactivate account. Please try again.');
       }
     } else {
-      alert("Incorrect password. Please try again.");
+      alert('Incorrect password. Please try again.');
     }
-  }; const handleVerifyCode = async () => {
+  };
+
+  const handleVerifyCoupon = async () => {
     try {
-      const response = await axios.get("http://localhost:8083/api/rewards/getAllRewards");
+      const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards');
       const rewards = response.data;
 
       const reward = rewards.find((reward) => reward.couponCode === couponCode);
 
       if (reward) {
-        setMessage("Success! The coupon code exists.");
+        setMessage('Success! The coupon code exists.');
         setIsSuccess(true);
-        setRewardDetails(reward); // Store reward details
-        setIsRewardModalOpen(true); // Open reward details modal
+        setIsCouponModalOpen(false);
+        setIsCongratsModalOpen(true);
       } else {
-        setMessage("This coupon code does not exist.");
+        setMessage('This coupon code does not exist.');
         setIsSuccess(false);
       }
     } catch (error) {
-      setMessage("An error occurred while verifying the coupon code.");
+      setMessage('An error occurred while verifying the coupon code.');
       setIsSuccess(false);
     }
   };
@@ -199,22 +201,23 @@ const handleCloseRewardModal = () => {
   return (
     <div className="dashboard">
       <header className="header">
-      <NavLink to="" end className="nav-item">
-        <img src="/citlogo.png" alt="University Logo" className="university-logo" /></NavLink>
-        
+        <NavLink to="" end className="nav-item">
+          <img src="/citlogo.png" alt="University Logo" className="university-logo" />
+        </NavLink>
+
         <div className="user-profile" onClick={handleProfileViewClick}>
           <div className="user-info">
             <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
-            <span className="user-id">{user?.schoolId|| '00-0000-000'}</span>
+            <span className="user-id">{user?.schoolId || '00-0000-000'}</span>
             <span className="curPoints">ADMIN</span>
           </div>
           <img src="/dilao.png" alt="User Profile" className="profile-picture" />
         </div>
       </header>
 
-       {/* Floating Ticket Button */}
-       <button className="ticket-button" onClick={() => setIsModalOpen(true)}>
-        <TicketIcon/>
+      {/* Floating Ticket Button */}
+      <button className="ticket-button" onClick={() => setIsCouponModalOpen(true)}>
+        <TicketIcon />
       </button>
 
       <div className="modern-sidebar">
@@ -223,7 +226,7 @@ const handleCloseRewardModal = () => {
           <span className="it">IT</span>
           <span className="admin">Admin</span>
         </div>
-        
+
         <div className="nav-links">
           <NavLink to="" end className="nav-item">
             <ContentPasteIcon sx={{ fontSize: 24 }} />
@@ -267,65 +270,97 @@ const handleCloseRewardModal = () => {
         </Routes>
       </div>
 
-      {isModalOpen && (
-        <div className="modal-overlay1">
-          <div className="modal-container2">
-            <h2>Verify Coupon Code</h2>
-            <p>Enter the 5-digit coupon code below:</p>
-            
+      {isCouponModalOpen && (
+        <div className="modal-coupon">
+        <div className="modal-coupon-verify">
+          <div className="modal-coupon-header">
+            <img src="/newadmin.png" alt="Admin Logo" className="admin-logo" />
+            <h2>Redeem Coupon</h2>
+            <p>redeem discounts now!</p>
+            <button
+              onClick={() => setIsCouponModalOpen(false)}
+              className="close-button"
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#000000',
+                fontSize: '20px',
+                cursor: 'pointer'
+              }}
+            >
+              &times;
+            </button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
             <input
               type="text"
               placeholder="Enter coupon code"
               maxLength={5}
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
-              style={{ marginBottom: "16px", padding: "8px", width: "100%" }}
+              style={{
+                flex: '1',
+                padding: '8px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                fontSize: '14px',
+                color: '#333'
+              }}
             />
-            <div className="button-group">
-              <button
-                onClick={handleVerifyCode}
-                className="confirm-button"
-                style={{ marginRight: "8px" }}
-              >
-                Verify
-              </button>
-              <button onClick={handleCloseModal} className="cancel-button">
-                Cancel
-              </button>
+            <button onClick={handleVerifyCoupon} className="confirm-button" style={{ marginLeft: '8px' }}>
+              Redeem
+            </button>
+          </div>
+          {/* No need for the "Cancel" button at the bottom */}
+      
+          {/* Success or Failure Message */}
+          {message && (
+            <div
+              style={{
+                marginTop: '16px',
+                padding: '12px',
+                borderRadius: '4px',
+                color: isSuccess ? '#022e1f' : '#f44336',
+                backgroundColor: isSuccess ? '#ffebc2' : '#ffebc2'
+              }}
+            >
+              <b>{message}</b>
             </div>
+          )}
+        </div>
+      </div>
+      )}
 
-            {/* Success or Failure Message */}
-            {message && (
-              <div
-                style={{
-                  marginTop: "16px",
-                  padding: "12px",
-                  borderRadius: "4px",
-                  color: isSuccess ? "#022e1f" : "#f44336",
-                  backgroundColor: isSuccess ? "#ffebc2" : "#ffebc2",
-                }}
-              >
-                <b>{message}</b>
-              </div>
-            )}
+      {isCongratsModalOpen && (
+        <div className="modal-coupon2">
+          <div className="modal-coupon-success">
+            <img src="/newadmin.png" alt="Admin Logo" className="admin-logo" />
+            <h2>Success</h2>
+            <p>Your transaction was successful. Check your email for details.</p>
+            <button onClick={() => setIsCongratsModalOpen(false)} className="confirm-button">
+              Done
+            </button>
           </div>
         </div>
       )}
 
-
-      {/* Reward Details Modal */}
-      {isRewardModalOpen && rewardDetails && (
-        <div className="modal-overlay1">
-          <div className="modal-container2">
-            <h2>Reward Details</h2>
-            <p><strong>Reward Name:</strong> {rewardDetails.rewardName}</p>
-            <p><strong>Reward Type:</strong> {rewardDetails.rewardType}</p>
-            <p><strong>Points Required:</strong> {rewardDetails.pointsRequired}</p> 
-            <br></br>
-              <button onClick={handleCloseRewardModal} className="confirm-button">
-                Close
-              </button>
-            
+      {/* Congratulations Modal */}
+      {isCongratsModalOpen && (
+        <div className="modal-coupon2">
+          <div className="modal-coupon-success">
+            <h2>Congratulations</h2>
+            <p>You've just displayed this awesome Pop Up View</p>
+            <button onClick={() => setIsCongratsModalOpen(false)} className="confirm-button">
+              Done
+            </button>
           </div>
         </div>
       )}

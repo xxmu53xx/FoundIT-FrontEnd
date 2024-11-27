@@ -136,8 +136,8 @@ const Login = ({ onLogin }) => {
                   onClick={() => handleAccountSelect('admin')}
                 >
                   <Box className="account-option-content">
-                    <img src="admin.png" alt="Admin" className="account-icon" />
-                    <Typography>Admin</Typography>
+                    <img src="newadmin.png" alt="Admin" className="account-icon" />
+                    <Typography><strong>Admin</strong></Typography>
                   </Box>
                   {selectedType === 'admin' && (
                     <CheckCircleIcon className="check-icon" />
@@ -148,8 +148,8 @@ const Login = ({ onLogin }) => {
                   onClick={() => handleAccountSelect('student')}
                 >
                   <Box className="account-option-content">
-                    <img src="student.png" alt="Student" className="account-icon" />
-                    <Typography>Student</Typography>
+                    <img src="newstudent.png" alt="Student" className="account-icon" />
+                    <Typography><strong>Student</strong></Typography>
                   </Box>
                   {selectedType === 'student' && (
                     <CheckCircleIcon className="check-icon" />
