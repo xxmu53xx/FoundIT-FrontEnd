@@ -212,6 +212,7 @@ tbody tr:hover {
   align-items: center; /* Vertically align items in the center */
   gap: 10px; /* Space between image and text */
   cursor: pointer; /* Pointer cursor for interactivity */
+  margin-left: 30px;
 }
 
 .user-info {

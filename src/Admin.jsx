@@ -18,6 +18,8 @@ import PointIcon from '@mui/icons-material/PointOfSale';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TicketIcon from '@mui/icons-material/ConfirmationNumber'; // Import ticket icon
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Badge } from '@mui/material';
 
 const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   //ticket/coupon modal design is in sidebar.css
@@ -27,9 +29,22 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
   const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isCongratsModalOpen, setIsCongratsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNotificationCount(prevCount => {
+        const newCount = prevCount + 1;
+        console.log('Notification Count:', newCount); // Log the updated count
+        return newCount;
+      });
+    }, 5000); // Increment every 5 seconds for demonstration
+  
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -205,14 +220,21 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
           <img src="/citlogo.png" alt="University Logo" className="university-logo" />
         </NavLink>
 
+        <div className="notification-icon">
+          <Badge badgeContent={notificationCount} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </div>
+
         <div className="user-profile" onClick={handleProfileViewClick}>
           <div className="user-info">
             <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
             <span className="user-id">{user?.schoolId || '00-0000-000'}</span>
             <span className="curPoints">ADMIN</span>
           </div>
-          <img src="/dilao.png" alt="User Profile" className="profile-picture" />
+          <img src="/dilao.png" alt="User  Profile" className="profile-picture" />
         </div>
+        
       </header>
 
       {/* Floating Ticket Button */}

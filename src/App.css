@@ -724,5 +724,12 @@ body, html {
     margin-top: 1rem;
   }
 
+  .notification-icon {
+    position: relative; /* Ensure proper positioning */
+    cursor: pointer; /* Change cursor to indicate it's clickable */
+    margin-right: 500px; /* Add some space from the user profile */
+    display: flex; /* Ensure it can contain the icon */
+    align-items: center; /* Center align the icon */
+  }
   
 }
