@@ -241,7 +241,7 @@ const Rewards = () => {
                 <button type="submit" className="edit-btn">
                   {editingReward ? 'Update' : 'Add'}
                 </button>
-                <button type="button" className="cancel-button" onClick={handleCloseModal}>
+                <button type="button" className="delete-btn" onClick={handleCloseModal}>
                   Cancel
                 </button>
               </div>

@@ -12,6 +12,7 @@ function ItemManagement({ user }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('');
+  const [zoomedImage, setZoomedImage] = useState(null);
   const [item, setItem] = useState({
     description: '',
     dateLostOrFound: '',
@@ -27,26 +28,25 @@ function ItemManagement({ user }) {
         axios.get('http://localhost:8083/api/items/getAllItems'),
         axios.get('http://localhost:8083/api/users/getAllUsers')
       ]);
-    
+
       const itemsData = itemsResponse.data;
       const usersData = usersResponse.data;
-    
+
       const enhancedItems = itemsData.map(item => {
         const associatedUser = usersData.find(user =>
           user.items.some(userItem => userItem.itemID === item.itemID)
         );
-    
+
         return {
           ...item,
           userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned'
         };
       });
-    
-      // Sort items by date in descending order (latest first)
-      const sortedItems = enhancedItems.sort((a, b) => 
+
+      const sortedItems = enhancedItems.sort((a, b) =>
         new Date(b.dateLostOrFound) - new Date(a.dateLostOrFound)
       );
-    
+
       setItems(sortedItems);
       setError(null);
     } catch (error) {
@@ -141,6 +141,17 @@ function ItemManagement({ user }) {
     }
   };
 
+  const handleZoomImage = (imageSrc) => {
+    setZoomedImage(imageSrc);
+  };
+
+  const handleCloseZoom = () => {
+    setZoomedImage(null);
+  };
+  const closeZoom = () => {
+    setZoomedImage(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -166,10 +177,8 @@ function ItemManagement({ user }) {
       }
     } catch (error) {
       console.error('Submission error:', error);
-      setError(`Error creating item: ${error.message}`);
     }
   };
-
   const renderItemImage = (item) => {
     if (item.image) {
       return (
@@ -181,8 +190,10 @@ function ItemManagement({ user }) {
             height: '300px',
             objectFit: 'cover',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            border: '1px solid #ddd',
+            cursor: 'pointer'
           }}
+          onClick={() => handleZoomImage(item.image)}
           onError={(e) => {
             console.error(`Image load error for item ${item.itemID}`);
             e.target.style.display = 'none';
@@ -227,10 +238,75 @@ function ItemManagement({ user }) {
   
     return matchesSearchTerm && matchesStatus;
   });
+  const renderItemStatus = (item) => {
+    // Check if the current user is the one who registered the item
+    const isUserItem = item.userEmail === user.schoolEmail;
 
+    if (isUserItem) {
+      if (item.status === 'Found') {
+        return (
+          <div 
+            style={{
+              backgroundColor: '#e0e0e0',
+              color: '#333',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '4px',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'center'
+            }}
+          >
+            Your Post
+          </div>
+        );
+      } else if (item.status === 'Lost') {
+        return (
+          <div 
+            style={{
+              backgroundColor: '#e0e0e0',
+              color: '#333',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '4px',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'center'
+            }}
+          >
+            Your Lost Item
+          </div>
+        );
+      }
+    }
+
+    // If not the user's item and status is Found, show Claim button
+    if (item.status === 'Found') {
+      return (
+        <button 
+          onClick={() => handleOpenClaimPopup(item)}
+          style={{
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            marginTop: '10px'
+          }}
+        >
+          Claim Item
+        </button>
+      );
+    }
+
+    // For Lost items that are not the user's, return null
+    return null;
+  };
   return (
     <div className="content">
-      <br></br>
+            <br></br>
       <div className="content-header">
         <h1>Current Items Pending</h1>
         <div className="coheader">
@@ -267,30 +343,43 @@ function ItemManagement({ user }) {
             <p><strong>Location:</strong> {item.location}</p>
             {renderItemImage(item)}
             <p><strong>Status:</strong> {item.status}</p>
-            {item.status === 'Found' && (
-              <button 
-                onClick={() => handleOpenClaimPopup(item)}
-                style={{
-                  backgroundColor: '#4CAF50',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  marginTop: '10px'
-                }}
-              >
-                Claim Item
-              </button>
-            )}
+            {renderItemStatus(item)}
           </div>
         ))}
       </div>
 
-      {/* Existing Add Item Popup */}
-      {showPopup && (
-        <div className="modal-overlay1" onClick={togglePopup}>
+
+      {zoomedImage && (
+      <div
+      className="zoom-overlay"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      onClick={closeZoom}
+    >
+      <img
+        src={zoomedImage}
+        alt="Zoomed Item"
+        style={{
+          maxWidth: '80%',
+          maxHeight: '80%',
+          borderRadius: '8px',
+        }}
+      />
+    </div>
+  )}
+  
+  {showPopup && (
+        <div className="modal-overlay" onClick={togglePopup}>
           <div
             className="popup1"
             onClick={(e) => e.stopPropagation()}
@@ -354,7 +443,7 @@ function ItemManagement({ user }) {
               </div>
 
               <div className="form-group">
-                <label>Image (5MB MAX):</label>
+                <label>Image (5MB MAX) (Optional):</label>
                 <input
                   type="file"
                   onChange={handleImageUpload}
@@ -374,10 +463,8 @@ function ItemManagement({ user }) {
           </div>
         </div>
       )}
-
-      {/* Claim Item Popup */}
-      {showClaimPopup && selectedItem && (
-        <div className="modal-overlay1" onClick={handleCloseClaimPopup}>
+{showClaimPopup && selectedItem && (
+        <div className="modal-overlay" onClick={handleCloseClaimPopup}>
           <div 
             className="popup1" 
             onClick={(e) => e.stopPropagation()} 

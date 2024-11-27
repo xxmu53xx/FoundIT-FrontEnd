@@ -155,7 +155,7 @@ countFoundItems();
     
       
       <Grid item xs={12} sm={6} md={3}>
-      <Link to="/student/claim" style={{ textDecoration: 'none' }}> 
+      <Link to="/student/posts" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -213,7 +213,7 @@ countFoundItems();
           <Typography variant="h3">{countItem}
           </Typography></Box>
           <Typography variant="body1" color="textSecondary">
-            Items Pending
+            Total Posts
           </Typography>
         </Box>
         </Link>

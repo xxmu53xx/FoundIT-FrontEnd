@@ -1,5 +1,6 @@
 .content {
     padding: 20px;
+    height: auto;
   }
   
   .content-header {
@@ -11,7 +12,7 @@
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    height: 510px;
+    height: 560px;
     scroll-behavior: smooth;
     gap: 10px;
   }
@@ -39,7 +40,7 @@
   /*for deposit item*/
   .item-card {
     width: 285px;
-    height:auto;
+    height:550px;
     background: white;
     padding: 16px;
     border-radius: 8px;

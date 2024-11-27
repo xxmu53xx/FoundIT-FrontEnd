@@ -326,7 +326,7 @@ function ItemManagement() {
       </div>
 
       {showPopup && (
-        <div className="modal-overlay1" onClick={togglePopup}>
+        <div className="modal-overlay" onClick={togglePopup}>
           <div
             className="popup1"
             onClick={(e) => e.stopPropagation()}

@@ -288,7 +288,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
                 <button type="submit" className="edit-btn">
                   {editingPoint ? 'Update' : 'Add'}
                 </button>
-                <button type="button" className="cancel-button" onClick={handleCloseModal}>
+                <button type="button" className="delete-btn" onClick={handleCloseModal}>
                   Cancel
                 </button>
               </div>

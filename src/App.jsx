@@ -398,7 +398,8 @@ function App() {
               <div className="dashboard">
           
       <header className="header">
-        <img src="/citlogo.png" alt="University Logo" className="university-logo" />
+      <NavLink to="/student/dashboard" className="nav-item">
+        <img src="/citlogo.png" alt="University Logo" className="university-logo" /></NavLink>
         <div className="user-profile" onClick={handleProfileViewClick}>
     <div className="user-info">
         <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
@@ -449,7 +450,7 @@ function App() {
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/rewards" element={<UserRewards />} />
           <Route path="/item" element={<UserItem user={user} />} />
-          <Route path="/posts" element={<UserPosts/>}/>
+          <Route path="/posts" element={<UserPosts user={user} />}/>
         </Routes>
       </div>
 
