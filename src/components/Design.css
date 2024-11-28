@@ -174,7 +174,19 @@ th {
   background-color: #800000;
   
 }
-
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.zoom-overlay{
+  animation: modalFadeIn 0.3s ease-out;
+}
 td {
   
   padding: 12px 20px;
@@ -311,6 +323,7 @@ tbody tr:hover {
 }
 
 .popup1 {
+  animation: modalFadeIn 0.3s ease-out;
   background-color: #ffffff;
   padding: 32px;
   border-radius: 8px;

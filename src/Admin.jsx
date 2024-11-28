@@ -35,13 +35,15 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [isCongratsModalOpen, setIsCongratsModalOpen] = useState(false);
 
   useEffect(() => {
+
+    //use to increment the bell icon
     const interval = setInterval(() => {
       setNotificationCount(prevCount => {
         const newCount = prevCount + 1;
         console.log('Notification Count:', newCount); // Log the updated count
         return newCount;
       });
-    }, 5000); // Increment every 5 seconds for demonstration
+    }, 500); // Increment every 5 seconds for demonstration
   
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
