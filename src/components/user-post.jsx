@@ -25,12 +25,12 @@ function ItemManagement({ user }) {
         axios.get('http://localhost:8083/api/users/getAllUsers')
       ]);
   
-      const itemsData = Array.isArray(itemsResponse.data) ? itemsResponse.data : [];
-      const usersData = Array.isArray(usersResponse.data) ? usersResponse.data : [];
+      const itemsData = itemsResponse.data;
+      const usersData = usersResponse.data;
   
       // Filter the items to only include those that belong to the current user
       const userItems = itemsData.filter(item => 
-        usersData.some(user => user.userID === userID && user.items.some(userItem => userItem.itemID === item.itemID))
+        usersData.some(user => user.userID === item.userID && user.items.some(userItem => userItem.itemID === item.itemID))
       );
   
       const enhancedItems = userItems.map(item => {

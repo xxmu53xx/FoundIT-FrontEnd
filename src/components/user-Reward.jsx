@@ -5,7 +5,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './user-Reward.css';
-
+import './Rewards.css'
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -21,12 +21,17 @@ const Rewards = () => {
 
   const fetchRewards = async () => {
     try {
-      const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards', {
-        params: {
-          sortOrder: sortOrder
-        }
-      });
-      setRewards(response.data);
+      const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards');
+      let fetchedRewards = response.data;
+
+      // Sort the rewards based on the selected sort order
+      if (sortOrder === 'pricelow') {
+        fetchedRewards.sort((a, b) => a.pointsRequired - b.pointsRequired);
+      } else if (sortOrder === 'pricehigh') {
+        fetchedRewards.sort((a, b) => b.pointsRequired - a.pointsRequired);
+      }
+
+      setRewards(fetchedRewards);
     } catch (error) {
       console.error('Error fetching rewards:', error);
       setError('Failed to fetch rewards');
@@ -41,13 +46,6 @@ const Rewards = () => {
     }
   };
 
-  // Commented out redeem functionality
-  /*
-  const handleRedeem = (reward) => {
-    console.log('Redeeming:', reward);
-  };
-  */
-
   const handleSortOrder = (event) => {
     setSortOrder(event.target.value);
   };
@@ -61,8 +59,8 @@ const Rewards = () => {
     <div className="content">
       <div className="header-container">
         <h1>REDEEM REWARDS</h1>
-        <br></br><br></br><br></br><br></br><br></br>
-        <select value={sortOrder} onChange={handleSortOrder} className="sort-select">
+        <br /><br /><br /><br /><br /><br />
+        <select value={sortOrder} onChange={handleSortOrder} className="status-dropdown">
           <option value="pricelow">Price: Low to High</option>
           <option value="pricehigh">Price: High to Low</option>
         </select>
@@ -88,8 +86,7 @@ const Rewards = () => {
                 src="/newadmin.png"
                 alt={reward.rewardName}
               />
-          {/*    <div className={`reward-type ${reward.rarity}`}>{reward.rarity}</div>*/}
-            <div className="reward-type">⭐ common</div>
+              <div className="reward-type">⭐{reward.pointsRequired}</div>
             </div>
             <h3>{reward.rewardName}</h3>
             <p className="RewardType">Reward type</p>
@@ -117,7 +114,7 @@ const Rewards = () => {
                   </div>
                   <div className="modal-info">
                     <h2>{selectedReward.rewardName}</h2>
-                    <p>★ {selectedReward.pointsRequired} points</p>
+                    <p>★ {selectedReward.pointsRequired} pointssss</p>
                     
                     
                     <button

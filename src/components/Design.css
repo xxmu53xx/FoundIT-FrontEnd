@@ -34,8 +34,18 @@
   color: #ffffff;
   font-size: 14px;
 }
-
+@keyframes subtleSlideIn {
+  0% {
+    transform: translateX(-40px);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 .content {
+  animation: subtleSlideIn 0.4s ease-out;
   overflow-x:hidden;
   flex: 1; 
   width: 83%;
@@ -229,6 +239,7 @@ tbody tr:hover {
 
 .user-info {
   display: flex;
+  width: 200px;
   flex-direction: column; /* Stack the text vertically */
   align-items: flex-end; /* Align the text to the right */
   text-align: right; /* Ensure the text content aligns to the right */

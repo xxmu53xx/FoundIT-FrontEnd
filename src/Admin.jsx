@@ -305,11 +305,11 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
               onClick={() => setIsCouponModalOpen(false)}
               className="close-button"
               style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                width: '24px',
-                height: '24px',
+                position: 'flex',
+                top: '37%',
+                right: '38%',
+                width: '40px',
+                height: '40px',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
