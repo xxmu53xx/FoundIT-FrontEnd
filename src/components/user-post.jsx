@@ -111,15 +111,10 @@ function ItemManagement({ user }) {
   };
   const handleDelete = async (itemID) => {
     try {
-      // Send the delete request
       await axios.delete(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`);
-
-      // Remove the deleted item from the local state (optimistic UI update)
+  
+      // Directly filter out the item from the current state
       setItems(prevItems => prevItems.filter(item => item.itemID !== itemID));
-
-      // Optionally, you can re-fetch items if needed, but in this case, we're updating the state directly
-      // await fetchItems(); // Unnecessary if items are being filtered correctly
-
     } catch (error) {
       console.error('Error deleting item:', error.message);
       setError('Error deleting item: ' + error.message);
@@ -203,23 +198,32 @@ function ItemManagement({ user }) {
       if (!newItem.dateLostOrFound) {
         throw new Error('Date Lost/Found is required.');
       }
-
+  
       const itemData = {
         ...newItem,
-        dateLostOrFound: new Date(newItem.dateLostOrFound).toISOString(), // Convert to ISO format
+        dateLostOrFound: new Date(newItem.dateLostOrFound).toISOString(),
         user: {
-          userID: user.userID, // Associate with the logged-in user
+          userID: user.userID,
         },
       };
-
+  
       const response = await axios.post(
         'http://localhost:8083/api/items/postItem',
         itemData,
         { headers: { 'Content-Type': 'application/json' } }
       );
-
+  
       if (response.status === 200 || response.status === 201) {
-        await fetchItems(); // Refresh the items list
+        // Directly add the new item to the current state
+        setItems(prevItems => [
+          {
+            ...itemData,
+            itemID: response.data.itemID, // Assuming the server returns the new item's ID
+            userEmail: user.schoolEmail
+          },
+          ...prevItems
+        ]);
+  
         togglePopup(); // Close the popup
         setError(null); // Reset error state
       }
