@@ -7,6 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 function ItemManagement() {
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [registeredByFilter, setRegisteredByFilter] = useState('');
+  const [claimedFilter, setClaimedFilter] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,33 +19,35 @@ function ItemManagement() {
     dateLostOrFound: '',
     userId: '',
     location: '',
+    isClaimed: false,
     status: 'Found',
     image: ''
   });
 
-  
+
   const fetchItems = async () => {
     try {
       const [itemsResponse, usersResponse] = await Promise.all([
         axios.get('http://localhost:8083/api/items/getAllItems'),
         axios.get('http://localhost:8083/api/users/getAllUsers')
       ]);
-    
+
       const itemsData = itemsResponse.data;
       const usersData = usersResponse.data;
-    
+
       // Map user items to their corresponding user emails
       const enhancedItems = itemsData.map(item => {
         const associatedUser = usersData.find(user =>
           user.items.some(userItem => userItem.itemID === item.itemID)
         );
-    
+
         return {
           ...item,
-          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned'
+          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned',
+          userId: associatedUser ? associatedUser.userID : null // Ensure userId is set
         };
       });
-    
+
       setItems(enhancedItems);
       setUsers(usersData);
       setError(null);
@@ -65,6 +69,7 @@ function ItemManagement() {
         dateLostOrFound: '',
         userId: '',
         location: '',
+        isClaimed: false,
         status: 'Found',
         image: ''
       });
@@ -106,7 +111,6 @@ function ItemManagement() {
       reader.readAsDataURL(file);
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -119,12 +123,10 @@ function ItemManagement() {
       const itemData = {
         ...item,
         dateLostOrFound: new Date(item.dateLostOrFound).toISOString(),
-        // Ensure we're sending the complete user object structure
         user: {
           userID: parseInt(item.userId)
         },
-        // Remove any extra fields that might cause issues
-        userEmail: undefined
+        userEmail: undefined // Remove any extra fields that might cause issues
       };
 
       // If updating, make sure we include the itemID in the request body
@@ -132,7 +134,7 @@ function ItemManagement() {
         itemData.itemID = item.itemID;
       }
 
-      const endpoint = isEditing 
+      const endpoint = isEditing
         ? `http://localhost:8083/api/items/putItemDetails/${item.itemID}`
         : 'http://localhost:8083/api/items/postItem';
 
@@ -156,7 +158,7 @@ function ItemManagement() {
 
   const handleEdit = (itemToEdit) => {
     // Find the current user associated with the item
-    const currentUser = users.find(user => 
+    const currentUser = users.find(user =>
       user.items.some(userItem => userItem.itemID === itemToEdit.itemID)
     );
 
@@ -239,13 +241,19 @@ function ItemManagement() {
     const matchesSearchTerm =
       (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
       (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
-      (item.user?.schoolEmail && item.user.schoolEmail.toLowerCase().includes(searchTermLower)) ||
+      (item.userEmail && item.userEmail.toLowerCase().includes(searchTermLower)) ||
       (item.location && item.location.toLowerCase().includes(searchTermLower));
-  
+
     const matchesStatus =
       !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
-  
-    return matchesSearchTerm && matchesStatus;
+
+    const matchesRegisteredBy =
+      !registeredByFilter || item.userId === Number(registeredByFilter);
+
+    const matchesClaimed =
+      claimedFilter === '' || (claimedFilter === 'Claimed' && item.isClaimed) || (claimedFilter === 'Unclaimed' && !item.isClaimed);
+
+    return matchesSearchTerm && matchesStatus && matchesRegisteredBy && matchesClaimed;
   });
 
   return (
@@ -255,6 +263,28 @@ function ItemManagement() {
         <h1>Item Management</h1>
 
         <div className="coheader">
+          <select
+            className="status-dropdown"
+            value={claimedFilter}
+            onChange={(e) => setClaimedFilter(e.target.value)}
+          >
+            <option value="">All Claimed Status</option>
+            <option value="Claimed">Claimed</option>
+            <option value="Unclaimed">Unclaimed</option>
+          </select>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <select
+            className="status-dropdown"
+            value={registeredByFilter}
+            onChange={(e) => setRegisteredByFilter(e.target.value)}
+          >
+            <option value="">All Registered By</option>
+            {users.map((user) => (
+              <option key={user.userID} value={user.userID}>
+                {user.schoolEmail}
+              </option>
+            ))}
+          </select>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <select
             className="status-dropdown"
             value={statusFilter}
@@ -280,12 +310,13 @@ function ItemManagement() {
       {error && <p className="error">{error}</p>}
 
       <div className="table-container">
-      <table>
+        <table>
           <thead>
             <tr className="labellist">
               <th className="item-id-column">ITEM ID</th>
               <th>Description</th>
               <th>Date Lost/Found</th>
+              <th>Claimed</th>
               <th>Registered By</th>
               <th>Location</th>
               <th>Status</th>
@@ -298,11 +329,13 @@ function ItemManagement() {
               <tr key={item.itemID}>
                 <td>{item.itemID}</td>
                 <td>{item.description}</td>
+
                 <td>
                   {item.dateLostOrFound
                     ? new Date(item.dateLostOrFound).toLocaleDateString()
                     : ''}
                 </td>
+                <td>{item?.isClaimed ? 'Claimed' : 'Unclaimed'}</td>
                 <td>{item.userEmail}</td>
                 <td>{item.location}</td>
                 <td>{item.status}</td>
@@ -398,6 +431,18 @@ function ItemManagement() {
                 </select>
               </div>
 
+              <label >  Claimed  </label>
+              <input
+                type="checkbox"
+                name="isClaimed"
+                checked={item.isClaimed}
+                onChange={(e) => setItem((prev) => ({
+                  ...prev,
+                  isClaimed: e.target.checked
+                }))}
+              />
+
+
               <div className="form-group">
                 <label>Image:</label>
                 <input
@@ -405,14 +450,14 @@ function ItemManagement() {
                   onChange={handleImageUpload}
                   accept="image/*"
                 />
-              {/*{item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
+                {/*{item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
               </div>
 
               {error && <div className="error">{error}</div>}
-<div style={{ textAlign: 'center', marginTop: '20px' }}>
-              <button type="submit" className="edit-btn" >
-                {isEditing ? 'Update Item' : 'Add Item'}
-              </button></div>
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button type="submit" className="edit-btn" >
+                  {isEditing ? 'Update Item' : 'Add Item'}
+                </button></div>
             </form>
           </div>
         </div>

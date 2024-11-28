@@ -46,7 +46,31 @@
     transform: scale(1);
   }
 }
+.close-button {
+  position: absolute; /* Position the close button absolutely */
+  top: 10px; /* Move it 10px from the top */
+  right: 10px; /* Move it 10px from the right */
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
+.modal-container-notif{
+  position: relative; /* Add this to create a containing block for the close button */
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  max-width: 90%;
+}
+.close-button:hover {
+  background-color: #c62828; /* Darker red on hover */
+}
 .login-container {
     animation: 
       loginContainerFadeIn 1s ease-out;
@@ -112,6 +136,24 @@
   -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1);
 }
 
+.modal-notif{animation: modalFadeIn 0.3s ease-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  
+}
+
+.modal-container-notif{
+width: 80%;
+height: 70%;
+}
 .account-types {
   display: flex;
   flex-direction: column;
@@ -250,7 +292,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   object-fit: cover;
 }
-
+ .about-me1{
+  
+  margin-top: 10px;
+  padding: 0 20px;
+ }
 /* About Section */
 .about-me {
   margin-top: 20px;
@@ -420,7 +466,14 @@
   .profile-body {
     flex-direction: column;
   }
-
+  .profile-left1{
+    width: 100%;
+  }
+  
+.profile-left1 {
+  width: 40%;
+  padding-top: 60px;
+}
   .profile-left,
   .profile-right {
     width: 100%;
@@ -742,7 +795,7 @@ body, html {
   .notification-icon {
     position: relative; /* Ensure proper positioning */
     cursor: pointer; /* Change cursor to indicate it's clickable */
-    margin-right: 500px; /* Add some space from the user profile */
+    margin-right: 50px; /* Add some space from the user profile */
     display: flex; /* Ensure it can contain the icon */
     align-items: center; /* Center align the icon */
   }

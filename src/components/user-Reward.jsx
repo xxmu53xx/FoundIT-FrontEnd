@@ -60,7 +60,7 @@ const Rewards = () => {
       <div className="header-container">
         <h1>REDEEM REWARDS</h1>
         <br /><br /><br /><br /><br /><br />
-        <select value={sortOrder} onChange={handleSortOrder} className="status-dropdown">
+        <select value={sortOrder} onChange={handleSortOrder} className="status-dropdown ">
           <option value="pricelow">Price: Low to High</option>
           <option value="pricehigh">Price: High to Low</option>
         </select>

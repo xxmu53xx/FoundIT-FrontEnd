@@ -16,6 +16,7 @@ function ItemManagement({ user }) {
     dateLostOrFound: '',
     location: '',
     status: 'Found',
+    isClaimed: false,
     image: ''
   });
   const fetchItems = async () => {
@@ -24,15 +25,15 @@ function ItemManagement({ user }) {
         axios.get('http://localhost:8083/api/items/getAllItems'),
         axios.get('http://localhost:8083/api/users/getAllUsers')
       ]);
-  
+
       const itemsData = itemsResponse.data;
       const usersData = usersResponse.data;
-  
+
       // Filter the items to only include those that belong to the current user
-      const userItems = itemsData.filter(item => 
+      const userItems = itemsData.filter(item =>
         usersData.some(user => user.userID === item.userID && user.items.some(userItem => userItem.itemID === item.itemID))
       );
-  
+
       const enhancedItems = userItems.map(item => {
         const associatedUser = usersData.find(user =>
           user.items.some(userItem => userItem.itemID === item.itemID)
@@ -42,11 +43,11 @@ function ItemManagement({ user }) {
           userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned'
         };
       });
-  
+
       const sortedItems = enhancedItems.sort((a, b) =>
         new Date(b.dateLostOrFound) - new Date(a.dateLostOrFound)
       );
-  
+
       setItems(sortedItems);
       setError(null);
     } catch (error) {
@@ -54,7 +55,7 @@ function ItemManagement({ user }) {
       setError('Error fetching items and users');
       setItems([]); // Ensure `items` is reset to an empty array on error
     }
-  };useEffect(() => {
+  }; useEffect(() => {
     if (user && Array.isArray(user.items)) {
       try {
         const sortedItems = [...user.items].sort((a, b) =>
@@ -83,12 +84,12 @@ function ItemManagement({ user }) {
       (item.dateLostOrFound && item.dateLostOrFound.toString().includes(searchTermLower)) ||
       (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
       (item.location && item.location.toLowerCase().includes(searchTermLower));
-  
+
     const matchesStatus =
       !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
-  
+
     return matchesSearchTerm && matchesStatus;
-  }) : [];const togglePopup = () => {
+  }) : []; const togglePopup = () => {
     setShowPopup(!showPopup);
     if (!showPopup) {
       setNewItem({
@@ -112,13 +113,13 @@ function ItemManagement({ user }) {
     try {
       // Send the delete request
       await axios.delete(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`);
-  
+
       // Remove the deleted item from the local state (optimistic UI update)
       setItems(prevItems => prevItems.filter(item => item.itemID !== itemID));
-  
+
       // Optionally, you can re-fetch items if needed, but in this case, we're updating the state directly
       // await fetchItems(); // Unnecessary if items are being filtered correctly
-  
+
     } catch (error) {
       console.error('Error deleting item:', error.message);
       setError('Error deleting item: ' + error.message);
@@ -176,12 +177,12 @@ function ItemManagement({ user }) {
         setError('File is too large. Please choose an image under 5MB.');
         return;
       }
-  
+
       if (!file.type.startsWith('image/')) {
         setError('Please upload an image file');
         return;
       }
-  
+
       const reader = new FileReader();
       reader.onloadend = () => {
         // Update the newItem state with the image (Base64)
@@ -196,13 +197,13 @@ function ItemManagement({ user }) {
       };
       reader.readAsDataURL(file);
     }
-  };const handleSubmit = async (e) => {
+  }; const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (!newItem.dateLostOrFound) {
         throw new Error('Date Lost/Found is required.');
       }
-  
+
       const itemData = {
         ...newItem,
         dateLostOrFound: new Date(newItem.dateLostOrFound).toISOString(), // Convert to ISO format
@@ -210,13 +211,13 @@ function ItemManagement({ user }) {
           userID: user.userID, // Associate with the logged-in user
         },
       };
-  
+
       const response = await axios.post(
         'http://localhost:8083/api/items/postItem',
         itemData,
         { headers: { 'Content-Type': 'application/json' } }
       );
-  
+
       if (response.status === 200 || response.status === 201) {
         await fetchItems(); // Refresh the items list
         togglePopup(); // Close the popup
@@ -227,7 +228,7 @@ function ItemManagement({ user }) {
       setError('Error submitting item: ' + error.message);
     }
   };
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewItem((prevItem) => ({
@@ -259,7 +260,7 @@ function ItemManagement({ user }) {
             value={searchTerm}
             onChange={handleSearch}
           />
-            <button onClick={togglePopup} className="add-button1" title="Add Item">
+          <button onClick={togglePopup} className="add-button1" title="Add Item">
             <h6>+ Add Item</h6>
           </button>
         </div>
@@ -295,6 +296,12 @@ function ItemManagement({ user }) {
               <p>
                 <strong>Status:</strong> {item.status}
               </p>
+              <p>
+                <strong>Claimed:{item?.isClaimed ? 'Yes' : 'No'}</strong>
+              </p>
+              <b className={item?.isVerified ? 'verified by' : 'not-verified'}>
+                <strong>{item?.isVerified ? 'Verified by admin' : 'Not Yet Verified by admin' }</strong>
+              </b><br></br>
               <button
                 className="delete-btn"
                 onClick={() => handleDelete(item.itemID)}
@@ -302,7 +309,7 @@ function ItemManagement({ user }) {
                 Delete
               </button>
             </div>
-            
+
           ))}
         </div>
       )}
@@ -336,8 +343,8 @@ function ItemManagement({ user }) {
         </div>
       )}
 
-      
-  {showPopup && (
+
+      {showPopup && (
         <div className="modal-overlay" onClick={togglePopup}>
           <div
             className="popup1"
@@ -346,75 +353,75 @@ function ItemManagement({ user }) {
           >
             <h2>Create New Item</h2>
             <form onSubmit={handleSubmit} className="item-form">
-  <div className="form-group">
-    <label>Description:</label>
-    <input
-      type="text"
-      name="description"
-      value={newItem.description}
-      onChange={handleChange}
-      required
-    />
-  </div>
+              <div className="form-group">
+                <label>Description:</label>
+                <input
+                  type="text"
+                  name="description"
+                  value={newItem.description}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-  <div className="form-group">
-    <label>Date Lost/Found:</label>
-    <input
-      type="date"
-      name="dateLostOrFound"
-      value={newItem.dateLostOrFound}
-      onChange={handleChange}
-      required
-    />
-  </div>
+              <div className="form-group">
+                <label>Date Lost/Found:</label>
+                <input
+                  type="date"
+                  name="dateLostOrFound"
+                  value={newItem.dateLostOrFound}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-  <div className="form-group">
-    <label>Registered By:</label>
-    <input type="text" value={user.schoolEmail} disabled />
-  </div>
+              <div className="form-group">
+                <label>Registered By:</label>
+                <input type="text" value={user.schoolEmail} disabled />
+              </div>
 
-  <div className="form-group">
-    <label>Location:</label>
-    <input
-      type="text"
-      name="location"
-      value={newItem.location}
-      onChange={handleChange}
-      required
-    />
-  </div>
+              <div className="form-group">
+                <label>Location:</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={newItem.location}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-  <div className="form-group">
-    <label>Status:</label>
-    <select
-      className="dropdown"
-      name="status"
-      value={newItem.status}
-      onChange={handleChange}
-    >
-      <option value="Found">Found</option>
-      <option value="Lost">Lost</option>
-    </select>
-  </div>
+              <div className="form-group">
+                <label>Status:</label>
+                <select
+                  className="dropdown"
+                  name="status"
+                  value={newItem.status}
+                  onChange={handleChange}
+                >
+                  <option value="Found">Found</option>
+                  <option value="Lost">Lost</option>
+                </select>
+              </div>
 
-  <div className="form-group">
-    <label>Image (5MB MAX) (Optional):</label>
-    <input type="file" onChange={handleImageUpload} accept="image/*" />
-  </div>
+              <div className="form-group">
+                <label>Image (5MB MAX) (Optional):</label>
+                <input type="file" onChange={handleImageUpload} accept="image/*" />
+              </div>
 
-  {error && <div className="error">{error}</div>}
+              {error && <div className="error">{error}</div>}
 
-  <div style={{ textAlign: 'center', marginTop: '20px' }}>
-    <button type="submit" className="edit-btn">
-      Add Item
-    </button>
-  </div>
-</form>
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button type="submit" className="edit-btn">
+                  Add Item
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      
+
     </div>
   );
 }

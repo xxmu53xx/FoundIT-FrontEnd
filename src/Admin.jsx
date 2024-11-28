@@ -34,19 +34,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isCongratsModalOpen, setIsCongratsModalOpen] = useState(false);
 
-  useEffect(() => {
-
-    //use to increment the bell icon
-    const interval = setInterval(() => {
-      setNotificationCount(prevCount => {
-        const newCount = prevCount + 1;
-        console.log('Notification Count:', newCount); // Log the updated count
-        return newCount;
-      });
-    }, 500); // Increment every 5 seconds for demonstration
   
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -63,9 +51,12 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [username, setUsername] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isViewProfileModal, setIsViewProfileModal] = useState(false);
+  const [unverifiedItems, setUnverifiedItems] = useState([]);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [error, setError] = useState(null);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     userID: '',
@@ -84,7 +75,9 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       return;
     }
 
+
     const displayName = user.schoolEmail.split('@')[0];
+
     setUsername(displayName);
     setProfileData({
       userID: user.userID,
@@ -94,7 +87,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       schoolEmail: user.schoolEmail,
       currentPoints: user.currentPoints,
       accountType: user.accountType,
-      isAdmin: true // Ensure isAdmin is set to true for admin users
+      isAdmin: true
     });
   }, [user, navigate]);
 
@@ -215,6 +208,75 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
     }
   };
 
+
+  const toggleNotificationModal = () => {
+    setIsNotificationModalOpen(!isNotificationModalOpen);
+  };
+
+  const handleAcceptItem = async (itemID) => {
+    try {
+      // Fetch the current item details to keep other properties intact
+      const response = await axios.get(`http://localhost:8083/api/items/getItemDetails/${itemID}`);
+      const itemDetails = response.data;
+  
+      // Update the isVerified property while keeping other properties
+      const updatedItem = {
+        ...itemDetails,
+        isVerified: true,
+      };
+  
+      // Send the updated item back to the server
+      await axios.put(`http://localhost:8083/api/items/putItemDetails/${itemID}`, updatedItem);
+  
+      // Update local state
+      setUnverifiedItems(prevItems => prevItems.filter(item => item.itemID !== itemID));
+      alert('Item accepted successfully!');
+    } catch (error) {
+      console.error('Error accepting item:', error);
+      alert('Error accepting item. Please try again.');
+    }
+  };
+
+  const handleRejectItem = async (itemID) => {
+    // Logic to delete the item
+    try {
+      await axios.delete(`http://localhost:8083/api/items/deleteItemDetails/${itemID}`);
+
+      // Update local state
+      setUnverifiedItems(prevItems => prevItems.filter(item => item.itemID !== itemID));
+      alert('Item rejected and deleted successfully!');
+    } catch (error) {
+      alert('Error rejecting item. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    // Filter items to get only those with isVerified as false
+    if (user && user.items) {
+      const unverified = user.items.filter(item => !item.isVerified);
+      setUnverifiedItems(unverified);
+    }
+  }, [user]);
+
+
+  const fetchUnverifiedItems = async () => {
+    try {
+      const response = await axios.get('http://localhost:8083/api/items/getAllItems');
+      const itemsData = response.data;
+
+      // Filter items where isVerified is false
+      const filteredItems = itemsData.filter(item => !item.isVerified);
+      setUnverifiedItems(filteredItems);
+      setNotificationCount(filteredItems.length); // Update the notification count
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+      setError('Error fetching items');
+    }
+  };
+  useEffect(() => {
+    fetchUnverifiedItems();
+  }, []);
   return (
     <div className="dashboard">
       <header className="header">
@@ -222,7 +284,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
           <img src="/citlogo.png" alt="University Logo" className="university-logo" />
         </NavLink>
 
-        <div className="notification-icon">
+        <div className="notification-icon" onClick={toggleNotificationModal}>
           <Badge badgeContent={notificationCount} color="secondary">
             <NotificationsIcon />
           </Badge>
@@ -236,7 +298,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
           </div>
           <img src="/dilao.png" alt="User  Profile" className="profile-picture" />
         </div>
-        
+
       </header>
 
       {/* Floating Ticket Button */}
@@ -296,71 +358,128 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
 
       {isCouponModalOpen && (
         <div className="modal-coupon">
-        <div className="modal-coupon-verify">
-          <div className="modal-coupon-header">
-            <img src="/newadmin.png" alt="Admin Logo" className="admin-logo" />
-            <h2>Redeem Coupon</h2>
-            <p>redeem discounts now!</p>
-            <button
-              onClick={() => setIsCouponModalOpen(false)}
-              className="close-button"
-              style={{
-                position: 'flex',
-                top: '37%',
-                right: '38%',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: '#000000',
-                fontSize: '20px',
-                cursor: 'pointer'
-              }}
-            >
-              &times;
-            </button>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Enter coupon code"
-              maxLength={5}
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              style={{
-                flex: '1',
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                fontSize: '14px',
-                color: '#333'
-              }}
-            />
-            <button onClick={handleVerifyCoupon} className="confirm-button" style={{ marginLeft: '8px' }}>
-              Redeem
-            </button>
-          </div>
-          {/* No need for the "Cancel" button at the bottom */}
-      
-          {/* Success or Failure Message */}
-          {message && (
-            <div
-              style={{
-                marginTop: '16px',
-                padding: '12px',
-                borderRadius: '4px',
-                color: isSuccess ? '#022e1f' : '#f44336',
-                backgroundColor: isSuccess ? '#ffebc2' : '#ffebc2'
-              }}
-            >
-              <b>{message}</b>
+          <div className="modal-coupon-verify">
+            <div className="modal-coupon-header">
+              <img src="/newadmin.png" alt="Admin Logo" className="admin-logo" />
+              <h2>Redeem Coupon</h2>
+              <p>redeem discounts now!</p>
+              <button
+                onClick={() => setIsCouponModalOpen(false)}
+                className="close-button"
+                style={{
+                  position: 'flex',
+                  top: '37%',
+                  right: '38%',
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: '#000000',
+                  fontSize: '20px',
+                  cursor: 'pointer'
+                }}
+              >
+                &times;
+              </button>
             </div>
-          )}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                maxLength={5}
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                style={{
+                  flex: '1',
+                  padding: '8px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  color: '#333'
+                }}
+              />
+              <button onClick={handleVerifyCoupon} className="confirm-button" style={{ marginLeft: '8px' }}>
+                Redeem
+              </button>
+            </div>
+            {/* No need for the "Cancel" button at the bottom */}
+
+            {/* Success or Failure Message */}
+            {message && (
+              <div
+                style={{
+                  marginTop: '16px',
+                  padding: '12px',
+                  borderRadius: '4px',
+                  color: isSuccess ? '#022e1f' : '#f44336',
+                  backgroundColor: isSuccess ? '#ffebc2' : '#ffebc2'
+                }}
+              >
+                <b>{message}</b>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )} 
+      
+      {/* Notification Modal */}
+      {isNotificationModalOpen && (
+        <div className="modal-notif">
+          <div className="modal-container-notif">
+            <h2>Unverified Items</h2>
+            {unverifiedItems.length === 0 ? (
+              <p>No unverified items to display.</p>
+            ) : (
+              <table className="item-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Date Lost/Found</th>
+                    <th>Registered By</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {unverifiedItems.map(item => (
+                    <tr key={item.itemID}>
+                      <td>{item.description}</td>
+                      <td>{new Date(item.dateLostOrFound).toLocaleDateString()}</td>
+                      <td>{item.userEmail || 'Unassigned'}</td>
+                      <td>{item.status}</td>
+                      <td>{item.location}</td>
+                      <td>
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.description}
+                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                            onError={(e) => {
+                              console.error(`Image load error for item ${item.itemID}`);
+                              e.target.style.display = 'none'; // Hide broken image
+                            }}
+                          />
+                        ) : (
+                          'No image'
+                        )}
+                      </td>
+                      <td>
+                        <button onClick={() => handleAcceptItem(item.itemID)} className="edit-btn">Accept</button>
+                        <button onClick={() => handleRejectItem(item.itemID)} className="delete-btn">Reject</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            <button onClick={toggleNotificationModal} className="close-button">Close</button>
+          </div>
+        </div>
       )}
 
       {isCongratsModalOpen && (
@@ -394,14 +513,14 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       {isViewProfileModal && (
         <div className="modal-overlay">
           <div className="modal-container">
-          <div className="content1-header">
+            <div className="content1-header">
               {error && <p className="error">{error}</p>}
             </div>
 
             <div className="profile-body">
-              <div className="profile-left">
+              <div className="profile-left1">
                 <img src="/dilao.png" alt="User Profile" className="profile-picture1" />
-                <div className="about-me">
+                <div className="about-me1">
                   <h3>Bio</h3>
                   <p>{profileData.bio || 'No bio available'}</p>
                 </div>
@@ -441,57 +560,57 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
             <form onSubmit={handleProfileSave}>
               <div className="form-group">
                 <label>Email:</label>
-                <input 
-                  type="text" 
-                  name="schoolEmail" 
-                  value={profileData.schoolEmail} 
-                  onChange={handleProfileChange} 
-                  disabled 
+                <input
+                  type="text"
+                  name="schoolEmail"
+                  value={profileData.schoolEmail}
+                  onChange={handleProfileChange}
+                  disabled
                 />
               </div>
               <div className="form-group">
                 <label>School ID:</label>
-                <input 
-                  type="text" 
-                  name="schoolId" 
-                  value={profileData.schoolId} 
-                  onChange={handleProfileChange} 
-                  disabled 
+                <input
+                  type="text"
+                  name="schoolId"
+                  value={profileData.schoolId}
+                  onChange={handleProfileChange}
+                  disabled
                 />
               </div>
               <div className="form-group">
                 <label>Password:</label>
-                <input 
-                  type="text" 
-                  name="password" 
-                  value={profileData.password} 
-                  onChange={handleProfileChange} 
+                <input
+                  type="text"
+                  name="password"
+                  value={profileData.password}
+                  onChange={handleProfileChange}
                 />
               </div>
               <div className="form-group">
                 <label>Bio:</label>
-                <textarea 
-                  name="bio" 
-                  value={profileData.bio} 
-                  onChange={handleProfileChange} 
+                <textarea
+                  name="bio"
+                  value={profileData.bio}
+                  onChange={handleProfileChange}
                 />
               </div>
               <div className="form-group">
                 <label>Account Type:</label>
-                <input 
-                  type="text" 
-                  name="accountType" 
-                  value={profileData.accountType} 
-                  disabled 
+                <input
+                  type="text"
+                  name="accountType"
+                  value={profileData.accountType}
+                  disabled
                 />
               </div>
               <div className="button-group">
                 <button type="submit" className="save-button">
                   {isEditing ? 'Update Profile' : 'Save Changes'}
                 </button>
-                <button 
-                  type="button" 
-                  className="delete-btn" 
+                <button
+                  type="button"
+                  className="delete-btn"
                   onClick={toggleProfileModal}
                 >
                   Cancel
@@ -518,9 +637,9 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
               <button onClick={confirmDeactivation} className="confirm-button">
                 Confirm
               </button>
-              <button 
-                onClick={() => setIsDeactivateModalOpen(false)} 
-                className="delete-btn" 
+              <button
+                onClick={() => setIsDeactivateModalOpen(false)}
+                className="delete-btn"
                 style={{ backgroundColor: '#f44336', color: '#fff' }}
               >
                 Cancel
