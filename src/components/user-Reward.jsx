@@ -15,15 +15,20 @@ const Rewards = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [sortOrder, setSortOrder] = useState('pricelow');
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     fetchRewards();
+    fetchCurrentUser();
   }, [sortOrder]);
 
   const fetchRewards = async () => {
     try {
       const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards');
       let fetchedRewards = response.data;
+
+      // Filter out claimed rewards
+      fetchedRewards = fetchedRewards.filter(reward => !reward.isClaimed);
 
       // Sort the rewards based on the selected sort order
       if (sortOrder === 'pricelow') {
@@ -36,6 +41,23 @@ const Rewards = () => {
     } catch (error) {
       console.error('Error fetching rewards:', error);
       setError('Failed to fetch rewards');
+    }
+  };
+
+  const fetchCurrentUser = async () => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        const response = await axios.get(`http://localhost:8083/api/users/getUserByEmail/${userData.schoolEmail}`);
+        setCurrentUser(response.data);
+      } else {
+        setError('No user found in local storage');
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      setError('Failed to fetch user details');
     }
   };
 
@@ -56,9 +78,61 @@ const Rewards = () => {
     setShowWishlistModal(true);
   };
 
-  const handleRedeem = (reward) => {
-    // Implement redeem logic here
-    console.log('Redeeming reward:', reward);
+  const handleRedeem = async (reward) => {
+    // Check if user has enough points
+    if (!currentUser) {
+      setError('Please log in to redeem rewards');
+      return;
+    }
+
+    if (currentUser.currentPoints < reward.pointsRequired) {
+      setError(`You do not have enough points to redeem ${reward.rewardName}. Required: ${reward.pointsRequired}, Current: ${currentUser.currentPoints}`);
+      return;
+    }
+
+    try {
+      // Prepare the updated user object with deducted points
+      const updatedUser = {
+        ...currentUser,
+        currentPoints: currentUser.currentPoints - reward.pointsRequired
+      };
+
+      // Update user points
+      const userResponse = await axios.put(
+        `http://localhost:8083/api/users/putUserDetails/${currentUser.userID}`, 
+        updatedUser
+      );
+
+      // Update reward to mark as claimed and associate with user
+      const rewardResponse = await axios.put(
+        `http://localhost:8083/api/rewards/putReward/${reward.rewardId}`,
+        {
+          ...reward,
+          isClaimed: true,
+          user: updatedUser
+        }
+      );
+
+      const updateEvent = new CustomEvent('userPointsUpdated', { 
+        detail: { 
+          newPoints: updatedUser.currentPoints 
+        } 
+      });
+      window.dispatchEvent(updateEvent);
+
+      // Update local state
+      setCurrentUser(userResponse.data);
+      setSuccessMessage(`Successfully redeemed ${reward.rewardName}!`);
+      setShowWishlistModal(false);
+      
+      // Refresh rewards and user data
+      fetchRewards();
+      fetchCurrentUser();
+
+    } catch (error) {
+      console.error('Error redeeming reward:', error);
+      setError('Failed to redeem reward. Please try again.');
+    }
   };
 
   const renderItemImage = (reward) => {
@@ -109,6 +183,9 @@ const Rewards = () => {
     <div className="content">
       <div className="header-container">
         <h1>REDEEM REWARDS</h1>
+        <div className="user-points">
+          {currentUser && `Your Points: ${currentUser.currentPoints}`}
+        </div>
         <br /><br /><br /><br /><br /><br />
         <select value={sortOrder} onChange={handleSortOrder} className="status-dropdown ">
           <option value="pricelow">Price: Low to High</option>
@@ -127,7 +204,7 @@ const Rewards = () => {
               <div className="reward-type">⭐{reward.pointsRequired}</div>
             </div>
             <h3>{reward.rewardName}</h3>
-            <p className="RewardType">Reward type</p>
+            <p className="RewardType">{reward.rewardType}</p>
             <div className="wishlist-icon" onClick={(e) => { e.stopPropagation(); toggleWishlist(reward); }}>
               {wishlist.find(item => item.rewardId === reward.rewardId)
                 ? <FavoriteIcon className="wished" />
@@ -157,10 +234,12 @@ const Rewards = () => {
                   <div className="modal-info">  
                     <h2>{selectedReward.rewardName}</h2>
                     <p>★ {selectedReward.pointsRequired} point/s</p>
+                    <p>Current Points: {currentUser?.currentPoints || 0}</p>
                     
                     <button
                       className="redeem-button"
                       onClick={() => handleRedeem(selectedReward)}
+                      disabled={!currentUser || currentUser.currentPoints < selectedReward.pointsRequired}
                     >
                       <ShoppingCartIcon /> REDEEM NOW
                     </button>

@@ -62,7 +62,7 @@ const Rewards = () => {
       rewardName: formData.rewardName,
       rewardType: formData.rewardType,
       pointsRequired: parseInt(formData.pointsRequired),
-      user: { userID: 1 }, // Make sure you dynamically set this to the correct userID
+      user: { userID: 3 },  // Make sure you dynamically set this to the correct userID
       ...(editingReward && { rewardId: editingReward.rewardId }),
       ...(formData.image && { image: formData.image }) // Include image in payload
     };

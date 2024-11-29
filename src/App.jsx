@@ -303,6 +303,27 @@ function App() {
     }
   }, [user]);
 
+  useEffect(() => {
+    const handlePointsUpdate = (event) => {
+      // Update the user's points in localStorage and state
+      const updatedUser = {
+        ...user,
+        currentPoints: event.detail.newPoints
+      };
+      
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    };
+
+    // Add event listener
+    window.addEventListener('userPointsUpdated', handlePointsUpdate);
+
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('userPointsUpdated', handlePointsUpdate);
+    };
+  }, [user]);
+
   const handleLogin = (userData) => {
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
