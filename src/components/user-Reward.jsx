@@ -184,7 +184,6 @@ const Rewards = () => {
       <div className="header-container">
         <h1>REDEEM REWARDS</h1>
         <div className="user-points">
-          {currentUser && `Your Points: ${currentUser.currentPoints}`}
         </div>
         <br /><br /><br /><br /><br /><br />
         <select value={sortOrder} onChange={handleSortOrder} className="status-dropdown ">

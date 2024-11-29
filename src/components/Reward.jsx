@@ -9,6 +9,7 @@ const Rewards = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
     rewardName: '',
     rewardType: '',
@@ -19,21 +20,45 @@ const Rewards = () => {
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
   useEffect(() => {
-    fetchRewards();
+    fetchRewardsAndUsers();
   }, []);
 
-  const fetchRewards = async () => {
+
+  const fetchRewardsAndUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards');
-      setRewards(response.data);
+      const [rewardsResponse, usersResponse] = await Promise.all([
+        axios.get('http://localhost:8083/api/rewards/getAllRewards'),
+        axios.get('http://localhost:8083/api/users/getAllUsers')
+      ]);
+
+      const rewardsData = rewardsResponse.data;
+      const usersData = usersResponse.data;
+
+      // Filter rewards if needed (e.g., only unclaimed rewards)
+      // const filteredRewards = rewardsData.filter(reward => !reward.isClaimed);
+
+      // Map rewards to include user email based on the user who claimed the reward
+      const enhancedRewards = rewardsData.map(reward => {
+        const associatedUser  = usersData.find(user =>
+          user.rewards.some(userReward => userReward.rewardId === reward.rewardId)
+        );
+
+        return {
+          ...reward,
+          userEmail: associatedUser  ? associatedUser.schoolEmail : 'Unassigned', // Use schoolEmail for userEmail
+          userId: associatedUser  ? associatedUser.userID : null // Ensure userId is set
+        };
+      });
+
+      setRewards(enhancedRewards);
+      setError(null);
     } catch (error) {
-      console.error('Error fetching rewards:', error);
-      setError('Failed to fetch rewards');
+      console.error('Error fetching rewards and users:', error);
+      setError('Failed to fetch rewards and users');
     }
   };
-
+ 
   const handleEdit = (reward) => {
     setEditingReward(reward);
     setFormData({
@@ -248,7 +273,7 @@ const Rewards = () => {
               <td>{reward.pointsRequired}</td>
       
               <td>{reward?.isClaimed? 'True' : 'False'}</td>
-              <td>if true display user here</td>
+              <td>{reward?.isClaimed?  reward.userEmail : 'Not yet claimed'}</td>
               <td>{reward.couponCode}</td>
               <td>{renderItemImage(reward)}</td>
               <td className="actions-column">
