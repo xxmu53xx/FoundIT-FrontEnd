@@ -34,6 +34,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import PersonIcon from '@mui/icons-material/Person';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import StarsIcon from '@mui/icons-material/Stars';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Login = ({ onLogin }) => {
@@ -136,8 +137,8 @@ const Login = ({ onLogin }) => {
                   onClick={() => handleAccountSelect('admin')}
                 >
                   <Box className="account-option-content">
-                    <img src="admin.png" alt="Admin" className="account-icon" />
-                    <Typography>Admin</Typography>
+                    <img src="newadmin.png" alt="Admin" className="account-icon" />
+                    <Typography><strong>Admin</strong></Typography>
                   </Box>
                   {selectedType === 'admin' && (
                     <CheckCircleIcon className="check-icon" />
@@ -148,8 +149,8 @@ const Login = ({ onLogin }) => {
                   onClick={() => handleAccountSelect('student')}
                 >
                   <Box className="account-option-content">
-                    <img src="student.png" alt="Student" className="account-icon" />
-                    <Typography>Student</Typography>
+                    <img src="newstudent.png" alt="Student" className="account-icon" />
+                    <Typography><strong>Student</strong></Typography>
                   </Box>
                   {selectedType === 'student' && (
                     <CheckCircleIcon className="check-icon" />
@@ -424,7 +425,7 @@ function App() {
           </NavLink>
 
           <NavLink to="/student/rewards" className="nav-item">
-            <PersonIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+            <StarsIcon style={{ color:'#dfb637', fontSize: 24 }}/>
             <span className="nav-label">Rewards</span>
           </NavLink>
 

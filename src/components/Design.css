@@ -34,8 +34,33 @@
   color: #ffffff;
   font-size: 14px;
 }
+@keyframes subtleSlideIn {
+  0% {
+    transform: translateX(-40px);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 
+.verified {
+  background-color: #d4edda; /* Light green background */
+  color: #155724; /* Dark green text */
+  border: 1px solid #c3e6cb; /* Green border */
+  text-align: center;
+}
+
+/* Styles for not verified items */
+.not-verified {
+  background-color: #f8d7da; /* Light red background */
+  color: #721c24; /* Dark red text */
+  border: 1px solid #f5c6cb; /* Red border */
+  text-align: center;
+}
 .content {
+  animation: subtleSlideIn 0.4s ease-out;
   overflow-x:hidden;
   flex: 1; 
   width: 83%;
@@ -52,19 +77,23 @@
 .accordion-root {
   background-color: #9b9b9b;
 }
-.search-bar{
-margin-right:40px;
-background-color: white;
-color:white;
+
+.search-bar {
+  width: 300px;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  margin-right: 16px;
 }
-.coheader{
+
+.coheader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid none;
-  padding:10px;
+  background-color: #f5f5f5;
+  padding: 16px 24px;
   border-radius: 25px;
-  background-color: rgb(255, 255, 255);
 }
 
 .accordion-summary {
@@ -117,29 +146,23 @@ color:white;
   color: #333;
 }
 
+
 .add-button1 {
-  width: 160px; /* Slightly wider for balance */
-  height: 45px; /* Taller for better visibility */
-  border-radius: 25px;
-  background-color: #ffc107; /* Bright gold */
-  color: #4b4b4b; /* Dark text for better contrast */
+  background-color: #800000;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 24px;
   border: none;
-  font-size: 18px; /* Adjusted font size for readability */
+  border-radius: 20px;
   cursor: pointer;
-  display: flex;
-  font-size: 20px;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold; /* Bold text for emphasis */
-  transition: all 0.3s ease; /* Smooth hover effect */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease;
 }
 
 /* Hover effect */
+
 .add-button1:hover {
-  background-color: #e0a806; /* Darker gold */
-  transform: scale(1.05); /* Slight enlargement on hover */
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+  background-color: #600000;
 }
 
 /* Active (click) effect */
@@ -176,7 +199,19 @@ th {
   background-color: #800000;
   
 }
-
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.zoom-overlay{
+  animation: modalFadeIn 0.3s ease-out;
+}
 td {
   
   padding: 12px 20px;
@@ -184,15 +219,22 @@ td {
   border-bottom: 1px solid #eee;
 } /* Zebra Striping for Rows */
 
-tbody tr{ 
-  background-color: #fde76c; /* Gold */
-  color: black; /* Black text for contrast */
+tbody tr {
+  background-color: #f5f5f5;
+  color: #333;
 }
 
+tbody tr:nth-child(even) {
+  background-color: #e6e6e6;
+}
 
-tbody tr:hover{
-  background-color: #f1c54a; /* Darker Gold */
-  color: black; /* Keep the text black for contrast */
+tbody td {
+  padding: 14px 20px;
+  font-size: 14px;
+}
+
+tbody tr:hover {
+  background-color: #d6d6d6;
 }
 
 
@@ -207,10 +249,12 @@ tbody tr:hover{
   align-items: center; /* Vertically align items in the center */
   gap: 10px; /* Space between image and text */
   cursor: pointer; /* Pointer cursor for interactivity */
+  margin-left: 30px;
 }
 
 .user-info {
   display: flex;
+  width: 100px;
   flex-direction: column; /* Stack the text vertically */
   align-items: flex-end; /* Align the text to the right */
   text-align: right; /* Ensure the text content aligns to the right */
@@ -243,40 +287,31 @@ tbody tr:hover{
 
 
 }
-.edit-btn, .delete-btn {
-  padding: 10px 20px; /* Adjusted padding for consistency */
-  border-radius: 50px; /* Rounded edges for a cleaner look */
-  border: none;
-  cursor: pointer;
-  font-size: 14px; /* Slightly increased font size */
-  margin-left: 8px;
-  transition: all 0.3s ease; /* Smooth transition for hover effects */
-  font-weight: bold; /* Make text stand out */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
 
-/* Edit button styling */
-.edit-btn {
-  background-color: #fcd112; /* Gold color for edit button */
-  color: #4b4b4b; /* Darker text color for better contrast */
-}
-
-.edit-btn:hover {
-  background-color: #e6b800; /* Slightly darker gold on hover */
-  transform: scale(1.05); /* Slight enlargement on hover */
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
-}
-
-/* Delete button styling */
+.edit-btn,
 .delete-btn {
-  background-color: #ff4444; /* Red for delete button */
-  color: white;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-left: 8px;
 }
 
+.edit-btn {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.delete-btn {
+  background-color: #ff4444;
+  color: #ffffff;
+}
+
+
+
+.edit-btn:hover,
 .delete-btn:hover {
-  background-color: #d32f2f; /* Darker red on hover */
-  transform: scale(1.05); /* Slight enlargement on hover */
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+  filter: brightness(0.9);
 }
 
 .Schoolid{
@@ -286,8 +321,19 @@ tbody tr:hover{
   width:200px;
   height:100px;
 }
-.labellist{
-  background-color: #000000;
+
+.labellist {
+  background-color: #800000;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 15px 15px 0 0;
+  padding: 16px 20px;
+  font-size: 16px;
+}
+
+.labellist th {
+  padding: 16px 20px;
+  font-size: 16px;
 }
 
 .modal-overlay1 {
@@ -303,12 +349,11 @@ tbody tr:hover{
 }
 
 .popup1 {
-  margin-top: 10px;
-  background-color: white;
-  padding: 24px;
-  border-radius: 4px;
-  width: 500px;
-  height: 400px;
+  animation: modalFadeIn 0.3s ease-out;
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .form-group1 {
@@ -316,23 +361,26 @@ tbody tr:hover{
 }
 
 .form-group1 label {
-  display: block;
-  margin-bottom: 8px;
+  font-size: 14px;
   color: #666;
 }
-.form-buttons{
+
+.form-buttons {
   display: flex;
-  justify-content: center;  
-  align-items: center;     
-  gap: 10px;                
-  margin-top: 20px;        
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
 }
-.form-group1 input {
-  width: 70%;
-  padding: 8px;
-  border: 1px solid #ddd;
+
+.form-group1 input,
+.form-group1 textarea {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .cancel-button{
   align-items: center;
   

@@ -4,10 +4,13 @@ import './Design.css';
 import './Item.css';
 
 function ItemManagement({ user }) {
+
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [showClaimPopup, setShowClaimPopup] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [showUserDetailsPopup, setShowUserDetailsPopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
@@ -54,7 +57,6 @@ function ItemManagement({ user }) {
       setError('Error fetching items and users');
     }
   };
-
   useEffect(() => {
     fetchItems();
   }, [user]);
@@ -208,7 +210,7 @@ function ItemManagement({ user }) {
         backgroundColor: '#f5f5f5',
         borderRadius: '4px',
         display: 'flex',
-        maxWidth: '250px', 
+        maxWidth: '250px',
         alignItems: 'center',
         justifyContent: 'center',
         border: '1px solid #ddd',
@@ -219,6 +221,23 @@ function ItemManagement({ user }) {
         No Image
       </div>
     );
+  };
+
+  /*user popup from display items */
+  const fetchUserDetails = async (email) => {
+    try {
+      const response = await axios.get(`http://localhost:8083/api/users/getUserByEmail/${email}`);
+      setUserDetails(response.data);
+      setShowUserDetailsPopup(true);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      setError('Error fetching user details');
+    }
+  };
+
+  const handleCloseUserDetailsPopup = () => {
+    setShowUserDetailsPopup(false);
+    setUserDetails(null);
   };
 
   const handleSearch = (e) => {
@@ -232,10 +251,12 @@ function ItemManagement({ user }) {
       (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
       (item.userEmail && item.userEmail.toLowerCase().includes(searchTermLower)) ||
       (item.location && item.location.toLowerCase().includes(searchTermLower));
-  
+
     const matchesStatus =
-      !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
-  
+      (!statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase()) &&
+      !item.isClaimed &&  // Only show unclaimed items
+      item.isVerified;     // Only show items that are verified
+
     return matchesSearchTerm && matchesStatus;
   });
   const renderItemStatus = (item) => {
@@ -245,7 +266,7 @@ function ItemManagement({ user }) {
     if (isUserItem) {
       if (item.status === 'Found') {
         return (
-          <div 
+          <div
             style={{
               backgroundColor: '#e0e0e0',
               color: '#333',
@@ -262,7 +283,7 @@ function ItemManagement({ user }) {
         );
       } else if (item.status === 'Lost') {
         return (
-          <div 
+          <div
             style={{
               backgroundColor: '#e0e0e0',
               color: '#333',
@@ -283,7 +304,7 @@ function ItemManagement({ user }) {
     // If not the user's item and status is Found, show Claim button
     if (item.status === 'Found') {
       return (
-        <button 
+        <button
           onClick={() => handleOpenClaimPopup(item)}
           style={{
             backgroundColor: '#4CAF50',
@@ -306,9 +327,9 @@ function ItemManagement({ user }) {
   };
   return (
     <div className="content">
-            <br></br>
+      <br></br>
       <div className="content-header">
-        <h1>Current Items Pending</h1>
+        <h1>General LOST and FOUND</h1>
         <div className="coheader">
           <select
             className="status-dropdown"
@@ -333,52 +354,71 @@ function ItemManagement({ user }) {
       </div>
 
       {error && <p className="error">{error}</p>}
-
+      {filteredItems.length === 0 ? (
+        <div
+          style={{
+            textAlign: 'center',
+            color: '#666',
+            padding: '20px',
+          }}
+        >
+          Nothing to see here
+        </div>
+      ) :(
       <div className="horizontal-scroll-container">
+        
         {filteredItems.map((item) => (
           <div className="item-card" key={item.itemID}>
             <p><strong>Description:</strong> {item.description}</p>
             <p><strong>Date:</strong> {new Date(item.dateLostOrFound).toLocaleDateString()}</p>
-            <p><strong>Registered By:</strong> {item.userEmail}</p>
+            <p>
+              <strong>Registered By:</strong>
+              <span
+                style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => fetchUserDetails(item.userEmail)}
+              >
+                {item.userEmail}
+              </span>
+            </p>
             <p><strong>Location:</strong> {item.location}</p>
             {renderItemImage(item)}
             <p><strong>Status:</strong> {item.status}</p>
             {renderItemStatus(item)}
           </div>
         ))}
-      </div>
+      </div>)}
 
 
       {zoomedImage && (
-      <div
-      className="zoom-overlay"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
-      onClick={closeZoom}
-    >
-      <img
-        src={zoomedImage}
-        alt="Zoomed Item"
-        style={{
-          maxWidth: '80%',
-          maxHeight: '80%',
-          borderRadius: '8px',
-        }}
-      />
-    </div>
-  )}
-  
-  {showPopup && (
+        <div
+          className="zoom-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={closeZoom}
+        >
+          <img
+            src={zoomedImage}
+            alt="Zoomed Item"
+            style={{
+              maxWidth: '80%',
+              maxHeight: '80%',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+      )}
+
+      {showPopup && (
         <div className="modal-overlay" onClick={togglePopup}>
           <div
             className="popup1"
@@ -449,7 +489,7 @@ function ItemManagement({ user }) {
                   onChange={handleImageUpload}
                   accept="image/*"
                 />
-              {/*  {item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
+                {/*  {item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
               </div>
 
               {error && <div className="error">{error}</div>}
@@ -463,12 +503,61 @@ function ItemManagement({ user }) {
           </div>
         </div>
       )}
-{showClaimPopup && selectedItem && (
+
+      {showUserDetailsPopup && userDetails && (
+        <div className="modal-overlay" onClick={handleCloseUserDetailsPopup}>
+          <div
+            className="modal-container" // Changed class name for consistency
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              height: 'auto',
+              width: '500px', // Adjusted width for better layout
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '15px'
+            }}
+          >
+            <div className="content1-header">
+
+            </div>
+
+            <div className="profile-body" style={{ display: 'flex' }}>
+              <div className="profile-left1" style={{ flex: 1, paddingRight: '20px' }}>
+                <img src="/dilao.png" alt="User  Profile" className="profile-picture1" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+                <div className="about-me1">
+                  <br></br>
+                  <h3>Bio</h3>
+                  <p>{userDetails.bio || 'No bio available'}</p>
+                </div>
+              </div>
+
+              <div className="profile-right" style={{ flex: 1 }}>
+                <div>
+                  <strong>Email:</strong> {userDetails.schoolEmail}
+                </div>
+                <br></br>
+                <div>
+                  <strong>School ID:</strong> {userDetails.schoolId}
+                </div>
+                <br></br>
+                <div>
+                  <strong>Current Points:</strong> {userDetails.currentPoints}
+                </div>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      )}
+      {showClaimPopup && selectedItem && (
         <div className="modal-overlay" onClick={handleCloseClaimPopup}>
-          <div 
-            className="popup1" 
-            onClick={(e) => e.stopPropagation()} 
-            style={{ 
+          <div
+            className="popup1"
+            onClick={(e) => e.stopPropagation()}
+            style={{
               height: 'auto',
               width: '400px',
               padding: '20px',
@@ -478,8 +567,8 @@ function ItemManagement({ user }) {
             }}
           >
             <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Claim Item</h2>
-            
-            <div style={{ 
+
+            <div style={{
               backgroundColor: '#f5f5f5',
               padding: '20px',
               borderRadius: '8px',
@@ -489,32 +578,32 @@ function ItemManagement({ user }) {
                 <strong>Description:</strong>
                 <div>{selectedItem.description}</div>
               </div>
-              
+
               <div style={{ marginBottom: '10px' }}>
                 <strong>Date Found:</strong>
                 <div>
-                  {selectedItem.dateLostOrFound 
-                    ? new Date(selectedItem.dateLostOrFound).toLocaleDateString() 
+                  {selectedItem.dateLostOrFound
+                    ? new Date(selectedItem.dateLostOrFound).toLocaleDateString()
                     : ''}
                 </div>
               </div>
-              
+
               <div style={{ marginBottom: '10px' }}>
                 <strong>Registered By:</strong>
                 <div>{selectedItem.userEmail}</div>
               </div>
-              
+
               <div style={{ marginBottom: '10px' }}>
                 <strong>Location:</strong>
                 <div>{selectedItem.location}</div>
               </div>
             </div>
 
-            <p style={{ 
-              textAlign: 'center', 
-              fontSize: '16px', 
+            <p style={{
+              textAlign: 'center',
+              fontSize: '16px',
               color: '#666',
-              margin: '10px 0' 
+              margin: '10px 0'
             }}>
               Are you sure you want to claim this item?
             </p>
@@ -524,7 +613,7 @@ function ItemManagement({ user }) {
               justifyContent: 'center',
               gap: '10px'
             }}>
-              <button 
+              <button
                 onClick={handleClaimItem}
                 style={{
                   backgroundColor: '#4CAF50',
@@ -538,7 +627,7 @@ function ItemManagement({ user }) {
               >
                 Confirm Claim
               </button>
-              <button 
+              <button
                 onClick={handleCloseClaimPopup}
                 style={{
                   backgroundColor: '#f44336',
