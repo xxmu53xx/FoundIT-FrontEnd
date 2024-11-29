@@ -435,7 +435,34 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
     </div>
   </div>
 )}
-
+ {zoomedImage && (
+        <div
+          className="zoom-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={closeZoom}
+        >
+          <img
+            src={zoomedImage}
+            alt="Zoomed Item"
+            style={{
+              maxWidth: '80%',
+              maxHeight: '80%',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+      )}
 
       {/* Notification Modal */}
       {isNotificationModalOpen && (
@@ -551,6 +578,10 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
               </div>
               <div className="info-item">
                 <span className="info-label">Points Required:</span>
+                <span className="info-value">{rewardDetails.pointsRequired}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Claimed By:</span>
                 <span className="info-value">{rewardDetails.pointsRequired}</span>
               </div>
               <div className="info-item">

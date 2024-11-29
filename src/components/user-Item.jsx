@@ -613,7 +613,7 @@ function ItemManagement({ user }) {
               justifyContent: 'center',
               gap: '10px'
             }}>
-              <button
+             {/* <button
                 onClick={handleClaimItem}
                 style={{
                   backgroundColor: '#4CAF50',
@@ -626,7 +626,7 @@ function ItemManagement({ user }) {
                 }}
               >
                 Confirm Claim
-              </button>
+              </button>*/}
               <button
                 onClick={handleCloseClaimPopup}
                 style={{

@@ -272,7 +272,7 @@ const Rewards = () => {
               <td>{reward.rewardType}</td>
               <td>{reward.pointsRequired}</td>
       
-              <td>{reward?.isClaimed? 'True' : 'False'}</td>
+              <td>{reward?.isClaimed? 'Claimed' : 'Unclaimed'}</td>
               <td>{reward?.isClaimed?  reward.userEmail : 'Not yet claimed'}</td>
               <td>{reward.couponCode}</td>
               <td>{renderItemImage(reward)}</td>

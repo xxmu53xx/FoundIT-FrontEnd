@@ -192,13 +192,16 @@
   }
   
   .reward-image-preview {
-    width: 200px;
+    
+    margin-right: 400px;
+    width: 600px;
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
   }
   
   .no-image-placeholder {
+    margin-right: 150px;
     width: 200px;
     height: 200px;
     display: flex;
@@ -217,6 +220,7 @@
   }
   
   .reward-details {
+    margin-left:-125px;
     flex-grow: 1;
     text-align: left;
   }
@@ -316,7 +320,7 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
+    width: 700px;
     max-width: 90%;
     display: flex;
     flex-direction: column;

@@ -254,7 +254,7 @@ tbody tr:hover {
 
 .user-info {
   display: flex;
-  width: 100px;
+  width: 150px;
   flex-direction: column; /* Stack the text vertically */
   align-items: flex-end; /* Align the text to the right */
   text-align: right; /* Ensure the text content aligns to the right */
