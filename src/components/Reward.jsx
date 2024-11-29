@@ -14,7 +14,8 @@ const Rewards = () => {
     rewardType: '',
     pointsRequired: '',
     isClaimed: false,
-    code:''
+    code:'',
+    image:''
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -40,8 +41,8 @@ const Rewards = () => {
       rewardType: reward.rewardType,
       pointsRequired: reward.pointsRequired.toString(),
       isClaimed: reward.isClaimed,
-      code:reward.couponCode
-      
+      code: reward.couponCode,
+      image: reward.image || '' // Set image for editing
     });
     setShowModal(true);
   };
@@ -61,13 +62,13 @@ const Rewards = () => {
       rewardName: formData.rewardName,
       rewardType: formData.rewardType,
       pointsRequired: parseInt(formData.pointsRequired),
-      user: { userID: 1 },  // Make sure you dynamically set this to the correct userID
-      ...(editingReward && { rewardId: editingReward.rewardId }) 
+      user: { userID: 1 }, // Make sure you dynamically set this to the correct userID
+      ...(editingReward && { rewardId: editingReward.rewardId }),
+      ...(formData.image && { image: formData.image }) // Include image in payload
     };
   
     try {
       if (editingReward) {
-        // Fix: Change port from 8080 to 8083
         const response = await axios.put(
           `http://localhost:8083/api/rewards/putReward/${editingReward.rewardId}`,
           payload
@@ -129,6 +130,76 @@ const Rewards = () => {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) {
+        setError('File is too large. Please choose an image under 5MB.');
+        return;
+      }
+  
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({
+          ...prev,
+          image: reader.result // Store the image in formData
+        }));
+        setError(null);
+      };
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  
+  const renderItemImage = (reward) => {
+    if (reward.image) {
+      return (
+        <img
+          src={reward.image}
+          alt="Reward"
+          style={{
+            width: '60px',
+            height: '60px',
+            objectFit: 'cover',
+            borderRadius: '4px',
+            border: '1px solid #ddd'
+          }}
+          onError={(e) => {
+            console.error(`Image load error for reward ${reward.rewardId}`);
+            e.target.style.display = 'none';
+          }}
+        />
+      );
+    }
+    return (
+      <div style={{
+        width: '60px',
+        height: '60px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '4px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid #ddd',
+        color: '#666',
+        fontSize: '12px',
+        textAlign: 'center'
+      }}>
+        No Image
+      </div>
+    );
+  };
+
   return (
     <div className="content">
        <br></br>
@@ -179,7 +250,7 @@ const Rewards = () => {
               <td>{reward?.isClaimed? 'True' : 'False'}</td>
               <td>if true display user here</td>
               <td>{reward.couponCode}</td>
-              <td>Image</td>
+              <td>{renderItemImage(reward)}</td>
               <td className="actions-column">
                 <button 
                   className="edit-btn" 
@@ -238,7 +309,25 @@ const Rewards = () => {
                   min="0"
                 />
               </div>
-            
+
+              
+              <div className="form-group">
+  <label>Image:</label>
+  <input
+    type="file"
+    onChange={handleImageUpload}
+    accept="image/*"
+  />
+  {formData.image && (
+    <img
+      src={formData.image}
+      alt="Preview"
+      style={{ width: '100px', height: '100px', objectFit: 'cover', marginTop: '10px' }}
+    />
+  )}
+</div>
+
+              
               <div className="modal-buttons">
                 <button type="submit" className="edit-btn">
                   {editingReward ? 'Update' : 'Add'}

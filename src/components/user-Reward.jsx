@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './user-Reward.css';
 import './Rewards.css'
+
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -55,6 +56,55 @@ const Rewards = () => {
     setShowWishlistModal(true);
   };
 
+  const handleRedeem = (reward) => {
+    // Implement redeem logic here
+    console.log('Redeeming reward:', reward);
+  };
+
+  const renderItemImage = (reward) => {
+    if (reward.image) {
+      return (
+        <img
+          src={reward.image}
+          alt="Reward"
+          style={{
+            marginTop:'20px',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '10%',
+            border: '1px solid #ddd'
+          }}
+          onError={(e) => {
+            console.error(`Image load error for reward ${reward.rewardId}`);
+            e.target.style.display = 'none';
+          }}
+        />
+      );
+    }
+    return (
+      <img
+      src="/NoImage.png"
+      alt="Reward"
+      style={{
+        width: '500px',
+        height: '100%',
+        objectFit: 'cover',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50%',
+        border: '1px solid #ddd'
+      }}
+      onError={(e) => {
+        console.error(`Image load error for reward ${reward.rewardId}`);
+        e.target.style.display = 'none';
+      }}
+    />
+    );
+  };
+
   return (
     <div className="content">
       <div className="header-container">
@@ -66,7 +116,6 @@ const Rewards = () => {
         </select>
       </div>
 
-
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
 
@@ -74,10 +123,7 @@ const Rewards = () => {
         {rewards.map((reward) => (
           <div key={reward.rewardId} className="reward-card" onClick={() => openWishlistModal(reward)}>
             <div className="reward-image">
-              <img 
-                src="/newadmin.png"
-                alt={reward.rewardName}
-              />
+              {renderItemImage(reward)}
               <div className="reward-type">⭐{reward.pointsRequired}</div>
             </div>
             <h3>{reward.rewardName}</h3>
@@ -99,15 +145,18 @@ const Rewards = () => {
               {selectedReward && (
                 <>
                   <div className="modal-image">
+                    {/* Replace the default image with the selected reward's image */}
                     <img 
-                      src="/newadmin.png" 
-                      alt={selectedReward.rewardName} 
+                      src={selectedReward.image || "/NoImage.png"} 
+                      onError={(e) => {
+                        e.target.src = "/dilao.png";
+                        console.warn(`Error loading image for ${selectedReward.rewardName}, using default`);
+                      }}
                     />
                   </div>
-                  <div className="modal-info">
+                  <div className="modal-info">  
                     <h2>{selectedReward.rewardName}</h2>
                     <p>★ {selectedReward.pointsRequired} point/s</p>
-                    
                     
                     <button
                       className="redeem-button"
@@ -115,7 +164,6 @@ const Rewards = () => {
                     >
                       <ShoppingCartIcon /> REDEEM NOW
                     </button>
-                    
                   </div>
                 </>
               )}

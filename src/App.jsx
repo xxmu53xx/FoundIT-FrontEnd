@@ -327,7 +327,7 @@ function App() {
   };
 
   const handleSaveProfile = () => {
-    axios.put(`http://localhost:8083/api/users/updateUserDetails/${user.userID}`, editProfileData)
+    axios.put(`http://localhost:8083/api/users/putUserDetails/${user.userID}`, editProfileData)
       .then(response => {
         const updatedUser = { ...user, ...editProfileData };
         setUser(updatedUser);

@@ -59,6 +59,15 @@
   transition: background-color 0.3s;
 }
 
+/* redeem code in admin interface modal animation*/
+.modal-coupon-verify{
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+/* redeem code in admin interface success animation*/
+.modal-coupon-success{
+  animation: modalFadeIn 0.3s ease-out;
+}
 .modal-container-notif{
   overflow: auto;
   position: relative; /* Add this to create a containing block for the close button */

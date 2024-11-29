@@ -269,6 +269,36 @@ function ItemManagement() {
   const closeZoom = () => {
     setZoomedImage(null);
   };
+
+  const renderStatus = (status) => {
+    const statusStyle = {
+      backgroundColor: `${status === 'Found' ? '#b8fcb8' : '#ffcccb'}`,
+      borderRadius: '15%',
+      padding: '5px 6px',
+      color: status === 'Found' ? 'green' : 'red',
+      border: `2px solid ${status === 'Found' ? '#90ee90' : '#ffcccb'}`, // Lighter green for Found, lighter red for Lost
+      display: 'inline-block',
+      textAlign: 'center',
+      alignItems:'center'
+    };
+
+    return <span style={statusStyle}>{status}</span>;
+  };
+
+  const renderClaimedStatus = (isClaimed) => {
+    const statusStyle = {
+      borderRadius: '15%',
+      padding: '5px 10px',
+      color: isClaimed ? 'green' : 'red', // Green for Claimed, Red for Unclaimed
+      backgroundColor: isClaimed ? 'rgba(144, 238, 144, 0.5)' : 'rgba(255, 204, 203, 0.5)', // Semi-transparent background
+      border: `2px solid ${isClaimed ? '#90ee90' : '#ffcccb'}`, // Lighter green for Claimed, lighter red for Unclaimed
+      display: 'inline-block',
+      textAlign: 'center',
+    };
+  
+    return <span style={statusStyle}>{isClaimed ? 'Claimed' : 'Unclaimed'}</span>;
+  };
+  
   return (
     <div className="content">
       <br></br>
@@ -349,10 +379,10 @@ function ItemManagement() {
                     ? new Date(item.dateLostOrFound).toLocaleDateString()
                     : ''}
                 </td>
-                <td>{item?.isClaimed ? 'Claimed' : 'Unclaimed'}</td>
+                <td className="itemStatus">{renderClaimedStatus(item.isClaimed)}</td>
                 <td>{item.userEmail}</td>
                 <td>{item.location}</td>
-                <td>{item.status}</td>
+                <td className="itemStatus">{renderStatus(item.status)}</td>
                 <td>{renderItemImage(item)}</td>
                 <td className="actions-column">
                   <button className="edit-btn" onClick={() => handleEdit(item)}>
