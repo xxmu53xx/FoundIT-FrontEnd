@@ -5,6 +5,8 @@ import './Rewards.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 function ItemManagement() {
+  
+  const [zoomedImage, setZoomedImage] = useState(null);
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [registeredByFilter, setRegisteredByFilter] = useState('');
@@ -206,6 +208,7 @@ function ItemManagement() {
             borderRadius: '4px',
             border: '1px solid #ddd'
           }}
+          onClick={() => handleImageClick(item.image)}
           onError={(e) => {
             console.error(`Image load error for item ${item.itemID}`);
             e.target.style.display = 'none';
@@ -252,10 +255,20 @@ function ItemManagement() {
 
     const matchesClaimed =
       claimedFilter === '' || (claimedFilter === 'Claimed' && item.isClaimed) || (claimedFilter === 'Unclaimed' && !item.isClaimed);
+    const isVerified =
+      (!statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase()) &&  // Only show unclaimed items
+      item.isVerified;     // Only show items that are verified
 
-    return matchesSearchTerm && matchesStatus && matchesRegisteredBy && matchesClaimed;
+    return matchesSearchTerm && matchesStatus && matchesRegisteredBy && matchesClaimed &&isVerified;
   });
 
+  const handleImageClick = (image) => {
+    setZoomedImage(image);
+  };
+
+  const closeZoom = () => {
+    setZoomedImage(null);
+  };
   return (
     <div className="content">
       <br></br>
@@ -325,6 +338,7 @@ function ItemManagement() {
             </tr>
           </thead>
           <tbody>
+            
             {filteredItems.map((item) => (
               <tr key={item.itemID}>
                 <td>{item.itemID}</td>
@@ -357,7 +371,34 @@ function ItemManagement() {
         </table>
         <div className="space"></div>
       </div>
-
+      {zoomedImage && (
+        <div
+          className="zoom-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={closeZoom}
+        >
+          <img
+            src={zoomedImage}
+            alt="Zoomed Item"
+            style={{
+              maxWidth: '80%',
+              maxHeight: '80%',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+      )}
       {showPopup && (
         <div className="modal-overlay" onClick={togglePopup}>
           <div

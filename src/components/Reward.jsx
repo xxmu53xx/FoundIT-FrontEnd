@@ -164,6 +164,7 @@ const Rewards = () => {
             <th>isClaimed</th>
             <th>Claimed By</th>
             <th>Code</th>
+            <th>Image</th>
             <th className="actions-column">ACTIONS</th>
           </tr>
         </thead>
@@ -178,6 +179,7 @@ const Rewards = () => {
               <td>{reward?.isClaimed? 'True' : 'False'}</td>
               <td>if true display user here</td>
               <td>{reward.couponCode}</td>
+              <td>Image</td>
               <td className="actions-column">
                 <button 
                   className="edit-btn" 

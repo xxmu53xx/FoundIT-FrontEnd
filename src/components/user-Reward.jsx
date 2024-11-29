@@ -66,14 +66,6 @@ const Rewards = () => {
         </select>
       </div>
 
-      <div className="wishlist-button-container">
-        <button
-          className="wishlist-button"
-          onClick={() => setShowWishlistModal(true)}
-        >
-          <FavoriteIcon /> Wishlist ({wishlist.length})
-        </button>
-      </div>
 
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
@@ -114,7 +106,7 @@ const Rewards = () => {
                   </div>
                   <div className="modal-info">
                     <h2>{selectedReward.rewardName}</h2>
-                    <p>★ {selectedReward.pointsRequired} pointssss</p>
+                    <p>★ {selectedReward.pointsRequired} point/s</p>
                     
                     
                     <button

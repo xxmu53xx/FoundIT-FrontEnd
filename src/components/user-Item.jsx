@@ -354,8 +354,19 @@ function ItemManagement({ user }) {
       </div>
 
       {error && <p className="error">{error}</p>}
-
+      {filteredItems.length === 0 ? (
+        <div
+          style={{
+            textAlign: 'center',
+            color: '#666',
+            padding: '20px',
+          }}
+        >
+          Nothing to see here
+        </div>
+      ) :(
       <div className="horizontal-scroll-container">
+        
         {filteredItems.map((item) => (
           <div className="item-card" key={item.itemID}>
             <p><strong>Description:</strong> {item.description}</p>
@@ -375,7 +386,7 @@ function ItemManagement({ user }) {
             {renderItemStatus(item)}
           </div>
         ))}
-      </div>
+      </div>)}
 
 
       {zoomedImage && (

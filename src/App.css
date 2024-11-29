@@ -60,6 +60,7 @@
 }
 
 .modal-container-notif{
+  overflow: auto;
   position: relative; /* Add this to create a containing block for the close button */
   background-color: #fff;
   border-radius: 8px;
@@ -538,6 +539,7 @@ height: 70%;
 
 .login-form {
   width: 100%;
+  animation: subtleSlideIn 0.4s ease-out;
 }
 
 

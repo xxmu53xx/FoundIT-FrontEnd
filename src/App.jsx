@@ -34,6 +34,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import PersonIcon from '@mui/icons-material/Person';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import StarsIcon from '@mui/icons-material/Stars';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Login = ({ onLogin }) => {
@@ -424,7 +425,7 @@ function App() {
           </NavLink>
 
           <NavLink to="/student/rewards" className="nav-item">
-            <PersonIcon style={{ color:'#dfb637', fontSize: 24 }}/>
+            <StarsIcon style={{ color:'#dfb637', fontSize: 24 }}/>
             <span className="nav-label">Rewards</span>
           </NavLink>
 

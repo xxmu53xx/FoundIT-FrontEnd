@@ -34,7 +34,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isCongratsModalOpen, setIsCongratsModalOpen] = useState(false);
 
-  
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -48,6 +48,8 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   };
 
   const navigate = useNavigate();
+
+  const [zoomedImage, setZoomedImage] = useState(null); // State for the zoomed image
   const [username, setUsername] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isViewProfileModal, setIsViewProfileModal] = useState(false);
@@ -218,16 +220,16 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       // Fetch the current item details to keep other properties intact
       const response = await axios.get(`http://localhost:8083/api/items/getItemDetails/${itemID}`);
       const itemDetails = response.data;
-  
+
       // Update the isVerified property while keeping other properties
       const updatedItem = {
         ...itemDetails,
         isVerified: true,
       };
-  
+
       // Send the updated item back to the server
       await axios.put(`http://localhost:8083/api/items/putItemDetails/${itemID}`, updatedItem);
-  
+
       // Update local state
       setUnverifiedItems(prevItems => prevItems.filter(item => item.itemID !== itemID));
       alert('Item accepted successfully!');
@@ -261,13 +263,33 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
 
   const fetchUnverifiedItems = async () => {
     try {
-      const response = await axios.get('http://localhost:8083/api/items/getAllItems');
-      const itemsData = response.data;
+      const [itemsResponse, usersResponse] = await Promise.all([
+        axios.get('http://localhost:8083/api/items/getAllItems'),
+        axios.get('http://localhost:8083/api/users/getAllUsers')
+      ]);
+
+      const itemsData = itemsResponse.data;
+      const usersData = usersResponse.data;
 
       // Filter items where isVerified is false
       const filteredItems = itemsData.filter(item => !item.isVerified);
-      setUnverifiedItems(filteredItems);
-      setNotificationCount(filteredItems.length); // Update the notification count
+
+      // Map user items to their corresponding user emails
+      const enhancedUnverifiedItems = filteredItems.map(item => {
+        const associatedUser = usersData.find(user =>
+          user.items.some(userItem => userItem.itemID === item.itemID)
+        );
+
+        return {
+          ...item,
+          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned', // Use schoolEmail for userEmail
+          userId: associatedUser ? associatedUser.userID : null // Ensure userId is set
+        };
+      });
+
+      // Update state with the enhanced unverified items
+      setUnverifiedItems(enhancedUnverifiedItems);
+      setNotificationCount(enhancedUnverifiedItems.length); // Update the notification count
       setError(null);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -277,6 +299,16 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   useEffect(() => {
     fetchUnverifiedItems();
   }, []);
+
+
+  //setImage zoom and unzoom
+  const handleImageClick = (image) => {
+    setZoomedImage(image);
+  };
+
+  const closeZoom = () => {
+    setZoomedImage(null);
+  };
   return (
     <div className="dashboard">
       <header className="header">
@@ -423,8 +455,8 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
             )}
           </div>
         </div>
-      )} 
-      
+      )}
+
       {/* Notification Modal */}
       {isNotificationModalOpen && (
         <div className="modal-notif">
@@ -458,7 +490,8 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
                           <img
                             src={item.image}
                             alt={item.description}
-                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                            style={{ width: '50px', height: '50px', objectFit: 'cover', cursor: 'pointer' }} // Added cursor pointer
+                            onClick={() => handleImageClick(item.image)} // Added click handler
                             onError={(e) => {
                               console.error(`Image load error for item ${item.itemID}`);
                               e.target.style.display = 'none'; // Hide broken image
@@ -508,33 +541,57 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
         </div>
       )}
 
-
+      {zoomedImage && (
+        <div
+          className="zoom-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={closeZoom}
+        >
+          <img
+            src={zoomedImage}
+            alt="Zoomed Item"
+            style={{
+              maxWidth: '80%',
+              maxHeight: '80%',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+      )}
       {/* View Profile Modal */}
       {isViewProfileModal && (
         <div className="modal-overlay">
           <div className="modal-container">
             <div className="content1-header">
-              {error && <p className="error">{error}</p>}
             </div>
 
             <div className="profile-body">
-              <div className="profile-left1">
+              <div className="profile-left">
                 <img src="/dilao.png" alt="User Profile" className="profile-picture1" />
-                <div className="about-me1">
+                <div className="about-me">
                   <h3>Bio</h3>
-                  <p>{profileData.bio || 'No bio available'}</p>
+                  <p>{user.bio}</p>
                 </div>
               </div>
 
               <div className="profile-right">
-                <p><strong>Email:</strong> {profileData.schoolEmail}</p>
-                <p><strong>School ID:</strong> {profileData.schoolId}</p>
-                <p><strong>Password:</strong> {profileData.password}</p>
-                <p><strong>Current Points:</strong> {profileData.currentPoints}</p>
-                <p><strong>Account Type:</strong> {profileData.accountType}</p>
+                <p><strong>Email:</strong> {user.schoolEmail}</p>
+                <p><strong>School ID:</strong> {user.schoolId}</p>
+                <p><strong>Password:</strong> {user.password}</p>
+                <p><strong>Current Points:</strong> {user.currentPoints}</p>
               </div>
             </div>
-
             <div className="button-group">
               <button onClick={() => setIsViewProfileModal(false)} className="delete-btn">
                 Cancel

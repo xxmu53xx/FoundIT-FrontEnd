@@ -280,7 +280,7 @@ function ItemManagement({ user }) {
             padding: '20px',
           }}
         >
-          You haven't posted any items yet.
+          Nothing to see here
         </div>
       ) : (
         <div className="horizontal-scroll-container">
