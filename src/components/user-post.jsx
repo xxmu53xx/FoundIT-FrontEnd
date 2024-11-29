@@ -55,7 +55,8 @@ function ItemManagement({ user }) {
       setError('Error fetching items and users');
       setItems([]); // Ensure `items` is reset to an empty array on error
     }
-  }; useEffect(() => {
+  };
+   useEffect(() => {
     if (user && Array.isArray(user.items)) {
       try {
         const sortedItems = [...user.items].sort((a, b) =>
@@ -280,7 +281,7 @@ function ItemManagement({ user }) {
             padding: '20px',
           }}
         >
-          Nothing to see here
+          You haven't posted any items yet.
         </div>
       ) : (
         <div className="horizontal-scroll-container">

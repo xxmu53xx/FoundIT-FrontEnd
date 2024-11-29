@@ -10,7 +10,113 @@
     align-items: center;
     z-index: 999;
   }
+  .modal-coupon {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
   
+  .modal-coupon-verify {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .modal-coupon-header .admin-logo {
+    width: 40px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .modal-subtitle {
+    font-size: 14px;
+    color: gray;
+    margin-bottom: 15px;
+  }
+  
+  .modal-body {
+    margin: 10px 0;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .modal-info {
+    font-size: 12px;
+    color: #f44336;
+    margin-bottom: 15px;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .cancel-button {
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: gray;
+    cursor: pointer;
+  }
+  
+  .redeem-button {
+    background: #4285F4;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .redeem-button:hover {
+    background: #357ae8;
+  }
+  
+  .message-box {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .message-box.success {
+    color: #022e1f;
+    background-color: #e7f6e7;
+  }
+  
+  .message-box.failure {
+    color: #f44336;
+    background-color: #ffebeb;
+  }
+  
+
   .modal-coupon-verify {
     background-color: white;
     padding: 20px;
@@ -37,6 +143,143 @@
     justify-content: space-between;
   }
   
+  .modal-coupon2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-coupon-success {
+    background: white;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .congrats-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .congrats-icon {
+    width: 60px;
+    height: 60px;
+    color: #4CAF50;
+    margin-bottom: 10px;
+  }
+  
+  .congrats-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .reward-image {
+    flex: 0 0 200px;
+  }
+  
+  .reward-image-preview {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .no-image-placeholder {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+  }
+  
+  .placeholder-icon {
+    width: 50px;
+    height: 50px;
+    color: #888;
+    margin-bottom: 10px;
+  }
+  
+  .reward-details {
+    flex-grow: 1;
+    text-align: left;
+  }
+  
+  .reward-details h3 {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .reward-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+  }
+  
+  .info-label {
+    color: #666;
+    font-weight: 500;
+  }
+  
+  .info-value {
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .coupon-code {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .congrats-actions {
+    margin-top: 20px;
+  }
+  
+  .confirm-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .confirm-button:hover {
+    background-color: #45a049;
+  }
+
   .confirm-button,
   .cancel-button {
     padding: 8px 16px;

@@ -192,13 +192,16 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
     try {
       const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards');
       const rewards = response.data;
-
+  
       const reward = rewards.find((reward) => reward.couponCode === couponCode);
-
+  
       if (reward) {
         setMessage('Success! The coupon code exists.');
         setIsSuccess(true);
         setIsCouponModalOpen(false);
+        
+        // Set the reward details for the congrats modal
+        setRewardDetails(reward);
         setIsCongratsModalOpen(true);
       } else {
         setMessage('This coupon code does not exist.');
@@ -389,73 +392,50 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       </div>
 
       {isCouponModalOpen && (
-        <div className="modal-coupon">
-          <div className="modal-coupon-verify">
-            <div className="modal-coupon-header">
-              <img src="/newadmin.png" alt="Admin Logo" className="admin-logo" />
-              <h2>Redeem Coupon</h2>
-              <p>redeem discounts now!</p>
-              <button
-                onClick={() => setIsCouponModalOpen(false)}
-                className="close-button"
-                style={{
-                  position: 'flex',
-                  top: '37%',
-                  right: '38%',
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: '#000000',
-                  fontSize: '20px',
-                  cursor: 'pointer'
-                }}
-              >
-                &times;
-              </button>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-              <input
-                type="text"
-                placeholder="Enter coupon code"
-                maxLength={5}
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                style={{
-                  flex: '1',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  color: '#333'
-                }}
-              />
-              <button onClick={handleVerifyCoupon} className="confirm-button" style={{ marginLeft: '8px' }}>
-                Redeem
-              </button>
-            </div>
-            {/* No need for the "Cancel" button at the bottom */}
-
-            {/* Success or Failure Message */}
-            {message && (
-              <div
-                style={{
-                  marginTop: '16px',
-                  padding: '12px',
-                  borderRadius: '4px',
-                  color: isSuccess ? '#022e1f' : '#f44336',
-                  backgroundColor: isSuccess ? '#ffebc2' : '#ffebc2'
-                }}
-              >
-                <b>{message}</b>
-              </div>
-            )}
-          </div>
+  <div className="modal-coupon">
+    <div className="modal-coupon-verify">
+      <div className="modal-coupon-header">
+        <img
+          src="/removebg.png"
+          alt="Admin Logo"
+          className="admin-logo"
+        />
+        <h2 className="modal-title">Redeem Code</h2>
+        <p className="modal-subtitle">We need more info to redeem your coupon.</p>
+      </div>
+      <div className="modal-body">
+        <input
+          type="text"
+          placeholder="Enter your coupon code"
+          maxLength={5}
+          value={couponCode}
+          onChange={(e) => setCouponCode(e.target.value)}
+          className="input-field"
+        />
+        <p className="modal-info">Send us details to proceed with verification.</p>
+      </div>
+      <div className="modal-footer">
+        <button
+          onClick={() => setIsCouponModalOpen(false)}
+          className="cancel-button"
+        >
+          Cancel
+        </button>
+        <button onClick={handleVerifyCoupon} className="redeem-button">
+          Redeem
+        </button>
+      </div>
+      {message && (
+        <div
+          className={`message-box ${isSuccess ? "success" : "failure"}`}
+        >
+          <b>{message}</b>
         </div>
       )}
+    </div>
+  </div>
+)}
+
 
       {/* Notification Modal */}
       {isNotificationModalOpen && (
@@ -515,60 +495,96 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
         </div>
       )}
 
-      {isCongratsModalOpen && (
-        <div className="modal-coupon2">
-          <div className="modal-coupon-success">
-            <img src="/newadmin.png" alt="Admin Logo" className="admin-logo" />
-            <h2>Success</h2>
-            <p>Your transaction was successful. Check your email for details.</p>
-            <button onClick={() => setIsCongratsModalOpen(false)} className="confirm-button">
-              Done
-            </button>
-          </div>
-        </div>
-      )}
+      
 
       {/* Congratulations Modal */}
       {isCongratsModalOpen && (
-        <div className="modal-coupon2">
-          <div className="modal-coupon-success">
-            <h2>Congratulations</h2>
-            <p>You've just displayed this awesome Pop Up View</p>
-            <button onClick={() => setIsCongratsModalOpen(false)} className="confirm-button">
-              Done
-            </button>
+  <div className="modal-coupon2">
+    <div className="modal-coupon-success">
+      <div className="congrats-header">
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          className="congrats-icon"
+        >
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <h2>Congratulations!</h2>
+      </div>
+
+      {rewardDetails && (
+        <div className="congrats-content">
+          <div className="reward-image">
+            {rewardDetails.image ? (
+              <img 
+                src={rewardDetails.image} 
+                alt={rewardDetails.rewardName}
+                className="reward-image-preview"
+              />
+            ) : (
+              <div className="no-image-placeholder">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  className="placeholder-icon"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>No Image Available</span>
+              </div>
+            )}
+          </div>
+
+          <div className="reward-details">
+            <h3>{rewardDetails.rewardName}</h3>
+            <div className="reward-info">
+              <div className="info-item">
+                <span className="info-label">Reward Type:</span>
+                <span className="info-value">{rewardDetails.rewardType}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Points Required:</span>
+                <span className="info-value">{rewardDetails.pointsRequired}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Coupon Code:</span>
+                <span className="info-value coupon-code">
+                  {rewardDetails.couponCode}
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(rewardDetails.couponCode)}
+                    className="copy-button"
+                    title="Copy Coupon Code"
+                  >
+                    📋
+                  </button>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {zoomedImage && (
-        <div
-          className="zoom-overlay"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-          onClick={closeZoom}
+      <div className="congrats-actions">
+        <button 
+          onClick={() => {
+            setIsCongratsModalOpen(false);
+            setRewardDetails(null);
+          }} 
+          className="confirm-button"
         >
-          <img
-            src={zoomedImage}
-            alt="Zoomed Item"
-            style={{
-              maxWidth: '80%',
-              maxHeight: '80%',
-              borderRadius: '8px',
-            }}
-          />
-        </div>
-      )}
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       {/* View Profile Modal */}
       {isViewProfileModal && (
         <div className="modal-overlay">
