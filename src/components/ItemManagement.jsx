@@ -5,7 +5,8 @@ import './Rewards.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 function ItemManagement() {
-  
+  const [itemIdFilter, setItemIdFilter] = useState('');
+
   const [zoomedImage, setZoomedImage] = useState(null);
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
@@ -246,22 +247,24 @@ function ItemManagement() {
       (item.description && item.description.toLowerCase().includes(searchTermLower)) ||
       (item.userEmail && item.userEmail.toLowerCase().includes(searchTermLower)) ||
       (item.location && item.location.toLowerCase().includes(searchTermLower));
-
+  
+    const matchesItemId = itemIdFilter === '' || item.itemID.toString().includes(itemIdFilter); // Check for Item ID filter
+  
     const matchesStatus =
       !statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase();
-
+  
     const matchesRegisteredBy =
       !registeredByFilter || item.userId === Number(registeredByFilter);
-
+  
     const matchesClaimed =
       claimedFilter === '' || (claimedFilter === 'Claimed' && item.isClaimed) || (claimedFilter === 'Unclaimed' && !item.isClaimed);
+  
     const isVerified =
       (!statusFilter || item.status.toLowerCase() === statusFilter.toLowerCase()) &&  // Only show unclaimed items
       item.isVerified;     // Only show items that are verified
-
-    return matchesSearchTerm && matchesStatus && matchesRegisteredBy && matchesClaimed &&isVerified;
+  
+    return matchesSearchTerm && matchesItemId && matchesStatus && matchesRegisteredBy && matchesClaimed && isVerified;
   });
-
   const handleImageClick = (image) => {
     setZoomedImage(image);
   };
@@ -306,6 +309,13 @@ function ItemManagement() {
         <h1>Item Management</h1>
 
         <div className="coheader">
+        <input
+  type="text"
+  className="search-bar-id"
+  placeholder="ID"
+  value={itemIdFilter}
+  onChange={(e) => setItemIdFilter(e.target.value)}
+/>
           <select
             className="status-dropdown"
             value={claimedFilter}
@@ -314,7 +324,7 @@ function ItemManagement() {
             <option value="">All Claimed Status</option>
             <option value="Claimed">Claimed</option>
             <option value="Unclaimed">Unclaimed</option>
-          </select>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </select>  &nbsp;&nbsp;&nbsp;
           <select
             className="status-dropdown"
             value={registeredByFilter}
@@ -327,7 +337,7 @@ function ItemManagement() {
               </option>
             ))}
           </select>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;
           <select
             className="status-dropdown"
             value={statusFilter}
@@ -336,7 +346,7 @@ function ItemManagement() {
             <option value="">All Status</option>
             <option value="Found">Found</option>
             <option value="Lost">Lost</option>
-          </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </select>&nbsp;&nbsp;&nbsp;&nbsp;
           <input
             type="text"
             className="search-bar"

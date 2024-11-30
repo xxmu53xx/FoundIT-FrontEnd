@@ -2,7 +2,6 @@
     padding: 20px;
     height: auto;
   }
-  
   .content-header {
     display: flex;
     justify-content: space-between;
@@ -12,7 +11,7 @@
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    height: 560px;
+    height: 60%;
     scroll-behavior: smooth;
     gap: 10px;
   }
@@ -43,8 +42,9 @@
   
   /*for deposit item*/
   .item-card {
+    margin-top: 20px;
     width: 285px;
-    height:550px;
+    height:60%;
     background: white;
     padding: 16px;
     border-radius: 8px;
@@ -74,6 +74,7 @@
   }
   
   .item-card:hover {
+    height: 100%;
     transform: translateY(-10px);
     box-shadow: 0 8px 15px rgba(107, 15, 51, 0.2);
     overflow: hidden;
@@ -116,7 +117,16 @@
     color: #8C1D3A;
     overflow: hidden;
   }
-
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
   .item-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 8px 15px rgba(107, 15, 51, 0.2);
@@ -124,6 +134,7 @@
   }
   
   .item-card:hover::before {
+    
     transform: scaleX(1);
   }
   

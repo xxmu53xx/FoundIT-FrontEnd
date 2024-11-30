@@ -16,13 +16,13 @@ import './App.css';
 import UserRewards from './components/user-Reward'
 import UserItem from './components/user-Item'
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  Button, 
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
   Paper,
-  IconButton 
+  IconButton
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
@@ -61,7 +61,7 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = () => {
     setError('');
-    
+
     const user = adminList.find(user => user.schoolEmail === credentials.email);
     if (!user) {
       setError('Email not found');
@@ -88,7 +88,7 @@ const Login = ({ onLogin }) => {
   const audioRef = useRef(null);
   useEffect(() => {
     const audioElement = audioRef.current;
-    
+
     const playAudio = () => {
       if (audioElement) {
         audioElement.play().catch(error => {
@@ -97,7 +97,7 @@ const Login = ({ onLogin }) => {
       }
     };
     playAudio();
-    
+
     const handleInteraction = () => {
       playAudio();
       document.removeEventListener('click', handleInteraction);
@@ -110,19 +110,22 @@ const Login = ({ onLogin }) => {
       }
     };
   }, []);
+
+
+
   return (
     <div className="page-container">
       <Paper elevation={3} className="login-container">
         <Box className="content-wrapper">
           <Box className="left-side">
-          <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline>
               <source src="/CITCine.mp4" type="video/mp4" />
             </video>
-            
+
             {/* Add audio element at the top level of your app */}
-            <audio 
+            <audio
               ref={audioRef}
-              loop 
+              loop
               id="background-music"
             >
               <source src="/CITHymn.mp3" type="audio/mpeg" />
@@ -132,7 +135,7 @@ const Login = ({ onLogin }) => {
                 <strong>Choose Account Type</strong>
               </Typography>
               <Box className="account-types">
-                <Box 
+                <Box
                   className={`account-option ${selectedType === 'admin' ? 'selected' : ''}`}
                   onClick={() => handleAccountSelect('admin')}
                 >
@@ -144,7 +147,7 @@ const Login = ({ onLogin }) => {
                     <CheckCircleIcon className="check-icon" />
                   )}
                 </Box>
-                <Box 
+                <Box
                   className={`account-option ${selectedType === 'student' ? 'selected' : ''}`}
                   onClick={() => handleAccountSelect('student')}
                 >
@@ -169,7 +172,7 @@ const Login = ({ onLogin }) => {
                 <Typography variant="subtitle1" className="login-subtitle">
                   Please Log in
                 </Typography>
-                
+
                 <Box className="input-field">
                   <EmailIcon className="field-icon" />
                   <TextField
@@ -206,9 +209,9 @@ const Login = ({ onLogin }) => {
                 {selectedType === 'student' && (
                   <Box className="signup-text">
                     <Typography variant="body2">
-                      No account? 
-                      <Button 
-                        color="primary" 
+                      No account?
+                      <Button
+                        color="primary"
                         onClick={handleSignup}
                         className="signup-link"
                       >
@@ -218,10 +221,10 @@ const Login = ({ onLogin }) => {
                   </Box>
                 )}
 
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  fullWidth 
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
                   className="login-button"
                   onClick={handleLogin}
                 >
@@ -232,8 +235,8 @@ const Login = ({ onLogin }) => {
           </Box>
         </Box>
       </Paper>
-      
-      <Signup 
+
+      <Signup
         open={isSignupOpen}
         onClose={() => setIsSignupOpen(false)}
       />
@@ -243,12 +246,12 @@ const Login = ({ onLogin }) => {
 
 const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }) => {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     } else if (accountType !== requiredType) {
-   
+
       if (accountType === 'admin' && requiredType === 'student') {
         return children;
       }
@@ -263,11 +266,59 @@ const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }
   return isAuthenticated && accountType === requiredType ? children : null;
 };
 
+
+
+
+
+
+/*
+const renderItemImage = (item) => {
+  if (item.image) {
+    return (
+      <img
+        src={item.image}
+        alt="Item"
+        style={{
+          width: '250px',
+          height: '300px',
+          objectFit: 'cover',
+          borderRadius: '4px',
+          border: '1px solid #ddd',
+          cursor: 'pointer'
+        }}
+        onClick={() => handleZoomImage(item.image)}
+        onError={(e) => {
+          console.error(`Image load error for item ${item.itemID}`);
+          e.target.style.display = 'none';
+        }}
+      />
+    );
+  }
+  return (
+    <div style={{
+      width: '420px',
+      height: '300px',
+      backgroundColor: '#f5f5f5',
+      borderRadius: '4px',
+      display: 'flex',
+      maxWidth: '250px',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: '1px solid #ddd',
+      color: '#666',
+      fontSize: '12px',
+      textAlign: 'center'
+    }}>
+      No Image
+    </div>
+  );
+};*/
 function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isViewProfileModal, setIsViewProfileModal] = useState(false);
   const [isEditProfileModal, setIsEditProfileModal] = useState(false);
+  const [error, setError] = useState(null);
   const [profileData, setProfileData] = useState({
     schoolEmail: '',
     schoolId: '',
@@ -279,6 +330,7 @@ function App() {
     schoolId: '',
     password: '',
     bio: '',
+    image: ''
   });
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -310,7 +362,7 @@ function App() {
         ...user,
         currentPoints: event.detail.newPoints
       };
-      
+
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
     };
@@ -372,7 +424,7 @@ function App() {
     if (passwordInput === user.password) {
       axios.delete(`http://localhost:8083/api/users/deleteUserDetails/${user.userID}`)
         .then(() => {
-          handleLogout(); 
+          handleLogout();
           alert("Account deactivated successfully.");
           navigate('/login');
         })
@@ -382,6 +434,34 @@ function App() {
     }
   };
 
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) {
+        setError('File is too large. Please choose an image under 5MB.');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditProfileData(prev => ({
+          ...prev,
+          image: reader.result
+        }));
+        setError(null);
+      };
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <Router>
       <Routes>
@@ -399,8 +479,8 @@ function App() {
         <Route
           path="/admin/*"
           element={
-            <ProtectedRoute 
-              isAuthenticated={isAuthenticated} 
+            <ProtectedRoute
+              isAuthenticated={isAuthenticated}
               accountType={user?.accountType}
               requiredType="admin"
             >
@@ -412,79 +492,111 @@ function App() {
         <Route
           path="/student/*"
           element={
-            <ProtectedRoute 
-              isAuthenticated={isAuthenticated} 
+            <ProtectedRoute
+              isAuthenticated={isAuthenticated}
               accountType={user?.accountType}
               requiredType="student"
             >
               <div className="dashboard">
-          
-      <header className="header">
-      <NavLink to="/student/dashboard" className="nav-item">
-        <img src="/citlogo.png" alt="University Logo" className="university-logo" /></NavLink>
-        <div className="user-profile" onClick={handleProfileViewClick}>
-    <div className="user-info">
-        <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
-        <span className="user-id">{user?.schoolId|| '00-0000-000'}</span>
-        <spam className="curPoints">{new Intl.NumberFormat().format(user?.currentPoints)} CP</spam>
-    </div>
-    <img src="/dilao.png" alt="User Profile" className="profile-picture" />
-</div>
-      </header>
 
-      <div className="modern-sidebar">
-        <div className="sidebar-brand">
-          <span className="found">Found</span>
-          <span className="it">IT</span>
-          <span className="admin">Student</span>
-        </div>
+                <header className="header">
+                  <NavLink to="/student/dashboard" className="nav-item">
+                    <img src="/citlogo.png" alt="University Logo" className="university-logo" /></NavLink>
+                  <div className="user-profile" onClick={handleProfileViewClick}>
+                    <div className="user-info">
+                      <span className="user-name">{user?.schoolEmail.split('@')[0] || 'Guest'}</span>
+                      <span className="user-id">{user?.schoolId || '00-0000-000'}</span>
+                      <spam className="curPoints">{new Intl.NumberFormat().format(user?.currentPoints)} CP</spam>
+                    </div>
+                    {user ? (
+                      <img
+                        src={user.image || "/NullPFP.png"}
+                        alt="User Profile"
+                        className="profile-picture"
+                      />
+                    ) : (
+                      <img
+                        src="/NullPFP.png"
+                        alt="Default Profile"
+                        className="profile-picture"
+                      />
+                    )}
+                  </div>
+                </header>
 
-        <div className="nav-links">
-          <NavLink to="/student/dashboard" className="nav-item">
-            <ContentPasteIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-            <span className="nav-label">Dashboard</span>
-          </NavLink>
+                <div className="modern-sidebar">
+                  <div className="sidebar-brand">
+                    <span className="found">Found</span>
+                    <span className="it">IT</span>
+                    <span className="admin">Student</span>
+                  </div>
 
-          <NavLink to="/student/rewards" className="nav-item">
-            <StarsIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-            <span className="nav-label">Rewards</span>
-          </NavLink>
+                  <div className="nav-links">
+                    <NavLink to="/student/dashboard" className="nav-item">
+                      <ContentPasteIcon style={{ color: '#dfb637', fontSize: 24 }} />
+                      <span className="nav-label">Dashboard</span>
+                    </NavLink>
 
-          <NavLink to="/student/item" className="nav-item">
-            <InventoryIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-            <span className="nav-label">Deposit/Retrieve Items</span>
-          </NavLink>
+                    <NavLink to="/student/rewards" className="nav-item">
+                      <StarsIcon style={{ color: '#dfb637', fontSize: 24 }} />
+                      <span className="nav-label">Rewards</span>
+                    </NavLink>
 
-          <NavLink to="/student/posts" className="nav-item">
-            <SystemUpdateAltIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-            <span className="nav-label">Your Posts</span>
-          </NavLink>
-        </div>
+                    <NavLink to="/student/item" className="nav-item">
+                      <InventoryIcon style={{ color: '#dfb637', fontSize: 24 }} />
+                      <span className="nav-label">Deposit/Retrieve Items</span>
+                    </NavLink>
 
-        <button onClick={handleLogout} className="logout-item">
-          <LogoutIcon style={{ color:'#dfb637', fontSize: 24 }}/>
-          <span className="nav-label">Logout</span>
-        </button>
-      </div>
-      
-      <div className="main-content">
-        <Routes>
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/rewards" element={<UserRewards />} />
-          <Route path="/item" element={<UserItem user={user} />} />
-          <Route path="/posts" element={<UserPosts user={user} />}/>
-        </Routes>
-      </div>
+                    <NavLink to="/student/posts" className="nav-item">
+                      <SystemUpdateAltIcon style={{ color: '#dfb637', fontSize: 24 }} />
+                      <span className="nav-label">Your Posts</span>
+                    </NavLink>
+                  </div>
 
-      {isViewProfileModal && (
+                  <button onClick={handleLogout} className="logout-item">
+                    <LogoutIcon style={{ color: '#dfb637', fontSize: 24 }} />
+                    <span className="nav-label">Logout</span>
+                  </button>
+                </div>
+
+                <div className="main-content">
+                  <Routes>
+                    <Route path="/dashboard" element={<UserDashboard />} />
+                    <Route path="/rewards" element={<UserRewards />} />
+                    <Route path="/item" element={<UserItem user={user} />} />
+                    <Route path="/posts" element={<UserPosts user={user} />} />
+                  </Routes>
+                </div>
+
+                {isViewProfileModal && (
                   <div className="modal-overlay">
                     <div className="modal-container">
-                      <div className="content1-header">
-                      </div>
+                      <div className="content1-header"></div>
 
                       <div className="profile-body">
                         <div className="profile-left">
-                          <img src="/dilao.png" alt="User Profile" className="profile-picture1" />
+                          <div style={{ position: 'relative', display: 'inline-block' }}>
+                            <label htmlFor="profile-picture-upload">
+                              <img
+                                src={user.image || "/NullPFP.png"}
+                                alt="User Profile"
+                                className="profile-picture1"
+                                style={{
+                                  width: '90px',
+                                  height: '90px',
+                                  borderRadius: '50%',
+                                  objectFit: 'cover',
+                                  border: '2px solid #ddd',
+                                }}
+                              />
+                            </label>
+                            <input
+                              type="file"
+                              id="profile-picture-upload"
+                              style={{ display: 'none' }}
+                              onChange={handleImageUpload}
+                            />
+                          </div>
                           <div className="about-me">
                             <h3>Bio</h3>
                             <p>{user.bio}</p>
@@ -514,7 +626,28 @@ function App() {
                       <div className="content1-header">
                         <h2>Edit Profile</h2>
                       </div>
-
+                      <div style={{ position: 'relative', display: 'inline-block' }}>
+                        <label htmlFor="profile-picture-upload" style={{ cursor: 'pointer' }}>
+                          <img
+                            src={user.image || "/NullPFP.png"}
+                            alt="User Profile"
+                            className="profile-picture1"
+                            style={{
+                              width: '90px',
+                              height: '90px',
+                              borderRadius: '50%',
+                              objectFit: 'cover',
+                              border: '2px solid #ddd',
+                            }}
+                          />
+                        </label>
+                        <input
+                          type="file"
+                          id="profile-picture-upload"
+                          style={{ display: 'none' }}
+                          onChange={handleImageUpload}
+                        />
+                      </div>
                       <div className="profile-body">
                         <div className="profile-form">
                           <div className="form-group">
@@ -587,9 +720,9 @@ function App() {
                       />
                       <div className="button-group">
                         <button onClick={confirmDeactivation} className="confirm-button">Confirm</button>
-                        <button 
-                          onClick={() => setIsDeactivateModalOpen(false)} 
-                          className="cancel-button" 
+                        <button
+                          onClick={() => setIsDeactivateModalOpen(false)}
+                          className="cancel-button"
                           style={{ backgroundColor: '#f44336', color: '#fff' }}
                         >
                           Cancel
@@ -607,8 +740,8 @@ function App() {
           path="/"
           element={
             <Navigate to={
-              !isAuthenticated 
-                ? '/login' 
+              !isAuthenticated
+                ? '/login'
                 : user?.accountType === 'admin'
                   ? '/admin'
                   : '/student/dashboard'

@@ -243,9 +243,6 @@ const Rewards = () => {
           <h6>+ Add Reward</h6>
         </button></div>
       </div>
-      {/* Display error message if there is one */}
-      {error && <div className="error-message">{error}</div>}
-      
       {/* Display success message if there is one */}
       {successMessage && <div className="success-message">{successMessage}</div>}
 

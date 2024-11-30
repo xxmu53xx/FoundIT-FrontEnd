@@ -366,7 +366,6 @@ function ItemManagement({ user }) {
         </div>
       ) :(
       <div className="horizontal-scroll-container">
-        
         {filteredItems.map((item) => (
           <div className="item-card" key={item.itemID}>
             <p><strong>Description:</strong> {item.description}</p>
@@ -524,7 +523,7 @@ function ItemManagement({ user }) {
 
             <div className="profile-body" style={{ display: 'flex' }}>
               <div className="profile-left1" style={{ flex: 1, paddingRight: '20px' }}>
-                <img src="/dilao.png" alt="User  Profile" className="profile-picture1" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+                <img src={userDetails.image || "/NullPFP.png"} alt="User  Profile" className="profile-picture1" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
                 <div className="about-me1">
                   <br></br>
                   <h3>Bio</h3>
@@ -596,6 +595,11 @@ function ItemManagement({ user }) {
               <div style={{ marginBottom: '10px' }}>
                 <strong>Location:</strong>
                 <div>{selectedItem.location}</div>
+              </div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Item ID:</strong>
+                <div>{selectedItem.itemID}</div>
               </div>
             </div>
 
