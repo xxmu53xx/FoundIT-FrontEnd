@@ -110,7 +110,6 @@ const Rewards = () => {
         );
         if (response.status === 201) {
           setSuccessMessage('Reward created successfully!');
-          fetchRewards();
           setTimeout(() => handleCloseModal(), 1500);
         }
       }
@@ -258,6 +257,7 @@ const Rewards = () => {
             <th>Claimed By</th>
             <th>Code</th>
             <th>Image</th>
+            <th>Used</th>
             <th className="actions-column">ACTIONS</th>
           </tr>
         </thead>
@@ -273,6 +273,7 @@ const Rewards = () => {
               <td>{reward?.isClaimed?  reward.userEmail : 'Not yet claimed'}</td>
               <td>{reward.couponCode}</td>
               <td>{renderItemImage(reward)}</td>
+              <td>{reward?.isUsed? 'Used' : 'Not Used'}</td>
               <td className="actions-column">
                 <button 
                   className="edit-btn" 

@@ -46,7 +46,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const handleCloseRewardModal = () => {
     setIsRewardModalOpen(false);
   };
-
+  const [isUnclaimedModalOpen, setUnclaimedModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const [zoomedImage, setZoomedImage] = useState(null); // State for the zoomed image
@@ -58,7 +58,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [passwordInput, setPasswordInput] = useState('');
   const [error, setError] = useState(null);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-
+  const [rewards, setRewards] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     userID: '',
@@ -187,22 +187,49 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       alert('Incorrect password. Please try again.');
     }
   };
-
   const handleVerifyCoupon = async () => {
     try {
-      const response = await axios.get('http://localhost:8083/api/rewards/getAllRewards');
-      const rewards = response.data;
+      // Fetch all rewards and users
+      const [rewardsResponse, usersResponse] = await Promise.all([
+        axios.get('http://localhost:8083/api/rewards/getAllRewards'),
+        axios.get('http://localhost:8083/api/users/getAllUsers')
+      ]);
   
-      const reward = rewards.find((reward) => reward.couponCode === couponCode);
+      const rewardsData = rewardsResponse.data;
+      const usersData = usersResponse.data;
+  
+      // Enhance the rewards data to include user email based on who claimed the reward
+      const enhancedRewards = rewardsData.map(reward => {
+        const associatedUser   = usersData.find(user =>
+          user.rewards.some(userReward => userReward.rewardId === reward.rewardId)
+        );
+  
+        return {
+          ...reward,
+          userEmail: associatedUser   ? associatedUser .schoolEmail : 'Unassigned', // Use schoolEmail for userEmail
+          userId: associatedUser   ? associatedUser .userID : null // Ensure userId is set
+        };
+      });
+  
+      // Find the reward based on the coupon code from the enhanced rewards
+      const reward = enhancedRewards.find((reward) => reward.couponCode === couponCode);
   
       if (reward) {
-        setMessage('Success! The coupon code exists.');
-        setIsSuccess(true);
-        setIsCouponModalOpen(false);
-        
-        // Set the reward details for the congrats modal
-        setRewardDetails(reward);
-        setIsCongratsModalOpen(true);
+        if (!reward.isClaimed) {
+          // If the reward is not claimed, show the unclaimed modal
+          setUnclaimedModalOpen(true);
+        } else {
+          // If the reward is claimed
+          setMessage('Success! The coupon code exists.');
+          setIsSuccess(true);
+          setIsCouponModalOpen(false);
+  
+          // Set the reward details including the user's email
+          setRewardDetails(reward); // Reward already includes userEmail and userId
+  
+          // Open the congratulations modal
+          setIsCongratsModalOpen(true);
+        }
       } else {
         setMessage('This coupon code does not exist.');
         setIsSuccess(false);
@@ -210,6 +237,7 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
     } catch (error) {
       setMessage('An error occurred while verifying the coupon code.');
       setIsSuccess(false);
+      console.error('Error verifying coupon:', error);
     }
   };
 
@@ -312,6 +340,19 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const closeZoom = () => {
     setZoomedImage(null);
   };
+
+  const UnclaimedCouponModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null; // Don't render if not open
+  
+    return (
+      <div className="modal">
+        <div className="modal-content">
+          <h2>This Coupon is Not Yet Claimed</h2>
+          <button onClick={onClose}>Close</button>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="dashboard">
       <header className="header">
@@ -391,6 +432,23 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
         </Routes>
       </div>
 
+      {isUnclaimedModalOpen && (
+  <div className="modal-overlay2">
+    <div className="modal-container2">
+      <h2>This Coupon is Not Yet Claimed</h2>
+      <p>Please note that this coupon has not been claimed yet.</p>
+      <div className="button-group">
+        <button
+          type="button"
+          className="confirm-button"
+          onClick={() => setUnclaimedModalOpen(false)}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       {isCouponModalOpen && (
   <div className="modal-coupon">
     <div className="modal-coupon-verify">
@@ -541,7 +599,6 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
         </svg>
         <h2>Congratulations!</h2>
       </div>
-
       {rewardDetails && (
         <div className="congrats-content">
           <div className="reward-image">
@@ -581,8 +638,8 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
                 <span className="info-value">{rewardDetails.pointsRequired}</span>
               </div>
               <div className="info-item">
-                <span className="info-label">Claimed By:</span>
-                <span className="info-value">{rewardDetails.pointsRequired}</span>
+                <span className="info-label">Purchased By:</span>
+                <span className="info-value">{rewardDetails.userEmail}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Coupon Code:</span>
@@ -724,7 +781,6 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
           </div>
         </div>
       )}
-
       {/* Deactivate Account Modal remains the same */}
       {isDeactivateModalOpen && (
         <div className="modal-overlay2">

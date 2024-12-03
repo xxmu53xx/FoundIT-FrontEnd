@@ -9,12 +9,14 @@ import './Rewards.css'
 
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
+  const [rewardDetailsModalOpen, setRewardDetailsModalOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [sortOrder, setSortOrder] = useState('pricelow');
+  const [rewardDetails, setRewardDetails] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -80,60 +82,50 @@ const Rewards = () => {
 
   const handleRedeem = async (reward) => {
     // Check if user has enough points
-    if (!currentUser) {
+    if (!currentUser ) {
       setError('Please log in to redeem rewards');
       return;
     }
 
-    if (currentUser.currentPoints < reward.pointsRequired) {
-      setError(`You do not have enough points to redeem ${reward.rewardName}. Required: ${reward.pointsRequired}, Current: ${currentUser.currentPoints}`);
+    if (currentUser .currentPoints < reward.pointsRequired) {
+      setError(`You do not have enough points to redeem ${reward.rewardName}. Required: ${reward.pointsRequired}, Current: ${currentUser .currentPoints}`);
       return;
     }
 
     try {
       // Prepare the updated user object with deducted points
-      const updatedUser = {
-        ...currentUser,
+      const updatedUser  = {
+        ...currentUser ,
         currentPoints: currentUser.currentPoints - reward.pointsRequired
       };
 
       // Update user points
-      const userResponse = await axios.put(
-        `http://localhost:8083/api/users/putUserDetails/${currentUser.userID}`, 
-        updatedUser
-      );
+      await axios.put(`http://localhost:8083/api/users/putUserDetails/${currentUser .userID}`, updatedUser );
 
       // Update reward to mark as claimed and associate with user
-      const rewardResponse = await axios.put(
-        `http://localhost:8083/api/rewards/putReward/${reward.rewardId}`,
-        {
-          ...reward,
-          isClaimed: true,
-          user: updatedUser
-        }
-      );
-
-      const updateEvent = new CustomEvent('userPointsUpdated', { 
-        detail: { 
-          newPoints: updatedUser.currentPoints 
-        } 
+      await axios.put(`http://localhost:8083/api/rewards/putReward/${reward.rewardId}`, {
+        ...reward,
+        isClaimed: true,
+        user: updatedUser 
       });
-      window.dispatchEvent(updateEvent);
 
-      // Update local state
-      setCurrentUser(userResponse.data);
-      setSuccessMessage(`Successfully redeemed ${reward.rewardName}!`);
-      setShowWishlistModal(false);
-      
+      // Set the reward details for the modal
+      setRewardDetails({
+        ...reward,
+        couponCode: `COUPON-${reward.couponCode}` // Example coupon code, replace with actual logic if needed
+      });
+      setRewardDetailsModalOpen(true);
+
       // Refresh rewards and user data
       fetchRewards();
-      fetchCurrentUser();
+      fetchCurrentUser ();
 
     } catch (error) {
       console.error('Error redeeming reward:', error);
       setError('Failed to redeem reward. Please try again.');
     }
   };
+
 
   const renderItemImage = (reward) => {
     if (reward.image) {
@@ -204,15 +196,51 @@ const Rewards = () => {
             </div>
             <h3>{reward.rewardName}</h3>
             <p className="RewardType">{reward.rewardType}</p>
-            <div className="wishlist-icon" onClick={(e) => { e.stopPropagation(); toggleWishlist(reward); }}>
+          { /* <div className="wishlist-icon" onClick={(e) => { e.stopPropagation(); toggleWishlist(reward); }}>
               {wishlist.find(item => item.rewardId === reward.rewardId)
                 ? <FavoriteIcon className="wished" />
                 : <FavoriteBorderIcon />}
-            </div>
+            </div>*/}
           </div>
         ))}
       </div>
-
+     
+     
+      {rewardDetailsModalOpen && (
+  <div className="modal-overlay">
+    <div className="wishlist-modal">
+      <div className="modal-content">
+        {rewardDetails && (
+          <>
+            <div className="modal-image">
+              {/* Display the image of the redeemed reward */}
+              <img 
+                src={rewardDetails.image || "/NoImage.png"} 
+                onError={(e) => {
+                  e.target.src = "/NoImage.png"; // Fallback image on error
+                  console.warn(`Error loading image for ${rewardDetails.rewardName}, using default`);
+                }}
+                alt={rewardDetails.rewardName}
+              />
+            </div>
+            <div className="modal-info">  
+              <h2>{rewardDetails.rewardName}</h2>
+              <p>Points Required: ★ {rewardDetails.pointsRequired}</p>
+              <p>Coupon Code: <strong style={{ fontSize: '1.5rem', color: '#b42626' }}><br></br>{rewardDetails.couponCode}</strong></p>
+              <p>Thank you for your purchase!</p>
+            </div>
+          </>
+        )}
+      </div>
+      <button
+        className="close-button"
+        onClick={() => setRewardDetailsModalOpen(false)}
+      >
+        <CloseIcon />
+      </button>
+    </div>
+  </div>
+)}
       {/* Wishlist Modal */}
       {showWishlistModal && (
         <div className="modal-overlay">

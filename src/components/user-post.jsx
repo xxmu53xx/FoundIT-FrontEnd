@@ -302,7 +302,7 @@ function ItemManagement({ user }) {
                 <strong>Status:</strong> {item.status}
               </p>
               <p>
-                <strong>Claimed:{item?.isClaimed ? 'Yes' : 'No'}</strong>
+                <strong>Claimed:{item?.isClaimed ? ' Claimed By you' : 'No'}</strong>
               </p>
               <b className={item?.isVerified ? 'verified by' : 'not-verified'}>
                 <strong>{item?.isVerified ? 'Verified by admin' : 'Not Yet Verified by admin' }</strong>
