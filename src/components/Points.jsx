@@ -5,6 +5,7 @@ import './Rewards.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
   const Points = () => {
+  const [registeredByFilter, setRegisteredByFilter] = useState('');
     const [points, setPoints] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -167,11 +168,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
     const filteredPoints = points.filter(point => {
       const searchTermLower = searchTerm.toLowerCase();
-      return (
+      const matchesSearchTerm =
         point.pointsEarned.toString().includes(searchTermLower) ||
         (point.dateEarned && point.dateEarned.toLowerCase().includes(searchTermLower)) ||
-        (point.userEmail && point.userEmail.toLowerCase().includes(searchTermLower))
-      );
+        (point.userEmail && point.userEmail.toLowerCase().includes(searchTermLower));
+    
+      const matchesRegisteredBy =
+        !registeredByFilter || point.userId === Number(registeredByFilter); // Check if registeredByFilter is set
+    
+      return matchesSearchTerm && matchesRegisteredBy; // Combine both filters
     });
 
     const handleSearch = (e) => {
@@ -184,6 +189,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
       <div className="content-header">
         <h1>Point Management</h1>
         <div className="coheader">
+        <select
+            className="status-dropdown"
+            value={registeredByFilter}
+            onChange={(e) => setRegisteredByFilter(e.target.value)}
+          >
+            <option value="">All User</option>
+            {users.map((user) => (
+              <option key={user.userID} value={user.userID}>
+                {user.schoolEmail}
+              </option>
+            ))}
+          </select>
           <input 
             type="text" 
             className="search-bar" 

@@ -4,8 +4,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './Design.css'
 
+import './Rewards.css';
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
+  const [registeredByFilter, setRegisteredByFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,6 +54,7 @@ const Rewards = () => {
       });
 
       setRewards(enhancedRewards);
+      setUsers(usersData);
       setError(null);
     } catch (error) {
       console.error('Error fetching rewards and users:', error);
@@ -144,13 +147,16 @@ const Rewards = () => {
   };
   const filteredRewards = rewards.filter(reward => {
     const searchTermLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearchTerm =
       reward.rewardName.toLowerCase().includes(searchTermLower) ||
       reward.rewardType.toLowerCase().includes(searchTermLower) ||
-      reward.pointsRequired.toString().includes(searchTermLower)
-    );
+      reward.pointsRequired.toString().includes(searchTermLower);
+  
+    const matchesRegisteredBy =
+      !registeredByFilter || reward.userId === Number(registeredByFilter); // Check if registeredByFilter is set
+  
+    return matchesSearchTerm && matchesRegisteredBy; // Combine both filters
   });
-
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -229,8 +235,20 @@ const Rewards = () => {
        <br></br>
       <div className="content-header">
         <h1>Reward Management</h1>
-        
+  
         <div className="coheader">
+        <select
+            className="status-dropdown"
+            value={registeredByFilter}
+            onChange={(e) => setRegisteredByFilter(e.target.value)}
+          >
+            <option value="">All User</option>
+            {users.map((user) => (
+              <option key={user.userID} value={user.userID}>
+                {user.schoolEmail}
+              </option>
+            ))}
+          </select>
         <input 
           type="text" 
           className="search-bar" 

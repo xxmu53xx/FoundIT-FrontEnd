@@ -187,27 +187,29 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       alert('Incorrect password. Please try again.');
     }
   };
+
+
   const handleVerifyCoupon = async () => {
     try {
       // Fetch all rewards and users
       const [rewardsResponse, usersResponse] = await Promise.all([
         axios.get('http://localhost:8083/api/rewards/getAllRewards'),
-        axios.get('http://localhost:8083/api/users/getAllUsers')
+        axios.get('http://localhost:8083/api/users/getAllUsers'),
       ]);
   
       const rewardsData = rewardsResponse.data;
       const usersData = usersResponse.data;
   
       // Enhance the rewards data to include user email based on who claimed the reward
-      const enhancedRewards = rewardsData.map(reward => {
-        const associatedUser   = usersData.find(user =>
-          user.rewards.some(userReward => userReward.rewardId === reward.rewardId)
+      const enhancedRewards = rewardsData.map((reward) => {
+        const associatedUser = usersData.find((user) =>
+          user.rewards.some((userReward) => userReward.rewardId === reward.rewardId)
         );
   
         return {
           ...reward,
-          userEmail: associatedUser   ? associatedUser .schoolEmail : 'Unassigned', // Use schoolEmail for userEmail
-          userId: associatedUser   ? associatedUser .userID : null // Ensure userId is set
+          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned',
+          userId: associatedUser ? associatedUser.userID : null,
         };
       });
   
@@ -216,19 +218,37 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   
       if (reward) {
         if (!reward.isClaimed) {
-          // If the reward is not claimed, show the unclaimed modal
-          setUnclaimedModalOpen(true);
+          setUnclaimedModalOpen(true); // Show the unclaimed modal if the reward is not claimed
         } else {
-          // If the reward is claimed
+          // Reward is claimed
           setMessage('Success! The coupon code exists.');
           setIsSuccess(true);
           setIsCouponModalOpen(false);
   
-          // Set the reward details including the user's email
-          setRewardDetails(reward); // Reward already includes userEmail and userId
-  
-          // Open the congratulations modal
+          // Set reward details and open the congratulations modal
+          setRewardDetails(reward);
           setIsCongratsModalOpen(true);
+  
+          try {
+            // Update the reward to set isUsed to true
+            await axios.put(`http://localhost:8083/api/rewards/putReward1/${reward.rewardId}`, {
+              isUsed: true, // Only update the isUsed attribute
+              user: {
+                userID: reward.userId // Send only the user ID if the user hasn't changed
+              }
+              
+            });
+  
+            // Optionally update state or refetch rewards to reflect the change
+            setRewardDetails((prev) => ({
+              ...prev,
+              isUsed: true,
+            }));
+          } catch (updateError) {
+            console.error('Error updating reward status:', updateError);
+            setMessage('Failed to update the reward status.');
+            setIsSuccess(false);
+          }
         }
       } else {
         setMessage('This coupon code does not exist.');
@@ -240,7 +260,6 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
       console.error('Error verifying coupon:', error);
     }
   };
-
 
   const toggleNotificationModal = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
@@ -339,19 +358,6 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
 
   const closeZoom = () => {
     setZoomedImage(null);
-  };
-
-  const UnclaimedCouponModal = ({ isOpen, onClose }) => {
-    if (!isOpen) return null; // Don't render if not open
-  
-    return (
-      <div className="modal">
-        <div className="modal-content">
-          <h2>This Coupon is Not Yet Claimed</h2>
-          <button onClick={onClose}>Close</button>
-        </div>
-      </div>
-    );
   };
   return (
     <div className="dashboard">
