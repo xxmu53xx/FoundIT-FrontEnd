@@ -10,7 +10,7 @@ function ItemManagement({ user }) {
   const [showPopup, setShowPopup] = useState(false);
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('');
-  const [zoomedImage, setZoomedImage] = useState(null); // State for the zoomed image
+  const [zoomedImage, setZoomedImage] = useState(null); //use to zooming
   const [newItem, setNewItem] = useState({
     description: '',
     dateLostOrFound: '',

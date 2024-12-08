@@ -488,7 +488,8 @@ function ItemManagement({ user }) {
                   onChange={handleImageUpload}
                   accept="image/*"
                 />
-                {/*  {item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/}
+                {/*  {item.image && <img src={item.image} alt="Preview" className="image-preview" />}*/
+                /*Purposely hidden to prevent overlapping */}
               </div>
 
               {error && <div className="error">{error}</div>}

@@ -90,7 +90,9 @@ const Rewards = () => {
       rewardName: formData.rewardName,
       rewardType: formData.rewardType,
       pointsRequired: parseInt(formData.pointsRequired),
-      user: { userID: 3 },  // Make sure you dynamically set this to the correct userID
+      user: { userID: 3 },
+      //this UserID is the temporary holder of the reward that is unclaimed
+      //admin must be the temporary holder
       ...(editingReward && { rewardId: editingReward.rewardId }),
       ...(formData.image && { image: formData.image }) // Include image in payload
     };

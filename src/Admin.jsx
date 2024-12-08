@@ -23,29 +23,13 @@ import { Badge } from '@mui/material';
 
 const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   //ticket/coupon modal design is in sidebar.css
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
-  const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
-
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [isCongratsModalOpen, setIsCongratsModalOpen] = useState(false);
-
-
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setMessage('');
-    setCouponCode('');
-    setRewardDetails(null);
-  };
-
-  const handleCloseRewardModal = () => {
-    setIsRewardModalOpen(false);
-  };
   const [isUnclaimedModalOpen, setUnclaimedModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -58,7 +42,6 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
   const [passwordInput, setPasswordInput] = useState('');
   const [error, setError] = useState(null);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [rewards, setRewards] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     userID: '',

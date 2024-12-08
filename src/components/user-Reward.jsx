@@ -10,7 +10,6 @@ import './Rewards.css'
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [rewardDetailsModalOpen, setRewardDetailsModalOpen] = useState(false);
-  const [wishlist, setWishlist] = useState([]);
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
   const [error, setError] = useState('');
@@ -63,13 +62,6 @@ const Rewards = () => {
     }
   };
 
-  const toggleWishlist = (reward) => {
-    if (wishlist.find(item => item.rewardId === reward.rewardId)) {
-      setWishlist(wishlist.filter(item => item.rewardId !== reward.rewardId));
-    } else {
-      setWishlist([...wishlist, reward]);
-    }
-  };
 
   const handleSortOrder = (event) => {
     setSortOrder(event.target.value);
@@ -196,11 +188,7 @@ const Rewards = () => {
             </div>
             <h3>{reward.rewardName}</h3>
             <p className="RewardType">{reward.rewardType}</p>
-          { /* <div className="wishlist-icon" onClick={(e) => { e.stopPropagation(); toggleWishlist(reward); }}>
-              {wishlist.find(item => item.rewardId === reward.rewardId)
-                ? <FavoriteIcon className="wished" />
-                : <FavoriteBorderIcon />}
-            </div>*/}
+      
           </div>
         ))}
       </div>

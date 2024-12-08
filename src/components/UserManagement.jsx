@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -144,7 +143,6 @@ function UserManagement() {
               <th className="user-id-column">USER ID</th>
               <th>SCHOOL EMAIL</th>
               <th>SCHOOL ID</th>
-              <th>PASSWORD</th>
               <th>BIO</th>
               <th className="cp-column">CP</th>
               <th>isAdmin</th>
@@ -158,7 +156,6 @@ function UserManagement() {
                 <td>{user.userID}</td>
                 <td>{user.schoolEmail}</td>
                 <td className="Schoolid">{user.schoolId}</td>
-                <td>•••••••</td>
                 <td className="bio">{user.bio}</td>
                 <td className="cp-column">{user.currentPoints}</td>
                 <td className="bio">{user?.isAdmin ? 'True' : 'False'}</td>

@@ -1,37 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
-import UserManagement from './components/UserManagement';
-import Dashboard from './components/Dashboard';
 import UserDashboard from './components/user-Dashboard'
-import Rewards from './components/Reward';
-import Points from './components/Points';
-import Item from './components/ItemManagement';
 import AdminDashboard from './Admin';
 import './components/sidebar.css';
-
 import UserPosts from './components/user-post'
 import axios from 'axios';
 import Signup from './components/Signup';
 import './App.css';
 import UserRewards from './components/user-Reward'
 import UserItem from './components/user-Item'
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import {
   Box,
   Typography,
   TextField,
   Button,
-  Paper,
-  IconButton
+  Paper
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-
-
 //icons
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import PersonIcon from '@mui/icons-material/Person';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import StarsIcon from '@mui/icons-material/Stars';
@@ -267,53 +256,6 @@ const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }
   return isAuthenticated && accountType === requiredType ? children : null;
 };
 
-
-
-
-
-
-/*
-const renderItemImage = (item) => {
-  if (item.image) {
-    return (
-      <img
-        src={item.image}
-        alt="Item"
-        style={{
-          width: '250px',
-          height: '300px',
-          objectFit: 'cover',
-          borderRadius: '4px',
-          border: '1px solid #ddd',
-          cursor: 'pointer'
-        }}
-        onClick={() => handleZoomImage(item.image)}
-        onError={(e) => {
-          console.error(`Image load error for item ${item.itemID}`);
-          e.target.style.display = 'none';
-        }}
-      />
-    );
-  }
-  return (
-    <div style={{
-      width: '420px',
-      height: '300px',
-      backgroundColor: '#f5f5f5',
-      borderRadius: '4px',
-      display: 'flex',
-      maxWidth: '250px',
-      alignItems: 'center',
-      justifyContent: 'center',
-      border: '1px solid #ddd',
-      color: '#666',
-      fontSize: '12px',
-      textAlign: 'center'
-    }}>
-      No Image
-    </div>
-  );
-};*/
 function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
