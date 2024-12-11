@@ -35,7 +35,7 @@
 }
 
 
-
+/*for animation/transiotion effect for login*/
 @keyframes loginContainerFadeIn {
   0% {
     opacity: 0;
@@ -464,6 +464,46 @@ height: 70%;
 }
 
 .form-group textarea {
+  height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #536471;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group1 input,
+.form-group1 textarea {
+  width: 200%;
+  padding: 12px;
+  border: 1px solid #cfd9de;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group1 input:focus,
+.form-group1 textarea:focus {
+  border-color: #1da1f2;
+  outline: none;
+}
+
+.form-group1 input:disabled {
+  background-color: #f7f9fa;
+  cursor: not-allowed;
+}
+
+.form-group1 textarea {
   height: 100px;
   resize: vertical;
   line-height: 1.5;

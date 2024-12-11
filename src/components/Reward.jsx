@@ -157,7 +157,7 @@ const Rewards = () => {
     const matchesRegisteredBy =
       !registeredByFilter || reward.userId === Number(registeredByFilter); // Check if registeredByFilter is set
   
-    return matchesSearchTerm && matchesRegisteredBy; // Combine both filters
+    return  matchesRegisteredBy && matchesSearchTerm; // Combine both filters
   });
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

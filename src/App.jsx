@@ -29,6 +29,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
+  
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -259,21 +260,23 @@ const ProtectedRoute = ({ children, isAuthenticated, accountType, requiredType }
 function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isViewProfileModal, setIsViewProfileModal] = useState(false);
   const [isEditProfileModal, setIsEditProfileModal] = useState(false);
   const [error, setError] = useState(null);
-  const [profileData, setProfileData] = useState({
+  /*const [profileData, setProfileData] = useState({
     schoolEmail: '',
     schoolId: '',
     password: '',
     bio: '',
-  });
+  });*/
   const [editProfileData, setEditProfileData] = useState({
     schoolEmail: '',
     schoolId: '',
     password: '',
     bio: '',
-    image: ''
+    image: '',
+
   });
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -293,7 +296,10 @@ function App() {
         schoolEmail: user.schoolEmail,
         schoolId: user.schoolId,
         password: user.password,
+        currentPoints: user.currentPoints,
         bio: user.bio || '',
+        isAdmin: user.isAdmin,
+        image:user.image
       });
     }
   }, [user]);
@@ -564,90 +570,109 @@ function App() {
                 )}
 
                 {isEditProfileModal && (
-                  <div className="modal-overlay">
-                    <div className="modal-container">
-                      <div className="content1-header">
-                        <h2>Edit Profile</h2>
-                      </div>
-                      <div style={{ position: 'relative', display: 'inline-block' }}>
-                        <label htmlFor="profile-picture-upload" style={{ cursor: 'pointer' }}>
-                          <img
-                            src={user.image || "/NullPFP.png"}
-                            alt="User Profile"
-                            className="profile-picture1"
-                            style={{
-                              width: '90px',
-                              height: '90px',
-                              borderRadius: '50%',
-                              objectFit: 'cover',
-                              border: '2px solid #ddd',
-                            }}
-                          />
-                        </label>
-                        <input
-                          type="file"
-                          id="profile-picture-upload"
-                          style={{ display: 'none' }}
-                          onChange={handleImageUpload}
-                        />
-                      </div>
-                      <div className="profile-body">
-                        <div className="profile-form">
-                          <div className="form-group">
-                            <label>Email:</label>
-                            <input
-                              type="email"
-                              value={editProfileData.schoolEmail}
-                              onChange={(e) => setEditProfileData({
-                                ...editProfileData,
-                                schoolEmail: e.target.value
-                              })}
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>School ID:</label>
-                            <input
-                              type="text"
-                              value={editProfileData.schoolId}
-                              onChange={(e) => setEditProfileData({
-                                ...editProfileData,
-                                schoolId: e.target.value
-                              })}
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Password:</label>
-                            <input
-                              type="password"
-                              value={editProfileData.password}
-                              onChange={(e) => setEditProfileData({
-                                ...editProfileData,
-                                password: e.target.value
-                              })}
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Bio:</label>
-                            <textarea
-                              value={editProfileData.bio}
-                              onChange={(e) => setEditProfileData({
-                                ...editProfileData,
-                                bio: e.target.value
-                              })}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="button-group">
-                        <button onClick={() => {
-                          setIsEditProfileModal(false);
-                          setIsViewProfileModal(true);
-                        }} className="cancel-button">Cancel</button>
-                        <button onClick={handleSaveProfile} className="save-button">Save Changes</button>
-                      </div>
-                    </div>
-                  </div>
+                 <div className="modal-overlay">
+                 <div className="modal-container">
+                   <div className="content1-header">
+                   </div>
+                   <div style={{ position: 'relative', display: 'inline-block' }}>
+                     <label htmlFor="profile-picture-upload" style={{ cursor: 'pointer' }}>
+                       <img
+                         src={user.image || "/NullPFP.png"}
+                         alt="User  Profile"
+                         className="profile-picture1"
+                         style={{
+                           width: '90px',
+                           height: '90px',
+                           borderRadius: '50%',
+                           objectFit: 'cover',
+                           border: '2px solid #ddd',
+                         }}
+                       />
+                     </label>
+                     <input
+                       type="file"
+                       id="profile-picture-upload"
+                       style={{ display: 'none' }}
+                       onChange={handleImageUpload}
+                     />
+                   </div>
+                   
+                   <div className="profile-body">
+                     <div className="profile-form">
+                       {error && <p className="error">{error}</p>}
+                       <div className="form-group1">
+                         <label>Email:</label>
+                         <input
+                           type="email"
+                           name="schoolEmail"
+                           value={editProfileData.schoolEmail}
+                           onChange={(e) => setEditProfileData({
+                             ...editProfileData,
+                             schoolEmail: e.target.value
+                           })}
+                           disabled={!isEditing} // Disable if not editing
+                         />
+                       </div>
+                       <div className="form-group1">
+                         <label>School ID:</label>
+                         <input
+                           type="text"
+                           name="schoolId"
+                           value={editProfileData.schoolId}
+                           onChange={(e) => setEditProfileData({
+                             ...editProfileData,
+                             schoolId: e.target.value
+                           })}
+                           disabled={!isEditing} // Disable if not editing
+                         />
+                       </div>
+                       <div className="form-group1">
+                         <label>Password:</label>
+                         <input
+                           type="password"
+                           name="password"
+                           value={editProfileData.password}
+                           onChange={(e) => setEditProfileData({
+                             ...editProfileData,
+                             password: e.target.value
+                           })}
+                         />
+                       </div>
+                       <div className="form-group1">
+                         <label>Bio:</label>
+                         <textarea
+                           name="bio"
+                           value={editProfileData.bio}
+                           onChange={(e) => setEditProfileData({
+                             ...editProfileData,
+                             bio: e.target.value
+                           })}
+                         />
+                       </div>
+                     </div>
+                   </div>
+             
+                   <div className="button-group">
+                     <button
+                       type="button"
+                       className="cancel-button"
+                       onClick={() => {
+                         setIsEditProfileModal(false);
+                         setIsViewProfileModal(true);
+                       }}
+                     >
+                       Cancel
+                     </button>
+                     <button
+                       type="button"
+                       className="save-button"
+                       onClick={handleSaveProfile}
+                     >
+                       {isEditing ? 'Update Profile' : 'Save Changes'}
+                     </button>
+                   </div>
+                 </div>
+               </div>
                 )}
 
                 {isDeactivateModalOpen && (

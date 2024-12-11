@@ -30,12 +30,12 @@ function userCurrentCount() {
   };
     const countRewards = async () => {
       try {
-          const response = await fetch('http://localhost:8083/api/rewards/getCountRewards');
+          const response = await fetch('http://localhost:8083/api/rewards/claimed-count');
           if (!response.ok) {
               throw new Error("Error reponse");
           }
           const data = await response.json();
-          setCountReward(data.user_count); 
+          setCountReward(data); 
       } catch (error) {
           console.error("Error fetching reward count count:", error);
       }

@@ -174,76 +174,76 @@ const AdminDashboard = ({ user, onLogout, onUserUpdate }) => {
 
   const handleVerifyCoupon = async () => {
     try {
-      // Fetch all rewards and users
-      const [rewardsResponse, usersResponse] = await Promise.all([
-        axios.get('http://localhost:8083/api/rewards/getAllRewards'),
-        axios.get('http://localhost:8083/api/users/getAllUsers'),
-      ]);
-  
-      const rewardsData = rewardsResponse.data;
-      const usersData = usersResponse.data;
-  
-      // Enhance the rewards data to include user email based on who claimed the reward
-      const enhancedRewards = rewardsData.map((reward) => {
-        const associatedUser = usersData.find((user) =>
-          user.rewards.some((userReward) => userReward.rewardId === reward.rewardId)
-        );
-  
-        return {
-          ...reward,
-          userEmail: associatedUser ? associatedUser.schoolEmail : 'Unassigned',
-          userId: associatedUser ? associatedUser.userID : null,
-        };
-      });
-  
-      // Find the reward based on the coupon code from the enhanced rewards
-      const reward = enhancedRewards.find((reward) => reward.couponCode === couponCode);
-  
-      if (reward) {
-        if (!reward.isClaimed) {
-          setUnclaimedModalOpen(true); // Show the unclaimed modal if the reward is not claimed
-        } else {
-          // Reward is claimed
-          setMessage('Success! The coupon code exists.');
-          setIsSuccess(true);
-          setIsCouponModalOpen(false);
-  
-          // Set reward details and open the congratulations modal
-          setRewardDetails(reward);
-          setIsCongratsModalOpen(true);
-  
-          try {
-            // Update the reward to set isUsed to true
-            await axios.put(`http://localhost:8083/api/rewards/putReward1/${reward.rewardId}`, {
-              isUsed: true, // Only update the isUsed attribute
-              user: {
-                userID: reward.userId // Send only the user ID if the user hasn't changed
-              }
-              
-            });
-  
-            // Optionally update state or refetch rewards to reflect the change
-            setRewardDetails((prev) => ({
-              ...prev,
-              isUsed: true,
-            }));
-          } catch (updateError) {
-            console.error('Error updating reward status:', updateError);
-            setMessage('Failed to update the reward status.');
-            setIsSuccess(false);
-          }
-        }
-      } else {
-        setMessage('This coupon code does not exist.');
-        setIsSuccess(false);
-      }
-    } catch (error) {
-      setMessage('An error occurred while verifying the coupon code.');
-      setIsSuccess(false);
-      console.error('Error verifying coupon:', error);
-    }
-  };
+        const [rewardsResponse, usersResponse] = await Promise.all([
+            axios.get('http://localhost:8083/api/rewards/getAllRewards'),
+            axios.get('http://localhost:8083/api/users/getAllUsers'),
+        ]);
 
+        const rewardsData = rewardsResponse.data;
+        const usersData = usersResponse.data;
+
+        const enhancedRewards = rewardsData.map((reward) => {
+            const associatedUser   = usersData.find((user) =>
+                user.rewards.some((userReward) => userReward.rewardId === reward.rewardId)
+            );
+
+            return {
+                ...reward,
+                userEmail: associatedUser   ? associatedUser .schoolEmail : 'Unassigned',
+                userId: associatedUser   ? associatedUser .userID : null,
+            };
+        });
+
+        const reward = enhancedRewards.find((reward) => reward.couponCode === couponCode);
+
+        if (!reward) {
+            setMessage('This coupon code does not exist.');
+            setIsSuccess(false);
+            return;
+        }
+
+        // Check if the reward is unclaimed
+        if (!reward.isClaimed) {
+            setMessage('This reward has not been claimed and cannot be redeemed.');
+            setIsSuccess(false);
+            return;
+        }
+
+        // Check if the reward is already claimed
+        if (reward.isUsed) {
+            setMessage('This reward has already been claimed and cannot be reused.');
+            setIsSuccess(false);
+            return;
+        }
+
+        // If the reward is claimed, proceed with the rest of the logic
+        setMessage('Success! The coupon code exists.');
+        setIsSuccess(true);
+        setIsCouponModalOpen(false);
+        setRewardDetails(reward);
+        setIsCongratsModalOpen(true);
+
+        // Update the reward to set isUsed to true
+        await axios.put(`http://localhost:8083/api/rewards/putReward/${reward.rewardId}`, {
+            ...reward, // Spread the existing reward properties
+            isUsed: true, // Set isUsed to true
+            user: {
+                userID: reward.userId // Include the user ID
+            }
+        });
+
+        // Update the state to reflect the change
+        setRewardDetails((prev) => ({
+            ...prev,
+            isUsed: true,
+        }));
+
+    } catch (error) {
+        setMessage('An error occurred while verifying the coupon code.');
+        setIsSuccess(false);
+        console.error('Error verifying coupon:', error);
+    }
+};
   const toggleNotificationModal = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
