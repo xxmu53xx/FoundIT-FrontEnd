@@ -12,7 +12,42 @@
   margin-right: 100px;
   margin-right:3%;
 }
+.confirmation-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 1000;
+}
 
+.confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirm-button1, .cancel-button1 {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-button1 {
+  background-color: #ffd700;
+  color: white;
+}
+
+.cancel-button1 {
+  background-color: #f44336;
+  color: white;
+}
 .header-container {
   display: flex;
   justify-content: space-between;

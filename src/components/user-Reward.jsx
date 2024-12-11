@@ -5,12 +5,13 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './user-Reward.css';
-import './Rewards.css'
+import './Rewards.css';
 
 const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [rewardDetailsModalOpen, setRewardDetailsModalOpen] = useState(false);
   const [showWishlistModal, setShowWishlistModal] = useState(false);
+  const [showConfirmCloseModal, setShowConfirmCloseModal] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -62,7 +63,6 @@ const Rewards = () => {
     }
   };
 
-
   const handleSortOrder = (event) => {
     setSortOrder(event.target.value);
   };
@@ -74,31 +74,31 @@ const Rewards = () => {
 
   const handleRedeem = async (reward) => {
     // Check if user has enough points
-    if (!currentUser ) {
+    if (!currentUser) {
       setError('Please log in to redeem rewards');
       return;
     }
 
-    if (currentUser .currentPoints < reward.pointsRequired) {
-      setError(`You do not have enough points to redeem ${reward.rewardName}. Required: ${reward.pointsRequired}, Current: ${currentUser .currentPoints}`);
+    if (currentUser.currentPoints < reward.pointsRequired) {
+      setError(`You do not have enough points to redeem ${reward.rewardName}. Required: ${reward.pointsRequired}, Current: ${currentUser.currentPoints}`);
       return;
     }
 
     try {
       // Prepare the updated user object with deducted points
-      const updatedUser  = {
-        ...currentUser ,
+      const updatedUser = {
+        ...currentUser,
         currentPoints: currentUser.currentPoints - reward.pointsRequired
       };
 
       // Update user points
-      await axios.put(`http://localhost:8083/api/users/putUserDetails/${currentUser .userID}`, updatedUser );
+      await axios.put(`http://localhost:8083/api/users/putUserDetails/${currentUser.userID}`, updatedUser);
 
       // Update reward to mark as claimed and associate with user
       await axios.put(`http://localhost:8083/api/rewards/putReward/${reward.rewardId}`, {
         ...reward,
         isClaimed: true,
-        user: updatedUser 
+        user: updatedUser
       });
 
       // Set the reward details for the modal
@@ -110,7 +110,7 @@ const Rewards = () => {
 
       // Refresh rewards and user data
       fetchRewards();
-      fetchCurrentUser ();
+      fetchCurrentUser();
 
     } catch (error) {
       console.error('Error redeeming reward:', error);
@@ -118,6 +118,16 @@ const Rewards = () => {
     }
   };
 
+  const handleCloseRewardDetails = () => {
+    // Show confirmation modal before closing
+    setShowConfirmCloseModal(true);
+  };
+
+  const confirmCloseRewardDetails = () => {
+    // Close both confirmation modal and reward details modal
+    setShowConfirmCloseModal(false);
+    setRewardDetailsModalOpen(false);
+  };
 
   const renderItemImage = (reward) => {
     if (reward.image) {
@@ -126,7 +136,7 @@ const Rewards = () => {
           src={reward.image}
           alt="Reward"
           style={{
-            marginTop:'20px',
+            marginTop: '20px',
             width: '100%',
             height: '100%',
             objectFit: 'cover',
@@ -144,22 +154,22 @@ const Rewards = () => {
     }
     return (
       <img
-      src="/NoImage.png"
-      alt="Reward"
-      style={{
-        width: '500px',
-        height: '100%',
-        objectFit: 'cover',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '50%',
-        border: '1px solid #ddd'
-      }}
-      onError={(e) => {
-        console.error(`Image load error for reward ${reward.rewardId}`);
-        e.target.style.display = 'none';
-      }}
-    />
+        src="/NoImage.png"
+        alt="Reward"
+        style={{
+          width: '500px',
+          height: '100%',
+          objectFit: 'cover',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          border: '1px solid #ddd'
+        }}
+        onError={(e) => {
+          console.error(`Image load error for reward ${reward.rewardId}`);
+          e.target.style.display = 'none';
+        }}
+      />
     );
   };
 
@@ -188,47 +198,76 @@ const Rewards = () => {
             </div>
             <h3>{reward.rewardName}</h3>
             <p className="RewardType">{reward.rewardType}</p>
-      
           </div>
         ))}
       </div>
      
-     
+      {/* Coupon Details Modal with Confirmation */}
       {rewardDetailsModalOpen && (
-  <div className="modal-overlay">
-    <div className="wishlist-modal">
-      <div className="modal-content">
-        {rewardDetails && (
-          <>
-            <div className="modal-image">
-              {/* Display the image of the redeemed reward */}
-              <img 
-                src={rewardDetails.image || "/NoImage.png"} 
-                onError={(e) => {
-                  e.target.src = "/NoImage.png"; // Fallback image on error
-                  console.warn(`Error loading image for ${rewardDetails.rewardName}, using default`);
-                }}
-                alt={rewardDetails.rewardName}
-              />
+        <div className="modal-overlay">
+          <div className="wishlist-modal">
+            <div className="modal-content">
+              {rewardDetails && (
+                <>
+                  <div className="modal-image">
+                    <img 
+                      src={rewardDetails.image || "/NoImage.png"} 
+                      onError={(e) => {
+                        e.target.src = "/NoImage.png";
+                        console.warn(`Error loading image for ${rewardDetails.rewardName}, using default`);
+                      }}
+                      alt={rewardDetails.rewardName}
+                    />
+                  </div>
+                  <div className="modal-info">  
+                    <h2>{rewardDetails.rewardName}</h2>
+                    <p>Points Required: ★ {rewardDetails.pointsRequired}</p>
+                    <p>Coupon Code: <strong style={{ fontSize: '1.5rem', color: '#b42626' }}><br></br>{rewardDetails.couponCode}</strong></p>
+                    <p>Thank you for your purchase!</p>
+                  </div>
+                </>
+              )}
             </div>
+            <button
+              className="close-button"
+              onClick={handleCloseRewardDetails}
+            >
+              <CloseIcon />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal for Closing Coupon Details */}
+      {showConfirmCloseModal && (
+        <div className="modal-overlay">
+          <div className="confirmation-modal">
+            <div className="modal-content">
             <div className="modal-info">  
-              <h2>{rewardDetails.rewardName}</h2>
-              <p>Points Required: ★ {rewardDetails.pointsRequired}</p>
-              <p>Coupon Code: <strong style={{ fontSize: '1.5rem', color: '#b42626' }}><br></br>{rewardDetails.couponCode}</strong></p>
-              <p>Thank you for your purchase!</p>
+              <h2>Are you sure you want to close?</h2>
+            
+              <p>Make sure you have noted down your coupon code.</p>
+            
+              <div className="confirmation-buttons">
+                <button 
+                  className="confirm-button1" 
+                  onClick={confirmCloseRewardDetails}
+                >
+                  &nbsp; &nbsp; Yes&nbsp; &nbsp;
+                </button>
+                <button 
+                  className="cancel-button1" 
+                  onClick={() => setShowConfirmCloseModal(false)}
+                >
+                  &nbsp; Cancel
+                </button>
+                </div>
+              </div>
             </div>
-          </>
-        )}
-      </div>
-      <button
-        className="close-button"
-        onClick={() => setRewardDetailsModalOpen(false)}
-      >
-        <CloseIcon />
-      </button>
-    </div>
-  </div>
-)}
+          </div>
+        </div>
+      )}
+
       {/* Wishlist Modal */}
       {showWishlistModal && (
         <div className="modal-overlay">
@@ -237,13 +276,13 @@ const Rewards = () => {
               {selectedReward && (
                 <>
                   <div className="modal-image">
-                    {/* Replace the default image with the selected reward's image */}
                     <img 
                       src={selectedReward.image || "/NoImage.png"} 
                       onError={(e) => {
                         e.target.src = "/dilao.png";
                         console.warn(`Error loading image for ${selectedReward.rewardName}, using default`);
                       }}
+                      alt={selectedReward.rewardName}
                     />
                   </div>
                   <div className="modal-info">  
