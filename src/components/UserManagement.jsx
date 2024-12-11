@@ -184,7 +184,7 @@ function UserManagement() {
           <div className="popup1" onClick={(e) => e.stopPropagation()}>
             <h2>{isEditing ? 'Edit User' : 'Create New User'}</h2>
             <form onSubmit={handleSubmit} className="user-form">
-              <div className="form-group1">
+              <div className="form-group">
                 <label>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <input
                     type="email"
@@ -196,7 +196,7 @@ function UserManagement() {
                 </label>
               </div>
 
-              <div className="form-group1">
+              <div className="form-group">
                 <label>School ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <input
                     type="text"
@@ -208,7 +208,7 @@ function UserManagement() {
                 </label>
               </div>
 
-              <div className="form-group1">
+              <div className="form-group">
                 <label>Password:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <input
                     type="text"
@@ -220,7 +220,7 @@ function UserManagement() {
                 </label>
               </div>
 
-              <div className="form-group1">
+              <div className="form-group">
                 <label>Bio:</label>
                 <textarea
                   className="textArea"
@@ -231,7 +231,7 @@ function UserManagement() {
                 />
               </div>
 
-              <div className="form-group1">
+              <div className="form-group">
                 <label>Current Points:
                   <input
                     className="currentPoints"
