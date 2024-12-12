@@ -90,7 +90,7 @@ const Rewards = () => {
       rewardName: formData.rewardName,
       rewardType: formData.rewardType,
       pointsRequired: parseInt(formData.pointsRequired),
-      user: { userID: 3 },
+      user: { userID: 1 },
       //this UserID is the temporary holder of the reward that is unclaimed
       //admin must be the temporary holder
       ...(editingReward && { rewardId: editingReward.rewardId }),

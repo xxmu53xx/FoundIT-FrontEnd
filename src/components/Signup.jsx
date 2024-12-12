@@ -1,7 +1,4 @@
-
-//goods nani dere ay na hilabi :<
-
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Dialog,
   DialogTitle,
@@ -11,7 +8,8 @@ import {
   Box,
   Typography,
   IconButton,
-  TextareaAutosize
+  TextareaAutosize,
+  LinearProgress
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
@@ -31,11 +29,57 @@ const Signup = ({ open, onClose }) => {
   });
   const [error, setError] = useState('');
 
+  // Password strength evaluation
+  const evaluatePasswordStrength = (password) => {
+    const checks = {
+      length: password.length >= 8,
+      punctuation: /[!"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password)
+    };
+
+    const strengthScore = Object.values(checks).filter(check => check).length;
+    
+    return {
+      checks,
+      score: strengthScore,
+      strength: strengthScore <= 1 ? 'Very Weak' :
+                strengthScore <= 2 ? 'Weak' :
+                strengthScore <= 3 ? 'Moderate' :
+                strengthScore <= 4 ? 'Strong' : 'Very Strong'
+    };
+  };
+
+  const passwordStrength = useMemo(() => 
+    evaluatePasswordStrength(formData.password), 
+    [formData.password]
+  );
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const validatePassword = (password) => {
+    return (
+      password.length >= 8 &&
+      /[!"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password)
+    );
+  };
+
+  const validateSchoolEmail = (email) => {
+    return email.endsWith('@cit.edu');
+  };
+
+  const validateSchoolId = (schoolId) => {
+    const schoolIdRegex = /^\d{2}-\d{4}-\d{3}$/;
+    return schoolIdRegex.test(schoolId);
   };
 
   const postUser = async () => {
@@ -57,17 +101,33 @@ const Signup = ({ open, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    setError('');
 
     if (formData.schoolEmail === '' || formData.schoolId === '' || formData.password === '') {
       setError('All fields are required.');
       return;
     }
 
-    setError('');
+    if (!validateSchoolEmail(formData.schoolEmail)) {
+      setError('Please use a valid CIT school email (must end with @cit.edu).');
+      return;
+    }
+
+    if (!validateSchoolId(formData.schoolId)) {
+      setError('School ID must be in the format 00-0000-000.');
+      return;
+    }
+
+    if (!validatePassword(formData.password)) {
+      setError('Password must be at least 8 characters long and include uppercase, lowercase, number, and punctuation.');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     postUser();
   };
 
@@ -106,6 +166,7 @@ const Signup = ({ open, onClose }) => {
               value={formData.schoolEmail}
               onChange={handleChange}
               className="text-field"
+              placeholder="example@cit.edu"
             />
           </Box>
 
@@ -119,6 +180,7 @@ const Signup = ({ open, onClose }) => {
               value={formData.schoolId}
               onChange={handleChange}
               className="text-field"
+              placeholder="00-0000-000"
             />
           </Box>
 
@@ -145,6 +207,40 @@ const Signup = ({ open, onClose }) => {
               value={formData.password}
               onChange={handleChange}
               className="text-field"
+              helperText={
+                <Box>
+                  <Typography variant="caption">
+                    Password Strength: {passwordStrength.strength}
+                  </Typography>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={(passwordStrength.score / 5) * 100}
+                    color={
+                      passwordStrength.score <= 1 ? 'error' :
+                      passwordStrength.score <= 2 ? 'warning' :
+                      passwordStrength.score <= 3 ? 'secondary' :
+                      'success'
+                    }
+                  />
+                  <Box display="flex" flexDirection="column" mt={1}>
+                    <Typography variant="caption" color={passwordStrength.checks.length ? 'success' : 'error'}>
+                      {passwordStrength.checks.length ? '✓' : '✗'} At least 8 characters
+                    </Typography>
+                    <Typography variant="caption" color={passwordStrength.checks.punctuation ? 'success' : 'error'}>
+                      {passwordStrength.checks.punctuation ? '✓' : '✗'} Contains punctuation
+                    </Typography>
+                    <Typography variant="caption" color={passwordStrength.checks.uppercase ? 'success' : 'error'}>
+                      {passwordStrength.checks.uppercase ? '✓' : '✗'} Contains uppercase letter
+                    </Typography>
+                    <Typography variant="caption" color={passwordStrength.checks.lowercase ? 'success' : 'error'}>
+                      {passwordStrength.checks.lowercase ? '✓' : '✗'} Contains lowercase letter
+                    </Typography>
+                    <Typography variant="caption" color={passwordStrength.checks.number ? 'success' : 'error'}>
+                      {passwordStrength.checks.number ? '✓' : '✗'} Contains number
+                    </Typography>
+                  </Box>
+                </Box>
+              }
             />
           </Box>
 

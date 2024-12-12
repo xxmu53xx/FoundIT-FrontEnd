@@ -368,10 +368,10 @@ function ItemManagement({ user }) {
       <div className="horizontal-scroll-container">
         {filteredItems.map((item) => (
           <div className="item-card" key={item.itemID}>
-            <p><strong>Description:</strong> {item.description}</p>
-            <p><strong>Date:</strong> {new Date(item.dateLostOrFound).toLocaleDateString()}</p>
+            <p><strong>Description:<br></br></strong></p> <p>{item.description}</p>
+            <p><strong>Date:<br></br></strong> {new Date(item.dateLostOrFound).toLocaleDateString()}</p>
             <p>
-              <strong>Registered By:</strong>
+              <strong>Registered By:<br></br></strong>
               <span
                 style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
                 onClick={() => fetchUserDetails(item.userEmail)}

@@ -288,10 +288,10 @@ function ItemManagement({ user }) {
           {filteredItems.map((item) => (
             <div className="item-card" key={item.itemID}>
               <p>
-                <strong>Description:</strong> {item.description}
+                <strong>Description:<br></br></strong> </p><p>{item.description}
               </p>
               <p>
-                <strong>Date:</strong>{' '}
+                <strong>Date:<br></br></strong>{' '}
                 {new Date(item.dateLostOrFound).toLocaleDateString()}
               </p>
               <p>
