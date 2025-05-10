@@ -203,6 +203,7 @@ function MyAccordion() {
                                             <tr style={{ backgroundColor: '#800000', color: 'white' }}>
                                                 <th style={{ padding: '10px', textAlign: 'center' }}>Rank</th>
                                                 <th style={{ padding: '10px', textAlign: 'left' }}>School ID</th>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Email</th>
                                                 <th style={{ padding: '10px', textAlign: 'center' }}>Points</th>
                                             </tr>
                                         </thead>
@@ -217,6 +218,7 @@ function MyAccordion() {
                                                         {getRankEmoji(index + 1)}
                                                     </td>
                                                     <td style={{ padding: '10px' }}>{user.schoolId}</td>
+                                                    <td style={{ padding: '10px' }}>{user.schoolEmail}</td>
                                                     <td style={{
                                                         padding: '10px',
                                                         textAlign: 'center',

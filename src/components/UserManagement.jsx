@@ -3,7 +3,6 @@ import { BrowserRouter as Router, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import './Design.css'
 
 function UserManagement() {
   const [users, setUsers] = useState([]);

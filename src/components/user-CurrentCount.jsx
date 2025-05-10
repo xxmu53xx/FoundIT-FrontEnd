@@ -42,12 +42,12 @@ function userCurrentCount() {
   };
     const countItems = async () => {
       try {
-          const response = await fetch('http://localhost:8083/api/items/getCountItem');
+          const response = await fetch('http://localhost:8083/api/items/getLostItemCount');
           if (!response.ok) {
               throw new Error("Error reponse");
           }
           const data = await response.json();
-          setCountItem(data.user_count); 
+          setCountItem(data.lost_item_count); 
       } catch (error) {
           console.error("Error fetching current item count:", error);
       }
@@ -155,7 +155,7 @@ countFoundItems();
     
       
       <Grid item xs={12} sm={6} md={3}>
-      <Link to="/student/posts" style={{ textDecoration: 'none' }}> 
+      <Link to="/student/item" style={{ textDecoration: 'none' }}> 
         <Box
           sx={{
             display: 'flex',
@@ -181,7 +181,7 @@ countFoundItems();
           <Typography variant="h3">{countFoundItems}
           </Typography></Box>
           <Typography variant="body1" color="white">
-            Items To be Claimed
+            Total Found Items
           </Typography>
         </Box>
         </Link>
@@ -213,7 +213,7 @@ countFoundItems();
           <Typography variant="h3">{countItem}
           </Typography></Box>
           <Typography variant="body1" color="textSecondary">
-            Total Posts
+            Total Lost Items
           </Typography>
         </Box>
         </Link>

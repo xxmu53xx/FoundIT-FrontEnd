@@ -16,6 +16,10 @@
     scroll-behavior: smooth;
     gap: 10px;
   }
+  .itemStatus{
+    align-items: center;
+    text-align: center;
+  }
   .horizontal-scroll-container1 {
     display: flex;
     flex-wrap: nowrap;
